@@ -1,0 +1,31 @@
+# A 股量化选股系统配置
+
+paths:
+  data_dir: data
+  output_dir: output
+  logs_dir: logs
+  watchlist: data/watchlist.json
+  market_snapshot: data/market_snapshot.json
+  scan_results: output/scan_results.json
+  backtest_report: output/backtest_report.json
+  dashboard_data: output/dashboard.json
+
+sync:
+  hhxg_skill_dir: ../.cursor/skills/hhxg-market/scripts
+  kline_days: 120
+  timeout_sec: 20
+  retries: 2
+
+scanner:
+  min_amount_yi: 1.0
+  volume_ratio_min: 1.5
+
+backtest:
+  hold_days: 5
+  stop_loss_pct: 0.08
+  take_profit_pct: 0.15
+
+logging:
+  level: INFO
+  file: logs/stock_quant.log
+  console: true

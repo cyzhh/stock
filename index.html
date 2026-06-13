@@ -1,0 +1,5314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A 股量化选股系统</title>
+  <style>
+    :root {
+      --bg: #0a0c1a;
+      --card: #12182b;
+      --card-inner: #0d1117;
+      --text: #e8edf5;
+      --muted: #8b95a8;
+      --accent: #4facfe;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #eab308;
+      --border: rgba(255, 255, 255, 0.06);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    .page { max-width: 960px; margin: 0 auto; padding: 48px 20px 80px; }
+    header { text-align: center; margin-bottom: 28px; }
+    header h1 { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 700; margin-bottom: 12px; }
+    header p { color: var(--muted); font-size: 0.9rem; }
+    .metrics-row {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px; margin-bottom: 24px;
+    }
+    .metric-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 16px 18px; text-align: center;
+    }
+    .metric-value { font-size: 1.6rem; font-weight: 800; color: var(--accent); line-height: 1.2; }
+    .metric-value.up { color: var(--green); }
+    .metric-value.down { color: var(--red); }
+    .metric-label { font-size: 0.82rem; color: var(--text); margin-top: 6px; font-weight: 600; }
+    .metric-sub { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+    .view-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .view-tab {
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      padding: 8px 18px; border-radius: 24px; cursor: pointer; font-size: 0.86rem;
+    }
+    .view-tab.active, .view-tab:hover {
+      border-color: var(--accent); color: var(--text); background: rgba(79,172,254,0.12);
+    }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .stats-bar { text-align: center; color: var(--muted); font-size: 0.8rem; margin-bottom: 16px; }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 18px 22px; margin-bottom: 18px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    }
+    .card h2 { font-size: 0.95rem; margin-bottom: 14px; color: #b8c5d9; }
+    .stock-card { border-color: rgba(79,172,254,0.2); }
+    .stock-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+    }
+    .stock-title { font-size: 1.05rem; font-weight: 700; }
+    .stock-code { color: var(--muted); font-size: 0.82rem; margin-left: 8px; }
+    .price-badge {
+      font-size: 1.2rem; font-weight: 800;
+      padding: 4px 12px; border-radius: 8px;
+      background: rgba(79,172,254,0.15); color: var(--accent);
+    }
+    .price-badge.up { background: rgba(34,197,94,0.15); color: var(--green); }
+    .price-badge.down { background: rgba(239,68,68,0.15); color: var(--red); }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .tag {
+      font-size: 0.76rem; padding: 4px 10px; border-radius: 16px; font-weight: 600;
+    }
+    .tag.buy { background: rgba(34,197,94,0.18); color: #4ade80; border: 1px solid rgba(34,197,94,0.35); }
+    .tag.neutral { background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid var(--border); }
+    .tag.warn { background: rgba(234,179,8,0.18); color: #facc15; border: 1px solid rgba(234,179,8,0.35); }
+    .tag.sell { background: rgba(239,68,68,0.18); color: #f87171; border: 1px solid rgba(239,68,68,0.35); }
+    .ind-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px; margin-top: 12px;
+    }
+    .ind-item {
+      background: var(--card-inner); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 12px; text-align: center;
+    }
+    .ind-val { font-size: 1rem; font-weight: 700; color: var(--accent); }
+    .ind-label { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+    .table-wrap {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      overflow: hidden; margin-bottom: 18px;
+    }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 600; background: rgba(0,0,0,0.15); }
+    tr:hover td { background: rgba(79,172,254,0.06); }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+      justify-content: center; margin-bottom: 16px; padding: 14px 16px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    }
+    .toolbar input, .toolbar select {
+      background: var(--card-inner); border: 1px solid var(--border); border-radius: 10px;
+      color: var(--text); padding: 10px 12px; font-size: 0.88rem;
+    }
+    .theme-list { display: flex; flex-direction: column; gap: 10px; }
+    .theme-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 12px; background: var(--card-inner); border-radius: 8px;
+      border: 1px solid var(--border); flex-wrap: wrap; gap: 8px;
+    }
+    .news-item { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
+    .news-item:last-child { border-bottom: none; }
+    .news-time { color: var(--muted); font-size: 0.75rem; margin-right: 8px; }
+    footer {
+      text-align: center; color: var(--muted); font-size: 0.75rem;
+      margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    .reason { font-size: 0.82rem; color: var(--muted); margin-top: 8px; }
+    .score-bar { display: flex; align-items: center; gap: 8px; min-width: 100px; }
+    .score-track { flex: 1; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+    .score-fill { height: 100%; background: linear-gradient(90deg, #4facfe, #00f2fe); border-radius: 3px; }
+    @media (max-width: 600px) {
+      .stock-header { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1 id="page-title">A 股量化选股系统</h1>
+      <p id="page-subtitle"></p>
+    </header>
+    <div class="metrics-row" id="metrics-row"></div>
+    <div class="view-tabs">
+      <button class="view-tab active" data-view="market">📊 市场概览</button>
+      <button class="view-tab" data-view="picks">🎯 策略选股</button>
+      <button class="view-tab" data-view="indicators">📈 个股指标</button>
+      <button class="view-tab" data-view="backtest">🔬 回测验证</button>
+    </div>
+    <div class="stats-bar" id="stats-bar"></div>
+    <div class="panel active" id="market-panel"></div>
+    <div class="panel" id="picks-panel"></div>
+    <div class="panel" id="indicators-panel"></div>
+    <div class="panel" id="backtest-panel"></div>
+    <footer>
+      参考 <a href="https://github.com/myhhub/stock" target="_blank">InStock (myhhub/stock)</a>
+      · 行情 <a href="https://hhxg.top" target="_blank">恢恢量化</a>
+      · 仅供学习研究，非投资建议
+    </footer>
+  </div>
+  <script>
+    const DATA = {
+  "generated_at": "2026-06-13T14:12:55.197724+00:00",
+  "market_date": "2026-06-12",
+  "snapshot": {
+    "market": {
+      "date": "2026-06-12",
+      "sentiment_index": 72.7,
+      "sentiment_label": "强",
+      "struct_diff": 2.1,
+      "total": 5286,
+      "buckets": [
+        {
+          "name": "小涨",
+          "count": 2810,
+          "prev": 954,
+          "dir": "up"
+        },
+        {
+          "name": "中涨",
+          "count": 816,
+          "prev": 272,
+          "dir": "up"
+        },
+        {
+          "name": "大涨",
+          "count": 216,
+          "prev": 156,
+          "dir": "up"
+        },
+        {
+          "name": "小跌",
+          "count": 977,
+          "prev": 2701,
+          "dir": "down"
+        },
+        {
+          "name": "中跌",
+          "count": 363,
+          "prev": 1032,
+          "dir": "down"
+        },
+        {
+          "name": "大跌",
+          "count": 104,
+          "prev": 169,
+          "dir": "down"
+        }
+      ],
+      "limit_up": 89,
+      "fried": 48,
+      "limit_down": 15,
+      "promotion_rate": "14%"
+    },
+    "hot_themes": [
+      {
+        "name": "无人机",
+        "limitup_count": 17,
+        "net_yi": 7.16,
+        "top_stocks": [
+          {
+            "name": "晨曦航空",
+            "net_yi": 1.44
+          },
+          {
+            "name": "蓝箭电子",
+            "net_yi": 1.24
+          }
+        ],
+        "related_themes": [
+          {
+            "name": "军民融合",
+            "count": 6
+          },
+          {
+            "name": "小米概念",
+            "count": 5
+          },
+          {
+            "name": "高端装备",
+            "count": 5
+          }
+        ]
+      },
+      {
+        "name": "有色金属",
+        "limitup_count": 16,
+        "net_yi": -6.29,
+        "top_stocks": [
+          {
+            "name": "铜陵有色",
+            "net_yi": 2.73
+          },
+          {
+            "name": "盛龙股份",
+            "net_yi": 1.31
+          }
+        ],
+        "related_themes": [
+          {
+            "name": "小金属概念",
+            "count": 36
+          },
+          {
+            "name": "铜缆高速连接",
+            "count": 5
+          },
+          {
+            "name": "养老概念",
+            "count": 2
+          }
+        ]
+      },
+      {
+        "name": "小金属概念",
+        "limitup_count": 15,
+        "net_yi": -5.24,
+        "top_stocks": [
+          {
+            "name": "铜陵有色",
+            "net_yi": 2.73
+          },
+          {
+            "name": "盛龙股份",
+            "net_yi": 1.31
+          }
+        ],
+        "related_themes": [
+          {
+            "name": "有色金属",
+            "count": 36
+          },
+          {
+            "name": "铜缆高速连接",
+            "count": 6
+          },
+          {
+            "name": "基础化工",
+            "count": 5
+          }
+        ]
+      },
+      {
+        "name": "铜缆高速连接",
+        "limitup_count": 12,
+        "net_yi": -0.75,
+        "top_stocks": [
+          {
+            "name": "铜陵有色",
+            "net_yi": 2.73
+          },
+          {
+            "name": "盛龙股份",
+            "net_yi": 1.31
+          }
+        ],
+        "related_themes": [
+          {
+            "name": "小金属概念",
+            "count": 6
+          },
+          {
+            "name": "有色金属",
+            "count": 5
+          },
+          {
+            "name": "高端装备",
+            "count": 3
+          }
+        ]
+      },
+      {
+        "name": "黄金概念",
+        "limitup_count": 12,
+        "net_yi": 2.73,
+        "top_stocks": [
+          {
+            "name": "铜陵有色",
+            "net_yi": 2.73
+          },
+          {
+            "name": "招金黄金",
+            "net_yi": 0.0
+          }
+        ],
+        "related_themes": [
+          {
+            "name": "小金属概念",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "name": "基础化工",
+        "limitup_count": 11,
+        "net_yi": 0.16,
+        "top_stocks": [
+          {
+            "name": "肯特催化",
+            "net_yi": 0.7
+          },
+          {
+            "name": "和远气体",
+            "net_yi": 0.3
+          }
+        ],
+        "related_themes": [
+          {
+            "name": "化学制品",
+            "count": 18
+          },
+          {
+            "name": "氢能源",
+            "count": 13
+          },
+          {
+            "name": "氟化工概念",
+            "count": 6
+          }
+        ]
+      }
+    ],
+    "ladder_detail": {
+      "levels": [
+        {
+          "boards": 4,
+          "count": 2,
+          "fail_count": 2,
+          "stocks": [
+            {
+              "name": "和远气体",
+              "code": "002971.SZ",
+              "industry": "化学制品",
+              "area": "湖北",
+              "concept": "基础化工",
+              "is_success": true
+            },
+            {
+              "name": "XD宿迁联",
+              "code": "603065.SH",
+              "industry": "化学制品",
+              "area": "江苏",
+              "concept": "基础化工",
+              "is_success": true
+            },
+            {
+              "name": "中化国际",
+              "code": "600500.SH",
+              "industry": "化学制品",
+              "area": "上海",
+              "concept": "基础化工",
+              "is_success": false
+            },
+            {
+              "name": "京基智农",
+              "code": "000048.SZ",
+              "industry": "养殖业",
+              "area": "深圳",
+              "concept": "乡村振兴",
+              "is_success": false
+            }
+          ]
+        },
+        {
+          "boards": 3,
+          "count": 0,
+          "fail_count": 7,
+          "stocks": [
+            {
+              "name": "康强电子",
+              "code": "002119.SZ",
+              "industry": "半导体",
+              "area": "浙江",
+              "concept": "先进封装",
+              "is_success": false
+            },
+            {
+              "name": "雅克科技",
+              "code": "002409.SZ",
+              "industry": "半导体",
+              "area": "江苏",
+              "concept": "MiniLED",
+              "is_success": false
+            },
+            {
+              "name": "红 宝 丽",
+              "code": "002165.SZ",
+              "industry": "化学制品",
+              "area": "江苏",
+              "concept": "基础化工",
+              "is_success": false
+            },
+            {
+              "name": "新亚强",
+              "code": "603155.SH",
+              "industry": "化学制品",
+              "area": "江苏",
+              "concept": "基础化工",
+              "is_success": false
+            },
+            {
+              "name": "昊华科技",
+              "code": "600378.SH",
+              "industry": "化学制品",
+              "area": "四川",
+              "concept": "基础化工",
+              "is_success": false
+            },
+            {
+              "name": "东安动力",
+              "code": "600178.SH",
+              "industry": "汽车零部件",
+              "area": "黑龙江",
+              "concept": "无人机",
+              "is_success": false
+            },
+            {
+              "name": "天地源",
+              "code": "600665.SH",
+              "industry": "房地产开发",
+              "area": "陕西",
+              "concept": "物业管理",
+              "is_success": false
+            }
+          ]
+        },
+        {
+          "boards": 2,
+          "count": 8,
+          "fail_count": 50,
+          "stocks": [
+            {
+              "name": "盛龙股份",
+              "code": "001257.SZ",
+              "industry": "小金属",
+              "area": "河南",
+              "concept": "有色金属",
+              "is_success": true
+            },
+            {
+              "name": "海亮股份",
+              "code": "002203.SZ",
+              "industry": "工业金属",
+              "area": "浙江",
+              "concept": "有色金属",
+              "is_success": true
+            },
+            {
+              "name": "宗申动力",
+              "code": "001696.SZ",
+              "industry": "通用设备",
+              "area": "重庆",
+              "concept": "氢能源",
+              "is_success": true
+            },
+            {
+              "name": "冠城新材",
+              "code": "600067.SH",
+              "industry": "电网设备",
+              "area": "福建",
+              "concept": "氢能源",
+              "is_success": true
+            },
+            {
+              "name": "新金路",
+              "code": "000510.SZ",
+              "industry": "化学原料",
+              "area": "四川",
+              "concept": "基础化工",
+              "is_success": true
+            },
+            {
+              "name": "深桑达Ａ",
+              "code": "000032.SZ",
+              "industry": "专业工程",
+              "area": "深圳",
+              "concept": "MiniLED",
+              "is_success": true
+            },
+            {
+              "name": "金钼股份",
+              "code": "601958.SH",
+              "industry": "小金属",
+              "area": "陕西",
+              "concept": "MiniLED",
+              "is_success": true
+            },
+            {
+              "name": "威高血净",
+              "code": "603014.SH",
+              "industry": "医疗器械",
+              "area": "山东",
+              "concept": "医疗器械概念",
+              "is_success": true
+            }
+          ]
+        },
+        {
+          "boards": 1,
+          "count": 79,
+          "fail_count": 0,
+          "stocks": [
+            {
+              "name": "中信海直",
+              "code": "000099.SZ",
+              "industry": "",
+              "area": "深圳",
+              "concept": "交通运输",
+              "is_success": true
+            },
+            {
+              "name": "中成股份",
+              "code": "000151.SZ",
+              "industry": "",
+              "area": "北京",
+              "concept": "中俄贸易概念",
+              "is_success": true
+            },
+            {
+              "name": "招金黄金",
+              "code": "000506.SZ",
+              "industry": "",
+              "area": "山东",
+              "concept": "小金属概念",
+              "is_success": true
+            },
+            {
+              "name": "航天发展",
+              "code": "000547.SZ",
+              "industry": "",
+              "area": "福建",
+              "concept": "F5G概念",
+              "is_success": true
+            },
+            {
+              "name": "铜陵有色",
+              "code": "000630.SZ",
+              "industry": "",
+              "area": "安徽",
+              "concept": "F5G概念",
+              "is_success": true
+            },
+            {
+              "name": "北方铜业",
+              "code": "000737.SZ",
+              "industry": "",
+              "area": "山西",
+              "concept": "PCB概念",
+              "is_success": true
+            },
+            {
+              "name": "锌业股份",
+              "code": "000751.SZ",
+              "industry": "",
+              "area": "辽宁",
+              "concept": "小金属概念",
+              "is_success": true
+            },
+            {
+              "name": "中色股份",
+              "code": "000758.SZ",
+              "industry": "",
+              "area": "北京",
+              "concept": "小金属概念",
+              "is_success": true
+            }
+          ]
+        }
+      ],
+      "lb_rates_map": {
+        "1": "13.8%",
+        "3": "50.0%",
+        "0": "65.3%"
+      },
+      "area_counts": {
+        "浙江": 9,
+        "江苏": 8,
+        "深圳": 7,
+        "山东": 6,
+        "安徽": 6,
+        "福建": 5,
+        "陕西": 5,
+        "北京": 5,
+        "广东": 5,
+        "四川": 4
+      },
+      "concept_counts": {
+        "无人机": 17,
+        "有色金属": 16,
+        "小金属概念": 15,
+        "铜缆高速连接": 12,
+        "深成500": 12,
+        "黄金概念": 12,
+        "工业金属": 11,
+        "基础化工": 11,
+        "F5G概念": 10,
+        "通信技术": 10
+      }
+    },
+    "ladder_summary": {
+      "total_limit_up": 89,
+      "max_streak": 4,
+      "top_streak": {
+        "name": "和远气体",
+        "boards": 4,
+        "industry": "化学制品"
+      }
+    },
+    "hotmoney": {
+      "date": "2026-06-12",
+      "total_net_yi": 20.54,
+      "top_net_buy": [
+        {
+          "name": "索辰科技",
+          "net_yi": 5.05,
+          "ratio_pct": 75.7
+        },
+        {
+          "name": "康强电子",
+          "net_yi": 4.93,
+          "ratio_pct": 42.8
+        },
+        {
+          "name": "富信科技",
+          "net_yi": 4.06,
+          "ratio_pct": 39.9
+        },
+        {
+          "name": "兴福电子",
+          "net_yi": 3.47,
+          "ratio_pct": 16.7
+        },
+        {
+          "name": "隆华科技",
+          "net_yi": 3.03,
+          "ratio_pct": 18.2
+        }
+      ],
+      "seats": [
+        {
+          "name": "成都系",
+          "stocks": [
+            {
+              "name": "深桑达Ａ",
+              "net_yi": 0.8
+            },
+            {
+              "name": "中化国际",
+              "net_yi": -1.36
+            }
+          ]
+        },
+        {
+          "name": "温州帮",
+          "stocks": [
+            {
+              "name": "财达证券",
+              "net_yi": 0.23
+            },
+            {
+              "name": "盛龙股份",
+              "net_yi": 0.23
+            },
+            {
+              "name": "蓝箭电子",
+              "net_yi": 0.21
+            },
+            {
+              "name": "肯特催化",
+              "net_yi": 0.16
+            },
+            {
+              "name": "通易航天",
+              "net_yi": 0.07
+            },
+            {
+              "name": "ST金鸿顺",
+              "net_yi": 0.05
+            },
+            {
+              "name": "新睿电子",
+              "net_yi": 0.05
+            },
+            {
+              "name": "退市熊猫",
+              "net_yi": -0.0
+            },
+            {
+              "name": "佳创视讯",
+              "net_yi": -0.1
+            },
+            {
+              "name": "五方光电",
+              "net_yi": -0.1
+            },
+            {
+              "name": "逸豪新材",
+              "net_yi": -0.13
+            }
+          ]
+        },
+        {
+          "name": "章盟主",
+          "stocks": [
+            {
+              "name": "沃格光电",
+              "net_yi": 1.35
+            },
+            {
+              "name": "退市太和",
+              "net_yi": 0.0
+            },
+            {
+              "name": "退市熊猫",
+              "net_yi": 0.0
+            },
+            {
+              "name": "退市华嵘",
+              "net_yi": -0.0
+            }
+          ]
+        },
+        {
+          "name": "量化基金",
+          "stocks": [
+            {
+              "name": "索辰科技",
+              "net_yi": 3.51
+            },
+            {
+              "name": "富信科技",
+              "net_yi": 3.5
+            },
+            {
+              "name": "中巨芯",
+              "net_yi": 1.84
+            },
+            {
+              "name": "三安光电",
+              "net_yi": 1.75
+            },
+            {
+              "name": "西安奕材",
+              "net_yi": 1.65
+            },
+            {
+              "name": "彩虹股份",
+              "net_yi": 1.45
+            },
+            {
+              "name": "欧莱新材",
+              "net_yi": 1.26
+            },
+            {
+              "name": "沃格光电",
+              "net_yi": 1.03
+            },
+            {
+              "name": "福光股份",
+              "net_yi": 0.76
+            },
+            {
+              "name": "嘉德利",
+              "net_yi": 0.74
+            },
+            {
+              "name": "中化国际",
+              "net_yi": 0.72
+            },
+            {
+              "name": "石英股份",
+              "net_yi": 0.54
+            },
+            {
+              "name": "中重科技",
+              "net_yi": 0.53
+            },
+            {
+              "name": "江化微",
+              "net_yi": 0.38
+            },
+            {
+              "name": "肯特催化",
+              "net_yi": 0.25
+            },
+            {
+              "name": "快克智能",
+              "net_yi": 0.23
+            },
+            {
+              "name": "威高血净",
+              "net_yi": 0.21
+            },
+            {
+              "name": "华特气体",
+              "net_yi": 0.19
+            },
+            {
+              "name": "京能置业",
+              "net_yi": 0.15
+            },
+            {
+              "name": "风语筑",
+              "net_yi": 0.15
+            },
+            {
+              "name": "赛伦生物",
+              "net_yi": 0.14
+            },
+            {
+              "name": "冠城新材",
+              "net_yi": 0.14
+            },
+            {
+              "name": "三孚股份",
+              "net_yi": 0.03
+            },
+            {
+              "name": "ST金鸿顺",
+              "net_yi": 0.03
+            },
+            {
+              "name": "红板科技",
+              "net_yi": 0.0
+            },
+            {
+              "name": "丰林集团",
+              "net_yi": -0.03
+            },
+            {
+              "name": "春光科技",
+              "net_yi": -0.03
+            },
+            {
+              "name": "爱普股份",
+              "net_yi": -0.06
+            },
+            {
+              "name": "同兴达",
+              "net_yi": -0.06
+            },
+            {
+              "name": "长华集团",
+              "net_yi": -0.12
+            },
+            {
+              "name": "恩捷股份",
+              "net_yi": -0.17
+            },
+            {
+              "name": "晋拓股份",
+              "net_yi": -0.19
+            },
+            {
+              "name": "宿迁联盛",
+              "net_yi": -0.21
+            },
+            {
+              "name": "天娱数科",
+              "net_yi": -0.25
+            },
+            {
+              "name": "科思科技",
+              "net_yi": -0.26
+            },
+            {
+              "name": "永杉锂业",
+              "net_yi": -0.45
+            },
+            {
+              "name": "天创时尚",
+              "net_yi": -0.48
+            },
+            {
+              "name": "兴福电子",
+              "net_yi": -0.85
+            }
+          ]
+        },
+        {
+          "name": "机构专用",
+          "stocks": [
+            {
+              "name": "兴福电子",
+              "net_yi": 4.59
+            },
+            {
+              "name": "康强电子",
+              "net_yi": 2.77
+            },
+            {
+              "name": "隆华科技",
+              "net_yi": 1.82
+            },
+            {
+              "name": "凡拓数创",
+              "net_yi": 1.46
+            },
+            {
+              "name": "恩捷股份",
+              "net_yi": 1.39
+            },
+            {
+              "name": "铜陵有色",
+              "net_yi": 1.17
+            },
+            {
+              "name": "宗申动力",
+              "net_yi": 0.74
+            },
+            {
+              "name": "阿石创",
+              "net_yi": 0.63
+            },
+            {
+              "name": "富信科技",
+              "net_yi": 0.57
+            },
+            {
+              "name": "天娱数科",
+              "net_yi": 0.5
+            },
+            {
+              "name": "华特气体",
+              "net_yi": 0.44
+            },
+            {
+              "name": "粤桂股份",
+              "net_yi": 0.37
+            },
+            {
+              "name": "五方光电",
+              "net_yi": 0.29
+            },
+            {
+              "name": "深桑达Ａ",
+              "net_yi": 0.28
+            },
+            {
+              "name": "川金诺",
+              "net_yi": 0.23
+            },
+            {
+              "name": "同兴达",
+              "net_yi": 0.17
+            },
+            {
+              "name": "火星人",
+              "net_yi": 0.15
+            },
+            {
+              "name": "肯特催化",
+              "net_yi": 0.12
+            },
+            {
+              "name": "京能置业",
+              "net_yi": 0.11
+            },
+            {
+              "name": "科力股份",
+              "net_yi": 0.11
+            },
+            {
+              "name": "金戈新材",
+              "net_yi": 0.1
+            },
+            {
+              "name": "蓝箭电子",
+              "net_yi": 0.09
+            },
+            {
+              "name": "彩客科技",
+              "net_yi": 0.07
+            },
+            {
+              "name": "新睿电子",
+              "net_yi": -0.01
+            },
+            {
+              "name": "盛龙股份",
+              "net_yi": -0.03
+            },
+            {
+              "name": "和远气体",
+              "net_yi": -0.06
+            },
+            {
+              "name": "津膜科技",
+              "net_yi": -0.07
+            },
+            {
+              "name": "新莱福",
+              "net_yi": -0.07
+            },
+            {
+              "name": "赢时胜",
+              "net_yi": -0.16
+            },
+            {
+              "name": "利和兴",
+              "net_yi": -0.16
+            },
+            {
+              "name": "快克智能",
+              "net_yi": -0.18
+            },
+            {
+              "name": "康达新材",
+              "net_yi": -0.18
+            },
+            {
+              "name": "威高血净",
+              "net_yi": -0.18
+            },
+            {
+              "name": "逸豪新材",
+              "net_yi": -0.28
+            },
+            {
+              "name": "晨曦航空",
+              "net_yi": -0.31
+            },
+            {
+              "name": "翔鹭钨业",
+              "net_yi": -0.34
+            },
+            {
+              "name": "红板科技",
+              "net_yi": -0.36
+            },
+            {
+              "name": "北玻股份",
+              "net_yi": -0.48
+            },
+            {
+              "name": "佳创视讯",
+              "net_yi": -0.52
+            },
+            {
+              "name": "达实智能",
+              "net_yi": -0.53
+            },
+            {
+              "name": "中重科技",
+              "net_yi": -0.55
+            },
+            {
+              "name": "福光股份",
+              "net_yi": -0.56
+            },
+            {
+              "name": "西安奕材",
+              "net_yi": -0.64
+            },
+            {
+              "name": "新金路",
+              "net_yi": -0.7
+            },
+            {
+              "name": "金钼股份",
+              "net_yi": -0.77
+            },
+            {
+              "name": "中工国际",
+              "net_yi": -1.27
+            },
+            {
+              "name": "石英股份",
+              "net_yi": -1.45
+            },
+            {
+              "name": "天创时尚",
+              "net_yi": -1.6
+            },
+            {
+              "name": "中巨芯",
+              "net_yi": -2.08
+            },
+            {
+              "name": "沃格光电",
+              "net_yi": -2.5
+            },
+            {
+              "name": "海亮股份",
+              "net_yi": -4.95
+            },
+            {
+              "name": "彩虹股份",
+              "net_yi": -7.85
+            }
+          ]
+        },
+        {
+          "name": "沪股通专用",
+          "stocks": [
+            {
+              "name": "沃格光电",
+              "net_yi": 2.27
+            },
+            {
+              "name": "索辰科技",
+              "net_yi": 2.01
+            },
+            {
+              "name": "中巨芯",
+              "net_yi": 1.52
+            },
+            {
+              "name": "风语筑",
+              "net_yi": 1.46
+            },
+            {
+              "name": "石英股份",
+              "net_yi": 1.03
+            },
+            {
+              "name": "江化微",
+              "net_yi": 0.96
+            },
+            {
+              "name": "中化国际",
+              "net_yi": 0.64
+            },
+            {
+              "name": "财达证券",
+              "net_yi": 0.6
+            },
+            {
+              "name": "中重科技",
+              "net_yi": 0.53
+            },
+            {
+              "name": "香江控股",
+              "net_yi": 0.33
+            },
+            {
+              "name": "金钼股份",
+              "net_yi": 0.25
+            },
+            {
+              "name": "福光股份",
+              "net_yi": 0.2
+            },
+            {
+              "name": "三孚股份",
+              "net_yi": 0.19
+            },
+            {
+              "name": "彩虹股份",
+              "net_yi": 0.18
+            },
+            {
+              "name": "龙溪股份",
+              "net_yi": 0.16
+            },
+            {
+              "name": "科思科技",
+              "net_yi": 0.04
+            },
+            {
+              "name": "华特气体",
+              "net_yi": 0.03
+            },
+            {
+              "name": "长华集团",
+              "net_yi": -0.04
+            },
+            {
+              "name": "晋拓股份",
+              "net_yi": -0.08
+            },
+            {
+              "name": "快克智能",
+              "net_yi": -0.2
+            },
+            {
+              "name": "三安光电",
+              "net_yi": -0.34
+            },
+            {
+              "name": "永杉锂业",
+              "net_yi": -0.58
+            },
+            {
+              "name": "兴福电子",
+              "net_yi": -1.85
+            }
+          ]
+        },
+        {
+          "name": "深股通专用",
+          "stocks": [
+            {
+              "name": "康强电子",
+              "net_yi": 2.16
+            },
+            {
+              "name": "铜陵有色",
+              "net_yi": 1.56
+            },
+            {
+              "name": "深桑达Ａ",
+              "net_yi": 1.55
+            },
+            {
+              "name": "阿石创",
+              "net_yi": 1.36
+            },
+            {
+              "name": "隆华科技",
+              "net_yi": 1.3
+            },
+            {
+              "name": "天娱数科",
+              "net_yi": 1.02
+            },
+            {
+              "name": "粤桂股份",
+              "net_yi": 0.8
+            },
+            {
+              "name": "宗申动力",
+              "net_yi": 0.57
+            },
+            {
+              "name": "和远气体",
+              "net_yi": 0.49
+            },
+            {
+              "name": "利和兴",
+              "net_yi": 0.49
+            },
+            {
+              "name": "神剑股份",
+              "net_yi": 0.34
+            },
+            {
+              "name": "蓝箭电子",
+              "net_yi": 0.26
+            },
+            {
+              "name": "同兴达",
+              "net_yi": 0.21
+            },
+            {
+              "name": "晨曦航空",
+              "net_yi": 0.19
+            },
+            {
+              "name": "新莱福",
+              "net_yi": 0.09
+            },
+            {
+              "name": "火星人",
+              "net_yi": 0.07
+            },
+            {
+              "name": "川金诺",
+              "net_yi": 0.01
+            },
+            {
+              "name": "盛龙股份",
+              "net_yi": -0.15
+            },
+            {
+              "name": "赢时胜",
+              "net_yi": -0.31
+            },
+            {
+              "name": "中工国际",
+              "net_yi": -0.68
+            },
+            {
+              "name": "恩捷股份",
+              "net_yi": -1.45
+            },
+            {
+              "name": "海亮股份",
+              "net_yi": -3.21
+            },
+            {
+              "name": "达实智能",
+              "net_yi": -3.86
+            }
+          ]
+        }
+      ]
+    },
+    "sectors": [
+      {
+        "label": "行业",
+        "strong": [
+          {
+            "name": "银行",
+            "net_yi": 57.0,
+            "leader": "西安银行",
+            "bias_pct": 3.7
+          },
+          {
+            "name": "小金属",
+            "net_yi": 38.0,
+            "leader": "金天钛业",
+            "bias_pct": 4.0
+          },
+          {
+            "name": "保险",
+            "net_yi": 15.0,
+            "leader": "中国人寿",
+            "bias_pct": 3.8
+          },
+          {
+            "name": "能源金属",
+            "net_yi": 8.0,
+            "leader": "融捷股份",
+            "bias_pct": 1.2
+          },
+          {
+            "name": "金属新材料",
+            "net_yi": -5.0,
+            "leader": "新莱福",
+            "bias_pct": 2.0
+          }
+        ],
+        "weak": [
+          {
+            "name": "通信设备",
+            "net_yi": -64.0,
+            "leader": "东土科技",
+            "bias_pct": -5.1
+          },
+          {
+            "name": "光学光电子",
+            "net_yi": -51.0,
+            "leader": "福光股份",
+            "bias_pct": -4.2
+          },
+          {
+            "name": "消费电子",
+            "net_yi": -21.0,
+            "leader": "智动力",
+            "bias_pct": -5.9
+          },
+          {
+            "name": "通用设备",
+            "net_yi": -20.0,
+            "leader": "思看科技",
+            "bias_pct": -4.7
+          },
+          {
+            "name": "光伏设备",
+            "net_yi": -19.0,
+            "leader": "赛伍技术",
+            "bias_pct": -7.9
+          }
+        ]
+      },
+      {
+        "label": "板块",
+        "strong": [
+          {
+            "name": "稀土永磁",
+            "net_yi": 33.0,
+            "leader": "新莱福",
+            "bias_pct": 0.7
+          },
+          {
+            "name": "芬太尼",
+            "net_yi": 0.0,
+            "leader": "万孚生物",
+            "bias_pct": 0.2
+          },
+          {
+            "name": "PET铜箔",
+            "net_yi": -13.0,
+            "leader": "嘉元科技",
+            "bias_pct": 3.6
+          },
+          {
+            "name": "光刻机",
+            "net_yi": -14.0,
+            "leader": "福光股份",
+            "bias_pct": 2.9
+          },
+          {
+            "name": "氟化工概念",
+            "net_yi": -22.0,
+            "leader": "华盛锂电",
+            "bias_pct": 2.0
+          }
+        ],
+        "weak": [
+          {
+            "name": "芯片概念",
+            "net_yi": -295.0,
+            "leader": "新莱福",
+            "bias_pct": -2.6
+          },
+          {
+            "name": "汽车电子",
+            "net_yi": -167.0,
+            "leader": "逸豪新材",
+            "bias_pct": -5.1
+          },
+          {
+            "name": "消费电子概念",
+            "net_yi": -130.0,
+            "leader": "新莱福",
+            "bias_pct": -4.2
+          },
+          {
+            "name": "OLED",
+            "net_yi": -127.0,
+            "leader": "智动力",
+            "bias_pct": -1.3
+          },
+          {
+            "name": "华为概念",
+            "net_yi": -127.0,
+            "leader": "新莱福",
+            "bias_pct": -5.5
+          }
+        ]
+      }
+    ],
+    "news": [
+      {
+        "t": "2026-06-13T20:00:02",
+        "cat": "市场",
+        "title": "本周大盘主力资金累计净流入-1900.95亿元，小金属、能源金属板块净流入居前，个股海光信息、天华新能净流入最多。"
+      },
+      {
+        "t": "2026-06-13T19:55:21",
+        "cat": "焦点",
+        "title": "【6月13日《新闻联播》主要内容】今天《新闻联播》主要内容有：1.【新思想引领新征程】守护文化瑰宝 赓续中华文脉； 2.第十八届海峡论坛大会在厦门举行 王沪宁出…"
+      },
+      {
+        "t": "2026-06-12T23:50:47",
+        "cat": "焦点",
+        "title": "SPACEX股价攀升至162美元，较IPO发行价上涨20%。"
+      },
+      {
+        "t": "2026-06-12T23:48:54",
+        "cat": "市场",
+        "title": "SpaceX 开盘大涨，马斯克成为全球首位万亿富豪。"
+      },
+      {
+        "t": "2026-06-12T23:42:30",
+        "cat": "焦点",
+        "title": "交易及航运业内消息称，海湾原油日减产规模维持在 500 万至 600 万桶，远低于此前预估的 1200 万至 1500 万桶。"
+      },
+      {
+        "t": "2026-06-12T23:29:34",
+        "cat": "市场",
+        "title": "【软件股迈向二十年来最长连跌，AI扰动之忧再度来袭】软件公司股价下跌，延续了近期的低迷走势，该板块正迈向约二十年来最长的连跌纪录。安硕扩展科技-软件部门ETF在…"
+      },
+      {
+        "t": "2026-06-12T23:27:22",
+        "cat": "市场",
+        "title": "现货白银日内涨1%，现报67.98美元/盎司。"
+      },
+      {
+        "t": "2026-06-12T23:27:22",
+        "cat": "焦点",
+        "title": "现货白银突破68美元/盎司，日内涨1.04%。"
+      }
+    ],
+    "ai_summary": "赚钱效应 72.7%（强） · 银行、小金属、保险 方向资金集中 · 无人机、有色金属、小金属概念 等题材活跃 · 游资净买入 21亿，索辰科技领涨 · 本周大盘主力资金累计净流入-1900.95亿元，小金属、能源金属板块净流入居前，个股海光信息、天华新能净流入最多。"
+  },
+  "scan": {
+    "universe_size": 29,
+    "pick_count": 15,
+    "picks": [
+      {
+        "code": "002971",
+        "name": "和远气体",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 58.03,
+          "change_pct": 10.01,
+          "amount_yi": 33.25,
+          "ma5": 48.39000000000002,
+          "ma10": 42.13700000000002,
+          "ma20": 38.753,
+          "ma30": 37.12666666666667,
+          "ma60": 33.629,
+          "macd_dif": 4.419078466568479,
+          "macd_dea": 2.2341223166354203,
+          "macd_hist": 4.369912299866117,
+          "kdj_k": 94.98012774913263,
+          "kdj_d": 85.42892057029687,
+          "kdj_j": 114.08254210680417,
+          "rsi6": 95.05638457995873,
+          "rsi12": 86.14548850906453,
+          "boll_upper": 52.34005575170721,
+          "boll_mid": 38.753,
+          "boll_lower": 25.16594424829279,
+          "volume_ratio": 1.938604639300494,
+          "signals": {
+            "kdj": "超买",
+            "rsi": "超买",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 100,
+            "reason": "成交额 33.25 亿，量比 1.94，涨幅 10.01%"
+          },
+          {
+            "strategy": "ma_bullish",
+            "name": "均线多头",
+            "score": 90,
+            "reason": "MA5/10/20/30 多头排列，价差 30.3%"
+          }
+        ],
+        "strategy_count": 2,
+        "top_score": 100
+      },
+      {
+        "code": "002203",
+        "name": "海亮股份",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 23.44,
+          "change_pct": 10.0,
+          "amount_yi": 23.99,
+          "ma5": 20.175999999999995,
+          "ma10": 19.947000000000006,
+          "ma20": 20.24750000000001,
+          "ma30": 20.502666666666666,
+          "ma60": 17.86550000000001,
+          "macd_dif": 0.43491856337605483,
+          "macd_dea": 0.34187805803187504,
+          "macd_hist": 0.18608101068835958,
+          "kdj_k": 68.87402360762218,
+          "kdj_d": 47.31948438142685,
+          "kdj_j": 111.98310206001284,
+          "rsi6": 76.19537858350364,
+          "rsi12": 66.18532353503646,
+          "boll_upper": 22.627389703326617,
+          "boll_mid": 20.24750000000001,
+          "boll_lower": 17.8676102966734,
+          "volume_ratio": 2.0276008324625594,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 100,
+            "reason": "成交额 23.99 亿，量比 2.03，涨幅 10.00%"
+          },
+          {
+            "strategy": "macd_golden_cross",
+            "name": "MACD金叉",
+            "score": 78,
+            "reason": "DIF 0.435 上穿 DEA 0.342"
+          }
+        ],
+        "strategy_count": 2,
+        "top_score": 100
+      },
+      {
+        "code": "000032",
+        "name": "深桑达Ａ",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 18.92,
+          "change_pct": 10.0,
+          "amount_yi": 19.23,
+          "ma5": 16.480000000000004,
+          "ma10": 16.309000000000005,
+          "ma20": 17.425000000000004,
+          "ma30": 17.72166666666667,
+          "ma60": 17.931499999999993,
+          "macd_dif": -0.42628016850898476,
+          "macd_dea": -0.5447325310866877,
+          "macd_hist": 0.23690472515540595,
+          "kdj_k": 61.56418456397345,
+          "kdj_d": 35.686191198695326,
+          "kdj_j": 113.3201712945297,
+          "rsi6": 76.02886978850316,
+          "rsi12": 62.35771877609802,
+          "boll_upper": 20.46261419538427,
+          "boll_mid": 17.425000000000004,
+          "boll_lower": 14.387385804615738,
+          "volume_ratio": 2.6494054903913633,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 100,
+            "reason": "成交额 19.23 亿，量比 2.65，涨幅 10.00%"
+          },
+          {
+            "strategy": "macd_golden_cross",
+            "name": "MACD金叉",
+            "score": 78,
+            "reason": "DIF -0.426 上穿 DEA -0.545"
+          }
+        ],
+        "strategy_count": 2,
+        "top_score": 100
+      },
+      {
+        "code": "603014",
+        "name": "威高血净",
+        "market": "sh",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 36.53,
+          "change_pct": 10.0,
+          "amount_yi": 3.24,
+          "ma5": 31.998000000000008,
+          "ma10": 32.30199999999998,
+          "ma20": 33.533000000000015,
+          "ma30": 34.208000000000006,
+          "ma60": 35.61300000000004,
+          "macd_dif": -0.81583385862114,
+          "macd_dea": -1.0147440859416368,
+          "macd_hist": 0.3978204546409936,
+          "kdj_k": 51.40115277749484,
+          "kdj_d": 28.752286043406055,
+          "kdj_j": 96.69888624567241,
+          "rsi6": 75.38395756632508,
+          "rsi12": 62.9418821562494,
+          "boll_upper": 37.38802840456463,
+          "boll_mid": 33.533000000000015,
+          "boll_lower": 29.6779715954354,
+          "volume_ratio": 3.0291672254257747,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 100,
+            "reason": "成交额 3.24 亿，量比 3.03，涨幅 10.00%"
+          },
+          {
+            "strategy": "macd_golden_cross",
+            "name": "MACD金叉",
+            "score": 78,
+            "reason": "DIF -0.816 上穿 DEA -1.015"
+          }
+        ],
+        "strategy_count": 2,
+        "top_score": 100
+      },
+      {
+        "code": "600067",
+        "name": "冠城新材",
+        "market": "sh",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 3.48,
+          "change_pct": 10.13,
+          "amount_yi": 3.81,
+          "ma5": 3.0600000000000014,
+          "ma10": 3.0479999999999983,
+          "ma20": 3.0990000000000006,
+          "ma30": 3.23666666666666,
+          "ma60": 3.6049999999999986,
+          "macd_dif": -0.11579822620094182,
+          "macd_dea": -0.17250036432129928,
+          "macd_hist": 0.11340427624071492,
+          "kdj_k": 63.21987747259239,
+          "kdj_d": 39.39548422198291,
+          "kdj_j": 110.86866397381135,
+          "rsi6": 79.6669223327566,
+          "rsi12": 63.13261020561773,
+          "boll_upper": 3.396449155319023,
+          "boll_mid": 3.0990000000000006,
+          "boll_lower": 2.8015508446809783,
+          "volume_ratio": 2.595834826087634,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 100,
+            "reason": "成交额 3.81 亿，量比 2.60，涨幅 10.13%"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 100
+      },
+      {
+        "code": "000737",
+        "name": "北方铜业",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 14.08,
+          "change_pct": 10.0,
+          "amount_yi": 14.76,
+          "ma5": 13.103999999999996,
+          "ma10": 13.758,
+          "ma20": 13.909000000000006,
+          "ma30": 14.256000000000002,
+          "ma60": 13.94433333333333,
+          "macd_dif": -0.2786586886126301,
+          "macd_dea": -0.18212534584168666,
+          "macd_hist": -0.19306668554188688,
+          "kdj_k": 30.19731513205554,
+          "kdj_d": 27.41279851674772,
+          "kdj_j": 35.76634836267118,
+          "rsi6": 58.25383710291015,
+          "rsi12": 51.76265047812564,
+          "boll_upper": 15.182371901684663,
+          "boll_mid": 13.909000000000006,
+          "boll_lower": 12.63562809831535,
+          "volume_ratio": 1.8619094772155245,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "死叉偏空"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 100,
+            "reason": "成交额 14.76 亿，量比 1.86，涨幅 10.00%"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 100
+      },
+      {
+        "code": "000758",
+        "name": "中色股份",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 6.96,
+          "change_pct": 9.95,
+          "amount_yi": 4.98,
+          "ma5": 6.461999999999999,
+          "ma10": 6.652000000000003,
+          "ma20": 6.797500000000001,
+          "ma30": 6.982,
+          "ma60": 6.85716666666667,
+          "macd_dif": -0.138134134207073,
+          "macd_dea": -0.11599231190706988,
+          "macd_hist": -0.04428364460000622,
+          "kdj_k": 37.568476271530045,
+          "kdj_d": 28.912847443164523,
+          "kdj_j": 54.87973392826109,
+          "rsi6": 63.166636966208145,
+          "rsi12": 53.90412418958283,
+          "boll_upper": 7.3322850035294564,
+          "boll_mid": 6.797500000000001,
+          "boll_lower": 6.262714996470546,
+          "volume_ratio": 1.6048143073496426,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "死叉偏空"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 97,
+            "reason": "成交额 4.98 亿，量比 1.60，涨幅 9.95%"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 97
+      },
+      {
+        "code": "603065",
+        "name": "XD宿迁联",
+        "market": "sh",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 13.6,
+          "change_pct": 10.03,
+          "amount_yi": 1.34,
+          "ma5": 11.33,
+          "ma10": 9.770999999999987,
+          "ma20": 8.758999999999997,
+          "ma30": 8.516666666666673,
+          "ma60": 8.245666666666665,
+          "macd_dif": 1.0142381190688674,
+          "macd_dea": 0.4175650723341344,
+          "macd_hist": 1.193346093469466,
+          "kdj_k": 95.71508993083357,
+          "kdj_d": 86.47180996702676,
+          "kdj_j": 114.20164985844718,
+          "rsi6": 95.51172703658874,
+          "rsi12": 90.20365079102912,
+          "boll_upper": 12.205899476341017,
+          "boll_mid": 8.758999999999997,
+          "boll_lower": 5.312100523658977,
+          "volume_ratio": 0.7728670289786937,
+          "signals": {
+            "kdj": "超买",
+            "rsi": "超买",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "ma_bullish",
+            "name": "均线多头",
+            "score": 93,
+            "reason": "MA5/10/20/30 多头排列，价差 33.0%"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 93
+      },
+      {
+        "code": "001257",
+        "name": "盛龙股份",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 27.74,
+          "change_pct": 9.99,
+          "amount_yi": 3.97,
+          "ma5": 24.49199999999999,
+          "ma10": 24.671000000000003,
+          "ma20": 25.054000000000006,
+          "ma30": 25.063666666666673,
+          "ma60": null,
+          "macd_dif": 0.1401091637346461,
+          "macd_dea": 0.1101683934239066,
+          "macd_hist": 0.05988154062147902,
+          "kdj_k": 56.60569256621414,
+          "kdj_d": 38.07412845565901,
+          "kdj_j": 93.66882078732439,
+          "rsi6": 73.11834968416338,
+          "rsi12": 61.684450853458564,
+          "boll_upper": 28.013353983557906,
+          "boll_mid": 25.054000000000006,
+          "boll_lower": 22.094646016442105,
+          "volume_ratio": 0.7286418590621535,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "macd_golden_cross",
+            "name": "MACD金叉",
+            "score": 78,
+            "reason": "DIF 0.140 上穿 DEA 0.110"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 78
+      },
+      {
+        "code": "000510",
+        "name": "新金路",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 19.37,
+          "change_pct": 9.99,
+          "amount_yi": 13.81,
+          "ma5": 17.314,
+          "ma10": 18.137999999999998,
+          "ma20": 16.887500000000003,
+          "ma30": 16.443333333333335,
+          "ma60": 15.57716666666667,
+          "macd_dif": 0.6991714663577291,
+          "macd_dea": 0.6912225575110423,
+          "macd_hist": 0.015897817693373506,
+          "kdj_k": 51.617157729987014,
+          "kdj_d": 47.21788795874316,
+          "kdj_j": 60.415697272474716,
+          "rsi6": 66.34821027981718,
+          "rsi12": 62.02842335215111,
+          "boll_upper": 20.888464258775628,
+          "boll_mid": 16.887500000000003,
+          "boll_lower": 12.886535741224376,
+          "volume_ratio": 1.421464127481056,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "macd_golden_cross",
+            "name": "MACD金叉",
+            "score": 78,
+            "reason": "DIF 0.699 上穿 DEA 0.691"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 78
+      },
+      {
+        "code": "000547",
+        "name": "航天发展",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 20.65,
+          "change_pct": 10.02,
+          "amount_yi": 18.8,
+          "ma5": 19.570000000000004,
+          "ma10": 19.85000000000001,
+          "ma20": 21.454500000000017,
+          "ma30": 23.037000000000003,
+          "ma60": 25.211833333333335,
+          "macd_dif": -1.6225612327288488,
+          "macd_dea": -1.63671562581122,
+          "macd_hist": 0.02830878616474264,
+          "kdj_k": 34.35826300335517,
+          "kdj_d": 23.343292948461336,
+          "kdj_j": 56.38820311314283,
+          "rsi6": 55.3297269968016,
+          "rsi12": 42.93220901132229,
+          "boll_upper": 25.432109709360653,
+          "boll_mid": 21.454500000000017,
+          "boll_lower": 17.476890290639382,
+          "volume_ratio": 0.9290061693318282,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "macd_golden_cross",
+            "name": "MACD金叉",
+            "score": 78,
+            "reason": "DIF -1.623 上穿 DEA -1.637"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 78
+      },
+      {
+        "code": "000630",
+        "name": "铜陵有色",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 7.1,
+          "change_pct": 10.08,
+          "amount_yi": 43.56,
+          "ma5": 6.416000000000001,
+          "ma10": 6.598000000000002,
+          "ma20": 6.4659999999999895,
+          "ma30": 6.489333333333331,
+          "ma60": 6.282666666666667,
+          "macd_dif": 0.054868091453853296,
+          "macd_dea": 0.04654855061336364,
+          "macd_hist": 0.016639081680979315,
+          "kdj_k": 53.046408613376386,
+          "kdj_d": 44.111087378009884,
+          "kdj_j": 70.91705108410937,
+          "rsi6": 68.40943694389176,
+          "rsi12": 60.68220260499522,
+          "boll_upper": 7.267184123656968,
+          "boll_mid": 6.4659999999999895,
+          "boll_lower": 5.664815876343011,
+          "volume_ratio": 1.3319405718390276,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "macd_golden_cross",
+            "name": "MACD金叉",
+            "score": 78,
+            "reason": "DIF 0.055 上穿 DEA 0.047"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 78
+      },
+      {
+        "code": "300059",
+        "name": "东方财富",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 18.0,
+          "change_pct": 3.69,
+          "amount_yi": 84.77,
+          "ma5": 17.74799999999999,
+          "ma10": 18.279,
+          "ma20": 18.974500000000006,
+          "ma30": 19.523999999999997,
+          "ma60": 19.611333333333338,
+          "macd_dif": -0.6156353657068294,
+          "macd_dea": -0.47067173072419083,
+          "macd_hist": -0.2899272699652772,
+          "kdj_k": 19.324012232129434,
+          "kdj_d": 13.0860789740755,
+          "kdj_j": 31.7998787482373,
+          "rsi6": 40.69020335439121,
+          "rsi12": 36.6163528154827,
+          "boll_upper": 20.63150301749877,
+          "boll_mid": 18.974500000000006,
+          "boll_lower": 17.317496982501243,
+          "volume_ratio": 1.5400818489378152,
+          "signals": {
+            "kdj": "超卖",
+            "rsi": "中性",
+            "macd": "死叉偏空"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "kdj_oversold",
+            "name": "KDJ超卖反弹",
+            "score": 75,
+            "reason": "K=19.3 低位金叉"
+          },
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 64,
+            "reason": "成交额 84.77 亿，量比 1.54，涨幅 3.69%"
+          }
+        ],
+        "strategy_count": 2,
+        "top_score": 75
+      },
+      {
+        "code": "002594",
+        "name": "比亚迪",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 91.6,
+          "change_pct": 2.0,
+          "amount_yi": 34.97,
+          "ma5": 90.95799999999988,
+          "ma10": 92.64699999999998,
+          "ma20": 93.86950000000009,
+          "ma30": 96.01000000000003,
+          "ma60": 99.39599999999997,
+          "macd_dif": -2.0879643653674975,
+          "macd_dea": -1.8383686551502068,
+          "macd_hist": -0.49919142043458153,
+          "kdj_k": 19.89238017584394,
+          "kdj_d": 18.795788378292865,
+          "kdj_j": 22.085563770946088,
+          "rsi6": 42.945794751318005,
+          "rsi12": 40.49129475240273,
+          "boll_upper": 97.96392291416028,
+          "boll_mid": 93.86950000000009,
+          "boll_lower": 89.7750770858399,
+          "volume_ratio": 1.2507392094888856,
+          "signals": {
+            "kdj": "超卖",
+            "rsi": "中性",
+            "macd": "死叉偏空"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "kdj_oversold",
+            "name": "KDJ超卖反弹",
+            "score": 75,
+            "reason": "K=19.9 低位金叉"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 75
+      },
+      {
+        "code": "688981",
+        "name": "中芯国际",
+        "market": "sh",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 124.88,
+          "change_pct": -1.98,
+          "amount_yi": 105.76,
+          "ma5": 125.3680000000002,
+          "ma10": 128.80399999999997,
+          "ma20": 133.09249999999997,
+          "ma30": 128.83599999999998,
+          "ma60": 115.54183333333339,
+          "macd_dif": 1.4474681241381404,
+          "macd_dea": 3.862015047170235,
+          "macd_hist": -4.829093846064189,
+          "kdj_k": 24.104802661001905,
+          "kdj_d": 23.526120554193707,
+          "kdj_j": 25.262166874618295,
+          "rsi6": 39.59165653701374,
+          "rsi12": 46.37430055848266,
+          "boll_upper": 154.37067085653743,
+          "boll_mid": 133.09249999999997,
+          "boll_lower": 111.81432914346252,
+          "volume_ratio": 1.1155906494425303,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "kdj_oversold",
+            "name": "KDJ超卖反弹",
+            "score": 70,
+            "reason": "K=24.1 低位金叉"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 70
+      }
+    ],
+    "all_results": [
+      {
+        "code": "002971",
+        "name": "和远气体",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 58.03,
+          "change_pct": 10.01,
+          "amount_yi": 33.25,
+          "ma5": 48.39000000000002,
+          "ma10": 42.13700000000002,
+          "ma20": 38.753,
+          "ma30": 37.12666666666667,
+          "ma60": 33.629,
+          "macd_dif": 4.419078466568479,
+          "macd_dea": 2.2341223166354203,
+          "macd_hist": 4.369912299866117,
+          "kdj_k": 94.98012774913263,
+          "kdj_d": 85.42892057029687,
+          "kdj_j": 114.08254210680417,
+          "rsi6": 95.05638457995873,
+          "rsi12": 86.14548850906453,
+          "boll_upper": 52.34005575170721,
+          "boll_mid": 38.753,
+          "boll_lower": 25.16594424829279,
+          "volume_ratio": 1.938604639300494,
+          "signals": {
+            "kdj": "超买",
+            "rsi": "超买",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 100,
+            "reason": "成交额 33.25 亿，量比 1.94，涨幅 10.01%"
+          },
+          {
+            "strategy": "ma_bullish",
+            "name": "均线多头",
+            "score": 90,
+            "reason": "MA5/10/20/30 多头排列，价差 30.3%"
+          }
+        ],
+        "strategy_count": 2,
+        "top_score": 100
+      },
+      {
+        "code": "002203",
+        "name": "海亮股份",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 23.44,
+          "change_pct": 10.0,
+          "amount_yi": 23.99,
+          "ma5": 20.175999999999995,
+          "ma10": 19.947000000000006,
+          "ma20": 20.24750000000001,
+          "ma30": 20.502666666666666,
+          "ma60": 17.86550000000001,
+          "macd_dif": 0.43491856337605483,
+          "macd_dea": 0.34187805803187504,
+          "macd_hist": 0.18608101068835958,
+          "kdj_k": 68.87402360762218,
+          "kdj_d": 47.31948438142685,
+          "kdj_j": 111.98310206001284,
+          "rsi6": 76.19537858350364,
+          "rsi12": 66.18532353503646,
+          "boll_upper": 22.627389703326617,
+          "boll_mid": 20.24750000000001,
+          "boll_lower": 17.8676102966734,
+          "volume_ratio": 2.0276008324625594,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 100,
+            "reason": "成交额 23.99 亿，量比 2.03，涨幅 10.00%"
+          },
+          {
+            "strategy": "macd_golden_cross",
+            "name": "MACD金叉",
+            "score": 78,
+            "reason": "DIF 0.435 上穿 DEA 0.342"
+          }
+        ],
+        "strategy_count": 2,
+        "top_score": 100
+      },
+      {
+        "code": "000032",
+        "name": "深桑达Ａ",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 18.92,
+          "change_pct": 10.0,
+          "amount_yi": 19.23,
+          "ma5": 16.480000000000004,
+          "ma10": 16.309000000000005,
+          "ma20": 17.425000000000004,
+          "ma30": 17.72166666666667,
+          "ma60": 17.931499999999993,
+          "macd_dif": -0.42628016850898476,
+          "macd_dea": -0.5447325310866877,
+          "macd_hist": 0.23690472515540595,
+          "kdj_k": 61.56418456397345,
+          "kdj_d": 35.686191198695326,
+          "kdj_j": 113.3201712945297,
+          "rsi6": 76.02886978850316,
+          "rsi12": 62.35771877609802,
+          "boll_upper": 20.46261419538427,
+          "boll_mid": 17.425000000000004,
+          "boll_lower": 14.387385804615738,
+          "volume_ratio": 2.6494054903913633,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 100,
+            "reason": "成交额 19.23 亿，量比 2.65，涨幅 10.00%"
+          },
+          {
+            "strategy": "macd_golden_cross",
+            "name": "MACD金叉",
+            "score": 78,
+            "reason": "DIF -0.426 上穿 DEA -0.545"
+          }
+        ],
+        "strategy_count": 2,
+        "top_score": 100
+      },
+      {
+        "code": "603014",
+        "name": "威高血净",
+        "market": "sh",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 36.53,
+          "change_pct": 10.0,
+          "amount_yi": 3.24,
+          "ma5": 31.998000000000008,
+          "ma10": 32.30199999999998,
+          "ma20": 33.533000000000015,
+          "ma30": 34.208000000000006,
+          "ma60": 35.61300000000004,
+          "macd_dif": -0.81583385862114,
+          "macd_dea": -1.0147440859416368,
+          "macd_hist": 0.3978204546409936,
+          "kdj_k": 51.40115277749484,
+          "kdj_d": 28.752286043406055,
+          "kdj_j": 96.69888624567241,
+          "rsi6": 75.38395756632508,
+          "rsi12": 62.9418821562494,
+          "boll_upper": 37.38802840456463,
+          "boll_mid": 33.533000000000015,
+          "boll_lower": 29.6779715954354,
+          "volume_ratio": 3.0291672254257747,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 100,
+            "reason": "成交额 3.24 亿，量比 3.03，涨幅 10.00%"
+          },
+          {
+            "strategy": "macd_golden_cross",
+            "name": "MACD金叉",
+            "score": 78,
+            "reason": "DIF -0.816 上穿 DEA -1.015"
+          }
+        ],
+        "strategy_count": 2,
+        "top_score": 100
+      },
+      {
+        "code": "600067",
+        "name": "冠城新材",
+        "market": "sh",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 3.48,
+          "change_pct": 10.13,
+          "amount_yi": 3.81,
+          "ma5": 3.0600000000000014,
+          "ma10": 3.0479999999999983,
+          "ma20": 3.0990000000000006,
+          "ma30": 3.23666666666666,
+          "ma60": 3.6049999999999986,
+          "macd_dif": -0.11579822620094182,
+          "macd_dea": -0.17250036432129928,
+          "macd_hist": 0.11340427624071492,
+          "kdj_k": 63.21987747259239,
+          "kdj_d": 39.39548422198291,
+          "kdj_j": 110.86866397381135,
+          "rsi6": 79.6669223327566,
+          "rsi12": 63.13261020561773,
+          "boll_upper": 3.396449155319023,
+          "boll_mid": 3.0990000000000006,
+          "boll_lower": 2.8015508446809783,
+          "volume_ratio": 2.595834826087634,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 100,
+            "reason": "成交额 3.81 亿，量比 2.60，涨幅 10.13%"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 100
+      },
+      {
+        "code": "000737",
+        "name": "北方铜业",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 14.08,
+          "change_pct": 10.0,
+          "amount_yi": 14.76,
+          "ma5": 13.103999999999996,
+          "ma10": 13.758,
+          "ma20": 13.909000000000006,
+          "ma30": 14.256000000000002,
+          "ma60": 13.94433333333333,
+          "macd_dif": -0.2786586886126301,
+          "macd_dea": -0.18212534584168666,
+          "macd_hist": -0.19306668554188688,
+          "kdj_k": 30.19731513205554,
+          "kdj_d": 27.41279851674772,
+          "kdj_j": 35.76634836267118,
+          "rsi6": 58.25383710291015,
+          "rsi12": 51.76265047812564,
+          "boll_upper": 15.182371901684663,
+          "boll_mid": 13.909000000000006,
+          "boll_lower": 12.63562809831535,
+          "volume_ratio": 1.8619094772155245,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "死叉偏空"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 100,
+            "reason": "成交额 14.76 亿，量比 1.86，涨幅 10.00%"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 100
+      },
+      {
+        "code": "000758",
+        "name": "中色股份",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 6.96,
+          "change_pct": 9.95,
+          "amount_yi": 4.98,
+          "ma5": 6.461999999999999,
+          "ma10": 6.652000000000003,
+          "ma20": 6.797500000000001,
+          "ma30": 6.982,
+          "ma60": 6.85716666666667,
+          "macd_dif": -0.138134134207073,
+          "macd_dea": -0.11599231190706988,
+          "macd_hist": -0.04428364460000622,
+          "kdj_k": 37.568476271530045,
+          "kdj_d": 28.912847443164523,
+          "kdj_j": 54.87973392826109,
+          "rsi6": 63.166636966208145,
+          "rsi12": 53.90412418958283,
+          "boll_upper": 7.3322850035294564,
+          "boll_mid": 6.797500000000001,
+          "boll_lower": 6.262714996470546,
+          "volume_ratio": 1.6048143073496426,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "死叉偏空"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 97,
+            "reason": "成交额 4.98 亿，量比 1.60，涨幅 9.95%"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 97
+      },
+      {
+        "code": "603065",
+        "name": "XD宿迁联",
+        "market": "sh",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 13.6,
+          "change_pct": 10.03,
+          "amount_yi": 1.34,
+          "ma5": 11.33,
+          "ma10": 9.770999999999987,
+          "ma20": 8.758999999999997,
+          "ma30": 8.516666666666673,
+          "ma60": 8.245666666666665,
+          "macd_dif": 1.0142381190688674,
+          "macd_dea": 0.4175650723341344,
+          "macd_hist": 1.193346093469466,
+          "kdj_k": 95.71508993083357,
+          "kdj_d": 86.47180996702676,
+          "kdj_j": 114.20164985844718,
+          "rsi6": 95.51172703658874,
+          "rsi12": 90.20365079102912,
+          "boll_upper": 12.205899476341017,
+          "boll_mid": 8.758999999999997,
+          "boll_lower": 5.312100523658977,
+          "volume_ratio": 0.7728670289786937,
+          "signals": {
+            "kdj": "超买",
+            "rsi": "超买",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "ma_bullish",
+            "name": "均线多头",
+            "score": 93,
+            "reason": "MA5/10/20/30 多头排列，价差 33.0%"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 93
+      },
+      {
+        "code": "001257",
+        "name": "盛龙股份",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 27.74,
+          "change_pct": 9.99,
+          "amount_yi": 3.97,
+          "ma5": 24.49199999999999,
+          "ma10": 24.671000000000003,
+          "ma20": 25.054000000000006,
+          "ma30": 25.063666666666673,
+          "ma60": null,
+          "macd_dif": 0.1401091637346461,
+          "macd_dea": 0.1101683934239066,
+          "macd_hist": 0.05988154062147902,
+          "kdj_k": 56.60569256621414,
+          "kdj_d": 38.07412845565901,
+          "kdj_j": 93.66882078732439,
+          "rsi6": 73.11834968416338,
+          "rsi12": 61.684450853458564,
+          "boll_upper": 28.013353983557906,
+          "boll_mid": 25.054000000000006,
+          "boll_lower": 22.094646016442105,
+          "volume_ratio": 0.7286418590621535,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "macd_golden_cross",
+            "name": "MACD金叉",
+            "score": 78,
+            "reason": "DIF 0.140 上穿 DEA 0.110"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 78
+      },
+      {
+        "code": "000510",
+        "name": "新金路",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 19.37,
+          "change_pct": 9.99,
+          "amount_yi": 13.81,
+          "ma5": 17.314,
+          "ma10": 18.137999999999998,
+          "ma20": 16.887500000000003,
+          "ma30": 16.443333333333335,
+          "ma60": 15.57716666666667,
+          "macd_dif": 0.6991714663577291,
+          "macd_dea": 0.6912225575110423,
+          "macd_hist": 0.015897817693373506,
+          "kdj_k": 51.617157729987014,
+          "kdj_d": 47.21788795874316,
+          "kdj_j": 60.415697272474716,
+          "rsi6": 66.34821027981718,
+          "rsi12": 62.02842335215111,
+          "boll_upper": 20.888464258775628,
+          "boll_mid": 16.887500000000003,
+          "boll_lower": 12.886535741224376,
+          "volume_ratio": 1.421464127481056,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "macd_golden_cross",
+            "name": "MACD金叉",
+            "score": 78,
+            "reason": "DIF 0.699 上穿 DEA 0.691"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 78
+      },
+      {
+        "code": "000547",
+        "name": "航天发展",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 20.65,
+          "change_pct": 10.02,
+          "amount_yi": 18.8,
+          "ma5": 19.570000000000004,
+          "ma10": 19.85000000000001,
+          "ma20": 21.454500000000017,
+          "ma30": 23.037000000000003,
+          "ma60": 25.211833333333335,
+          "macd_dif": -1.6225612327288488,
+          "macd_dea": -1.63671562581122,
+          "macd_hist": 0.02830878616474264,
+          "kdj_k": 34.35826300335517,
+          "kdj_d": 23.343292948461336,
+          "kdj_j": 56.38820311314283,
+          "rsi6": 55.3297269968016,
+          "rsi12": 42.93220901132229,
+          "boll_upper": 25.432109709360653,
+          "boll_mid": 21.454500000000017,
+          "boll_lower": 17.476890290639382,
+          "volume_ratio": 0.9290061693318282,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "macd_golden_cross",
+            "name": "MACD金叉",
+            "score": 78,
+            "reason": "DIF -1.623 上穿 DEA -1.637"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 78
+      },
+      {
+        "code": "000630",
+        "name": "铜陵有色",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 7.1,
+          "change_pct": 10.08,
+          "amount_yi": 43.56,
+          "ma5": 6.416000000000001,
+          "ma10": 6.598000000000002,
+          "ma20": 6.4659999999999895,
+          "ma30": 6.489333333333331,
+          "ma60": 6.282666666666667,
+          "macd_dif": 0.054868091453853296,
+          "macd_dea": 0.04654855061336364,
+          "macd_hist": 0.016639081680979315,
+          "kdj_k": 53.046408613376386,
+          "kdj_d": 44.111087378009884,
+          "kdj_j": 70.91705108410937,
+          "rsi6": 68.40943694389176,
+          "rsi12": 60.68220260499522,
+          "boll_upper": 7.267184123656968,
+          "boll_mid": 6.4659999999999895,
+          "boll_lower": 5.664815876343011,
+          "volume_ratio": 1.3319405718390276,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "macd_golden_cross",
+            "name": "MACD金叉",
+            "score": 78,
+            "reason": "DIF 0.055 上穿 DEA 0.047"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 78
+      },
+      {
+        "code": "300059",
+        "name": "东方财富",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 18.0,
+          "change_pct": 3.69,
+          "amount_yi": 84.77,
+          "ma5": 17.74799999999999,
+          "ma10": 18.279,
+          "ma20": 18.974500000000006,
+          "ma30": 19.523999999999997,
+          "ma60": 19.611333333333338,
+          "macd_dif": -0.6156353657068294,
+          "macd_dea": -0.47067173072419083,
+          "macd_hist": -0.2899272699652772,
+          "kdj_k": 19.324012232129434,
+          "kdj_d": 13.0860789740755,
+          "kdj_j": 31.7998787482373,
+          "rsi6": 40.69020335439121,
+          "rsi12": 36.6163528154827,
+          "boll_upper": 20.63150301749877,
+          "boll_mid": 18.974500000000006,
+          "boll_lower": 17.317496982501243,
+          "volume_ratio": 1.5400818489378152,
+          "signals": {
+            "kdj": "超卖",
+            "rsi": "中性",
+            "macd": "死叉偏空"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "kdj_oversold",
+            "name": "KDJ超卖反弹",
+            "score": 75,
+            "reason": "K=19.3 低位金叉"
+          },
+          {
+            "strategy": "volume_breakout",
+            "name": "放量上涨",
+            "score": 64,
+            "reason": "成交额 84.77 亿，量比 1.54，涨幅 3.69%"
+          }
+        ],
+        "strategy_count": 2,
+        "top_score": 75
+      },
+      {
+        "code": "002594",
+        "name": "比亚迪",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 91.6,
+          "change_pct": 2.0,
+          "amount_yi": 34.97,
+          "ma5": 90.95799999999988,
+          "ma10": 92.64699999999998,
+          "ma20": 93.86950000000009,
+          "ma30": 96.01000000000003,
+          "ma60": 99.39599999999997,
+          "macd_dif": -2.0879643653674975,
+          "macd_dea": -1.8383686551502068,
+          "macd_hist": -0.49919142043458153,
+          "kdj_k": 19.89238017584394,
+          "kdj_d": 18.795788378292865,
+          "kdj_j": 22.085563770946088,
+          "rsi6": 42.945794751318005,
+          "rsi12": 40.49129475240273,
+          "boll_upper": 97.96392291416028,
+          "boll_mid": 93.86950000000009,
+          "boll_lower": 89.7750770858399,
+          "volume_ratio": 1.2507392094888856,
+          "signals": {
+            "kdj": "超卖",
+            "rsi": "中性",
+            "macd": "死叉偏空"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "kdj_oversold",
+            "name": "KDJ超卖反弹",
+            "score": 75,
+            "reason": "K=19.9 低位金叉"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 75
+      },
+      {
+        "code": "688981",
+        "name": "中芯国际",
+        "market": "sh",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 124.88,
+          "change_pct": -1.98,
+          "amount_yi": 105.76,
+          "ma5": 125.3680000000002,
+          "ma10": 128.80399999999997,
+          "ma20": 133.09249999999997,
+          "ma30": 128.83599999999998,
+          "ma60": 115.54183333333339,
+          "macd_dif": 1.4474681241381404,
+          "macd_dea": 3.862015047170235,
+          "macd_hist": -4.829093846064189,
+          "kdj_k": 24.104802661001905,
+          "kdj_d": 23.526120554193707,
+          "kdj_j": 25.262166874618295,
+          "rsi6": 39.59165653701374,
+          "rsi12": 46.37430055848266,
+          "boll_upper": 154.37067085653743,
+          "boll_mid": 133.09249999999997,
+          "boll_lower": 111.81432914346252,
+          "volume_ratio": 1.1155906494425303,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [
+          {
+            "strategy": "kdj_oversold",
+            "name": "KDJ超卖反弹",
+            "score": 70,
+            "reason": "K=24.1 低位金叉"
+          }
+        ],
+        "strategy_count": 1,
+        "top_score": 70
+      },
+      {
+        "code": "600519",
+        "name": "贵州茅台",
+        "market": "sh",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 1291.91,
+          "change_pct": 1.01,
+          "amount_yi": 64.78,
+          "ma5": 1273.1539999999977,
+          "ma10": 1280.5360000000005,
+          "ma20": 1291.6549999999995,
+          "ma30": 1315.7729999999997,
+          "ma60": 1376.3736666666678,
+          "macd_dif": -24.170438432330457,
+          "macd_dea": -27.736905277637167,
+          "macd_hist": 7.13293369061342,
+          "kdj_k": 38.01944682643193,
+          "kdj_d": 33.0604147692488,
+          "kdj_j": 47.93751094079819,
+          "rsi6": 56.589477659212704,
+          "rsi12": 45.97875481257175,
+          "boll_upper": 1334.000076927548,
+          "boll_mid": 1291.6549999999995,
+          "boll_lower": 1249.309923072451,
+          "volume_ratio": 1.4528510349351762,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [],
+        "strategy_count": 0,
+        "top_score": 0
+      },
+      {
+        "code": "000858",
+        "name": "五粮液",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 79.92,
+          "change_pct": 0.16,
+          "amount_yi": 28.71,
+          "ma5": 79.58400000000002,
+          "ma10": 80.85700000000006,
+          "ma20": 82.62699999999995,
+          "ma30": 85.7443333333333,
+          "ma60": 94.09483333333334,
+          "macd_dif": -3.549911110694964,
+          "macd_dea": -3.792330991478689,
+          "macd_hist": 0.48483976156745,
+          "kdj_k": 23.38729704356979,
+          "kdj_d": 17.53555766317008,
+          "kdj_j": 35.090775804369216,
+          "rsi6": 32.699896985592304,
+          "rsi12": 27.04546955424179,
+          "boll_upper": 87.08443020136038,
+          "boll_mid": 82.62699999999995,
+          "boll_lower": 78.16956979863953,
+          "volume_ratio": 1.2264242639962215,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [],
+        "strategy_count": 0,
+        "top_score": 0
+      },
+      {
+        "code": "300750",
+        "name": "宁德时代",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 394.85,
+          "change_pct": 3.31,
+          "amount_yi": 162.79,
+          "ma5": 391.6140000000006,
+          "ma10": 404.96799999999996,
+          "ma20": 409.11149999999986,
+          "ma30": 419.12933333333325,
+          "ma60": 414.6156666666667,
+          "macd_dif": -7.8208951547150605,
+          "macd_dea": -4.607130466157247,
+          "macd_hist": -6.427529377115627,
+          "kdj_k": 17.624838755315587,
+          "kdj_d": 21.807688533899533,
+          "kdj_j": 9.259139198147693,
+          "rsi6": 42.7412369120148,
+          "rsi12": 42.13008670092365,
+          "boll_upper": 434.964174349088,
+          "boll_mid": 409.11149999999986,
+          "boll_lower": 383.2588256509117,
+          "volume_ratio": 1.3889380697151625,
+          "signals": {
+            "kdj": "超卖",
+            "rsi": "中性",
+            "macd": "死叉偏空"
+          }
+        },
+        "strategies": [],
+        "strategy_count": 0,
+        "top_score": 0
+      },
+      {
+        "code": "601318",
+        "name": "中国平安",
+        "market": "sh",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 54.01,
+          "change_pct": 2.6,
+          "amount_yi": 59.24,
+          "ma5": 52.735999999999954,
+          "ma10": 52.327000000000055,
+          "ma20": 52.22100000000002,
+          "ma30": 53.83733333333335,
+          "ma60": 55.19399999999997,
+          "macd_dif": -0.6579750158103579,
+          "macd_dea": -1.024469248356304,
+          "macd_hist": 0.7329884650918923,
+          "kdj_k": 72.2389334236997,
+          "kdj_d": 61.21740235459512,
+          "kdj_j": 94.28199556190887,
+          "rsi6": 70.61256039855769,
+          "rsi12": 56.84287643102302,
+          "boll_upper": 53.63415108887905,
+          "boll_mid": 52.22100000000002,
+          "boll_lower": 50.807848911120985,
+          "volume_ratio": 1.3502023186275385,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [],
+        "strategy_count": 0,
+        "top_score": 0
+      },
+      {
+        "code": "000001",
+        "name": "平安银行",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 11.24,
+          "change_pct": 2.74,
+          "amount_yi": 22.63,
+          "ma5": 10.916000000000004,
+          "ma10": 10.764000000000005,
+          "ma20": 10.586500000000001,
+          "ma30": 10.696,
+          "ma60": 10.691833333333333,
+          "macd_dif": 0.077188987043316,
+          "macd_dea": -0.0020087128172438014,
+          "macd_hist": 0.1583953997211196,
+          "kdj_k": 89.47579324881899,
+          "kdj_d": 81.96775360055467,
+          "kdj_j": 104.4918725453476,
+          "rsi6": 82.92237185046244,
+          "rsi12": 71.42299588972772,
+          "boll_upper": 11.068465766419152,
+          "boll_mid": 10.586500000000001,
+          "boll_lower": 10.10453423358085,
+          "volume_ratio": 1.4574388179826288,
+          "signals": {
+            "kdj": "超买",
+            "rsi": "超买",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [],
+        "strategy_count": 0,
+        "top_score": 0
+      },
+      {
+        "code": "600036",
+        "name": "招商银行",
+        "market": "sh",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 39.34,
+          "change_pct": 1.58,
+          "amount_yi": 43.73,
+          "ma5": 38.79200000000001,
+          "ma10": 38.61399999999999,
+          "ma20": 37.919500000000006,
+          "ma30": 37.94200000000003,
+          "ma60": 38.73266666666665,
+          "macd_dif": 0.1762943223925575,
+          "macd_dea": -0.030388127486625054,
+          "macd_hist": 0.4133648997583651,
+          "kdj_k": 86.0731142643205,
+          "kdj_d": 80.50498155253719,
+          "kdj_j": 97.2093796878871,
+          "rsi6": 75.81334987958674,
+          "rsi12": 67.08888024229768,
+          "boll_upper": 39.450714877148215,
+          "boll_mid": 37.919500000000006,
+          "boll_lower": 36.3882851228518,
+          "volume_ratio": 1.370958836490638,
+          "signals": {
+            "kdj": "超买",
+            "rsi": "中性",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [],
+        "strategy_count": 0,
+        "top_score": 0
+      },
+      {
+        "code": "601012",
+        "name": "隆基绿能",
+        "market": "sh",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 13.46,
+          "change_pct": -1.32,
+          "amount_yi": 25.57,
+          "ma5": 13.312000000000001,
+          "ma10": 13.36099999999999,
+          "ma20": 14.061000000000007,
+          "ma30": 14.855999999999977,
+          "ma60": 16.316333333333333,
+          "macd_dif": -0.7842815821731435,
+          "macd_dea": -0.8544424379943409,
+          "macd_hist": 0.14032171164239493,
+          "kdj_k": 53.751120236404155,
+          "kdj_d": 37.460690180227715,
+          "kdj_j": 86.33198034875704,
+          "rsi6": 45.82888372021465,
+          "rsi12": 38.81840719956186,
+          "boll_upper": 15.705638562116317,
+          "boll_mid": 14.061000000000007,
+          "boll_lower": 12.416361437883698,
+          "volume_ratio": 0.9030313585450854,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [],
+        "strategy_count": 0,
+        "top_score": 0
+      },
+      {
+        "code": "001696",
+        "name": "宗申动力",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 22.84,
+          "change_pct": 10.02,
+          "amount_yi": 21.06,
+          "ma5": 19.11,
+          "ma10": 16.732999999999997,
+          "ma20": 16.128999999999998,
+          "ma30": 16.461666666666662,
+          "ma60": 17.71616666666667,
+          "macd_dif": 0.615354576832889,
+          "macd_dea": -0.32644692133029696,
+          "macd_hist": 1.8836029963263718,
+          "kdj_k": 88.03066707475897,
+          "kdj_d": 68.79371042241252,
+          "kdj_j": 126.50458037945185,
+          "rsi6": 94.17822780347498,
+          "rsi12": 84.18896490773992,
+          "boll_upper": 20.54689950089406,
+          "boll_mid": 16.128999999999998,
+          "boll_lower": 11.711100499105935,
+          "volume_ratio": 0.8823634690361517,
+          "signals": {
+            "kdj": "超买",
+            "rsi": "超买",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [],
+        "strategy_count": 0,
+        "top_score": 0
+      },
+      {
+        "code": "601958",
+        "name": "金钼股份",
+        "market": "sh",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 25.52,
+          "change_pct": 10.0,
+          "amount_yi": 4.16,
+          "ma5": 22.312000000000005,
+          "ma10": 22.782999999999987,
+          "ma20": 22.705000000000002,
+          "ma30": 22.212999999999997,
+          "ma60": 20.70916666666666,
+          "macd_dif": 0.5083436217896704,
+          "macd_dea": 0.5347995404209005,
+          "macd_hist": -0.05291183726246018,
+          "kdj_k": 56.88219259599525,
+          "kdj_d": 41.11898404606063,
+          "kdj_j": 88.40860969586447,
+          "rsi6": 71.48569630357075,
+          "rsi12": 63.17122597709859,
+          "boll_upper": 26.08953246401922,
+          "boll_mid": 22.705000000000002,
+          "boll_lower": 19.320467535980782,
+          "volume_ratio": 0.3394351181279438,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [],
+        "strategy_count": 0,
+        "top_score": 0
+      },
+      {
+        "code": "000099",
+        "name": "中信海直",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 17.41,
+          "change_pct": 9.98,
+          "amount_yi": 4.17,
+          "ma5": 16.509999999999998,
+          "ma10": 15.955000000000004,
+          "ma20": 16.219000000000005,
+          "ma30": 16.673333333333343,
+          "ma60": 17.15399999999998,
+          "macd_dif": -0.23251613499397905,
+          "macd_dea": -0.41371914872156407,
+          "macd_hist": 0.36240602745517003,
+          "kdj_k": 71.16811054867797,
+          "kdj_d": 53.69506031140695,
+          "kdj_j": 106.11421102322001,
+          "rsi6": 67.46140121329577,
+          "rsi12": 59.553702475084044,
+          "boll_upper": 17.498435813161414,
+          "boll_mid": 16.219000000000005,
+          "boll_lower": 14.939564186838593,
+          "volume_ratio": 1.0151359009087186,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "震荡"
+          }
+        },
+        "strategies": [],
+        "strategy_count": 0,
+        "top_score": 0
+      },
+      {
+        "code": "000151",
+        "name": "中成股份",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 13.94,
+          "change_pct": 10.02,
+          "amount_yi": 1.63,
+          "ma5": 13.45000000000002,
+          "ma10": 13.655999999999988,
+          "ma20": 12.799999999999995,
+          "ma30": 12.536666666666669,
+          "ma60": 12.096499999999995,
+          "macd_dif": 0.45642540540896803,
+          "macd_dea": 0.42208072077042424,
+          "macd_hist": 0.06868936927708758,
+          "kdj_k": 57.33305416126016,
+          "kdj_d": 64.23847012128525,
+          "kdj_j": 43.52222224120999,
+          "rsi6": 60.8357762329949,
+          "rsi12": 60.47980673997465,
+          "boll_upper": 14.77480125582297,
+          "boll_mid": 12.799999999999995,
+          "boll_lower": 10.82519874417702,
+          "volume_ratio": 0.7908997660702417,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "金叉偏多"
+          }
+        },
+        "strategies": [],
+        "strategy_count": 0,
+        "top_score": 0
+      },
+      {
+        "code": "000506",
+        "name": "招金黄金",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 13.73,
+          "change_pct": 10.02,
+          "amount_yi": 5.07,
+          "ma5": 13.146000000000006,
+          "ma10": 13.666999999999991,
+          "ma20": 14.005499999999994,
+          "ma30": 14.703666666666669,
+          "ma60": 15.86000000000002,
+          "macd_dif": -0.7130749689705915,
+          "macd_dea": -0.687151282650955,
+          "macd_hist": -0.05184737263927297,
+          "kdj_k": 29.653600308809594,
+          "kdj_d": 23.907266072911465,
+          "kdj_j": 41.14626878060586,
+          "rsi6": 51.639087485257164,
+          "rsi12": 44.82196759013143,
+          "boll_upper": 15.273150977201526,
+          "boll_mid": 14.005499999999994,
+          "boll_lower": 12.737849022798462,
+          "volume_ratio": 1.0823691745848718,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "死叉偏空"
+          }
+        },
+        "strategies": [],
+        "strategy_count": 0,
+        "top_score": 0
+      },
+      {
+        "code": "000751",
+        "name": "锌业股份",
+        "market": "sz",
+        "latest": {
+          "date": "2026-06-12",
+          "close": 5.09,
+          "change_pct": 9.94,
+          "amount_yi": 4.15,
+          "ma5": 4.698000000000006,
+          "ma10": 4.980000000000002,
+          "ma20": 5.2034999999999965,
+          "ma30": 5.546999999999994,
+          "ma60": 5.557499999999995,
+          "macd_dif": -0.2777725294926636,
+          "macd_dea": -0.23881615152704122,
+          "macd_hist": -0.0779127559312448,
+          "kdj_k": 28.689287352833595,
+          "kdj_d": 22.164885957618893,
+          "kdj_j": 41.73809014326301,
+          "rsi6": 55.313889855768856,
+          "rsi12": 46.43695769671857,
+          "boll_upper": 5.908745347379191,
+          "boll_mid": 5.2034999999999965,
+          "boll_lower": 4.498254652620802,
+          "volume_ratio": 1.413668106354304,
+          "signals": {
+            "kdj": "中性",
+            "rsi": "中性",
+            "macd": "死叉偏空"
+          }
+        },
+        "strategies": [],
+        "strategy_count": 0,
+        "top_score": 0
+      }
+    ]
+  },
+  "backtest": {
+    "summary": [
+      {
+        "strategy": "kdj_oversold",
+        "name": "KDJ超卖反弹",
+        "trades": 10,
+        "win_rate": 70.0,
+        "avg_return_pct": 0.85
+      },
+      {
+        "strategy": "macd_golden_cross",
+        "name": "MACD金叉",
+        "trades": 35,
+        "win_rate": 54.3,
+        "avg_return_pct": -0.42
+      },
+      {
+        "strategy": "volume_breakout",
+        "name": "放量上涨",
+        "trades": 48,
+        "win_rate": 47.9,
+        "avg_return_pct": 0.93
+      },
+      {
+        "strategy": "ma_bullish",
+        "name": "均线多头",
+        "trades": 46,
+        "win_rate": 45.7,
+        "avg_return_pct": 0.34
+      }
+    ],
+    "overall": {
+      "stocks_tested": 5,
+      "total_trades": 139,
+      "best_strategy": {
+        "strategy": "kdj_oversold",
+        "name": "KDJ超卖反弹",
+        "trades": 10,
+        "win_rate": 70.0,
+        "avg_return_pct": 0.85
+      }
+    },
+    "stock_results": [
+      {
+        "code": "002971",
+        "strategy": "volume_breakout",
+        "trades": 13,
+        "wins": 7,
+        "win_rate": 53.8,
+        "avg_return_pct": 4.07,
+        "trade_list": [
+          {
+            "entry_date": "2025-09-25",
+            "exit_date": "2025-10-10",
+            "entry_price": 35.9,
+            "exit_price": 35.45,
+            "return_pct": -1.25,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2025-11-04",
+            "exit_date": "2025-11-11",
+            "entry_price": 37.88,
+            "exit_price": 39.07,
+            "return_pct": 3.14,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2025-12-12",
+            "exit_date": "2025-12-17",
+            "entry_price": 32.95,
+            "exit_price": 30.1,
+            "return_pct": -8.65,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 3,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-01-07",
+            "exit_date": "2026-01-14",
+            "entry_price": 30.57,
+            "exit_price": 30.14,
+            "return_pct": -1.41,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-01-21",
+            "exit_date": "2026-01-28",
+            "entry_price": 32.7,
+            "exit_price": 31.04,
+            "return_pct": -5.08,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-02-25",
+            "exit_date": "2026-03-04",
+            "entry_price": 33.75,
+            "exit_price": 32.5,
+            "return_pct": -3.7,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-04-07",
+            "exit_date": "2026-04-14",
+            "entry_price": 30.25,
+            "exit_price": 30.39,
+            "return_pct": 0.46,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-04-21",
+            "exit_date": "2026-04-28",
+            "entry_price": 31.06,
+            "exit_price": 33.81,
+            "return_pct": 8.85,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-05-11",
+            "exit_date": "2026-05-15",
+            "entry_price": 34.27,
+            "exit_price": 41.21,
+            "return_pct": 20.25,
+            "win": true,
+            "exit_reason": "take_profit",
+            "hold_days": 4,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-06-05",
+            "exit_date": "2026-06-10",
+            "entry_price": 39.3,
+            "exit_price": 47.95,
+            "return_pct": 22.01,
+            "win": true,
+            "exit_reason": "take_profit",
+            "hold_days": 3,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          }
+        ],
+        "name": "和远气体"
+      },
+      {
+        "code": "002971",
+        "strategy": "ma_bullish",
+        "trades": 12,
+        "wins": 7,
+        "win_rate": 58.3,
+        "avg_return_pct": 2.57,
+        "trade_list": [
+          {
+            "entry_date": "2025-08-14",
+            "exit_date": "2025-08-21",
+            "entry_price": 28.45,
+            "exit_price": 28.3,
+            "return_pct": -0.53,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-09-10",
+            "exit_date": "2025-09-17",
+            "entry_price": 31.47,
+            "exit_price": 31.7,
+            "return_pct": 0.73,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-09-24",
+            "exit_date": "2025-10-09",
+            "entry_price": 34.52,
+            "exit_price": 38.35,
+            "return_pct": 11.1,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-10-13",
+            "exit_date": "2025-10-20",
+            "entry_price": 36.75,
+            "exit_price": 36.08,
+            "return_pct": -1.82,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-10-21",
+            "exit_date": "2025-10-28",
+            "entry_price": 37.58,
+            "exit_price": 37.27,
+            "return_pct": -0.82,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-11-06",
+            "exit_date": "2025-11-13",
+            "entry_price": 39.06,
+            "exit_price": 39.12,
+            "return_pct": 0.15,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2026-01-23",
+            "exit_date": "2026-01-30",
+            "entry_price": 32.85,
+            "exit_price": 31.23,
+            "return_pct": -4.93,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2026-02-24",
+            "exit_date": "2026-03-03",
+            "entry_price": 32.93,
+            "exit_price": 33.9,
+            "return_pct": 2.95,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2026-04-23",
+            "exit_date": "2026-04-30",
+            "entry_price": 33.88,
+            "exit_price": 31.74,
+            "return_pct": -6.32,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2026-05-13",
+            "exit_date": "2026-05-15",
+            "entry_price": 34.05,
+            "exit_price": 41.21,
+            "return_pct": 21.03,
+            "win": true,
+            "exit_reason": "take_profit",
+            "hold_days": 2,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          }
+        ],
+        "name": "和远气体"
+      },
+      {
+        "code": "002971",
+        "strategy": "macd_golden_cross",
+        "trades": 10,
+        "wins": 6,
+        "win_rate": 60.0,
+        "avg_return_pct": 2.59,
+        "trade_list": [
+          {
+            "entry_date": "2025-08-12",
+            "exit_date": "2025-08-19",
+            "entry_price": 28.59,
+            "exit_price": 28.38,
+            "return_pct": -0.73,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2025-09-05",
+            "exit_date": "2025-09-12",
+            "entry_price": 30.5,
+            "exit_price": 30.95,
+            "return_pct": 1.48,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2025-10-17",
+            "exit_date": "2025-10-24",
+            "entry_price": 37.35,
+            "exit_price": 38.04,
+            "return_pct": 1.85,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2025-11-13",
+            "exit_date": "2025-11-14",
+            "entry_price": 39.12,
+            "exit_price": 35.21,
+            "return_pct": -9.99,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 1,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2025-12-12",
+            "exit_date": "2025-12-17",
+            "entry_price": 32.95,
+            "exit_price": 30.1,
+            "return_pct": -8.65,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 3,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2025-12-25",
+            "exit_date": "2026-01-05",
+            "entry_price": 31.06,
+            "exit_price": 29.92,
+            "return_pct": -3.67,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-02-09",
+            "exit_date": "2026-02-24",
+            "entry_price": 32.01,
+            "exit_price": 32.93,
+            "return_pct": 2.87,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-04-07",
+            "exit_date": "2026-04-14",
+            "entry_price": 30.25,
+            "exit_price": 30.39,
+            "return_pct": 0.46,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-05-11",
+            "exit_date": "2026-05-15",
+            "entry_price": 34.27,
+            "exit_price": 41.21,
+            "return_pct": 20.25,
+            "win": true,
+            "exit_reason": "take_profit",
+            "hold_days": 4,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-06-05",
+            "exit_date": "2026-06-10",
+            "entry_price": 39.3,
+            "exit_price": 47.95,
+            "return_pct": 22.01,
+            "win": true,
+            "exit_reason": "take_profit",
+            "hold_days": 3,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          }
+        ],
+        "name": "和远气体"
+      },
+      {
+        "code": "002971",
+        "strategy": "kdj_oversold",
+        "trades": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "avg_return_pct": -0.86,
+        "trade_list": [
+          {
+            "entry_date": "2026-03-25",
+            "exit_date": "2026-04-01",
+            "entry_price": 28.91,
+            "exit_price": 28.66,
+            "return_pct": -0.86,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "kdj_oversold",
+            "strategy_name": "KDJ超卖反弹"
+          }
+        ],
+        "name": "和远气体"
+      },
+      {
+        "code": "002203",
+        "strategy": "volume_breakout",
+        "trades": 11,
+        "wins": 7,
+        "win_rate": 63.6,
+        "avg_return_pct": 2.15,
+        "trade_list": [
+          {
+            "entry_date": "2025-08-15",
+            "exit_date": "2025-08-22",
+            "entry_price": 13.25,
+            "exit_price": 12.39,
+            "return_pct": -6.49,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2025-09-09",
+            "exit_date": "2025-09-16",
+            "entry_price": 12.29,
+            "exit_price": 12.51,
+            "return_pct": 1.79,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2025-11-12",
+            "exit_date": "2025-11-19",
+            "entry_price": 11.18,
+            "exit_price": 11.33,
+            "return_pct": 1.34,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2025-12-11",
+            "exit_date": "2025-12-18",
+            "entry_price": 11.73,
+            "exit_price": 11.61,
+            "return_pct": -1.02,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2025-12-22",
+            "exit_date": "2025-12-29",
+            "entry_price": 12.4,
+            "exit_price": 12.57,
+            "return_pct": 1.37,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-01-09",
+            "exit_date": "2026-01-16",
+            "entry_price": 14.05,
+            "exit_price": 15.17,
+            "return_pct": 7.97,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-03-13",
+            "exit_date": "2026-03-20",
+            "entry_price": 14.29,
+            "exit_price": 13.42,
+            "return_pct": -6.09,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-03-26",
+            "exit_date": "2026-04-02",
+            "entry_price": 13.91,
+            "exit_price": 14.68,
+            "return_pct": 5.54,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-04-20",
+            "exit_date": "2026-04-27",
+            "entry_price": 17.91,
+            "exit_price": 17.23,
+            "return_pct": -3.8,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-05-06",
+            "exit_date": "2026-05-12",
+            "entry_price": 19.79,
+            "exit_price": 22.9,
+            "return_pct": 15.72,
+            "win": true,
+            "exit_reason": "take_profit",
+            "hold_days": 4,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          }
+        ],
+        "name": "海亮股份"
+      },
+      {
+        "code": "002203",
+        "strategy": "ma_bullish",
+        "trades": 12,
+        "wins": 5,
+        "win_rate": 41.7,
+        "avg_return_pct": 1.96,
+        "trade_list": [
+          {
+            "entry_date": "2025-08-13",
+            "exit_date": "2025-08-20",
+            "entry_price": 12.09,
+            "exit_price": 13.02,
+            "return_pct": 7.69,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-10-09",
+            "exit_date": "2025-10-16",
+            "entry_price": 13.2,
+            "exit_price": 12.38,
+            "return_pct": -6.21,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-12-25",
+            "exit_date": "2026-01-05",
+            "entry_price": 12.31,
+            "exit_price": 12.81,
+            "return_pct": 4.06,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2026-01-07",
+            "exit_date": "2026-01-13",
+            "entry_price": 12.97,
+            "exit_price": 15.26,
+            "return_pct": 17.66,
+            "win": true,
+            "exit_reason": "take_profit",
+            "hold_days": 4,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2026-01-15",
+            "exit_date": "2026-01-22",
+            "entry_price": 15.45,
+            "exit_price": 14.94,
+            "return_pct": -3.3,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2026-01-29",
+            "exit_date": "2026-02-02",
+            "entry_price": 15.43,
+            "exit_price": 13.49,
+            "return_pct": -12.57,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 2,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2026-04-13",
+            "exit_date": "2026-04-20",
+            "entry_price": 15.25,
+            "exit_price": 17.91,
+            "return_pct": 17.44,
+            "win": true,
+            "exit_reason": "take_profit",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2026-04-21",
+            "exit_date": "2026-04-28",
+            "entry_price": 17.71,
+            "exit_price": 17.32,
+            "return_pct": -2.2,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2026-04-29",
+            "exit_date": "2026-05-07",
+            "entry_price": 18.0,
+            "exit_price": 20.89,
+            "return_pct": 16.06,
+            "win": true,
+            "exit_reason": "take_profit",
+            "hold_days": 3,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2026-05-12",
+            "exit_date": "2026-05-19",
+            "entry_price": 22.9,
+            "exit_price": 20.52,
+            "return_pct": -10.39,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          }
+        ],
+        "name": "海亮股份"
+      },
+      {
+        "code": "002203",
+        "strategy": "macd_golden_cross",
+        "trades": 8,
+        "wins": 5,
+        "win_rate": 62.5,
+        "avg_return_pct": -1.65,
+        "trade_list": [
+          {
+            "entry_date": "2025-08-01",
+            "exit_date": "2025-08-08",
+            "entry_price": 11.8,
+            "exit_price": 12.16,
+            "return_pct": 3.05,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2025-09-11",
+            "exit_date": "2025-09-18",
+            "entry_price": 12.68,
+            "exit_price": 12.26,
+            "return_pct": -3.31,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2025-09-24",
+            "exit_date": "2025-10-09",
+            "entry_price": 12.9,
+            "exit_price": 13.2,
+            "return_pct": 2.33,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2025-11-14",
+            "exit_date": "2025-11-21",
+            "entry_price": 11.57,
+            "exit_price": 11.59,
+            "return_pct": 0.17,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2025-12-22",
+            "exit_date": "2025-12-29",
+            "entry_price": 12.4,
+            "exit_price": 12.57,
+            "return_pct": 1.37,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-01-28",
+            "exit_date": "2026-02-02",
+            "entry_price": 15.67,
+            "exit_price": 13.49,
+            "return_pct": -13.91,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 3,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-02-27",
+            "exit_date": "2026-03-06",
+            "entry_price": 14.71,
+            "exit_price": 14.07,
+            "return_pct": -4.35,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-03-27",
+            "exit_date": "2026-04-03",
+            "entry_price": 14.82,
+            "exit_price": 15.04,
+            "return_pct": 1.48,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          }
+        ],
+        "name": "海亮股份"
+      },
+      {
+        "code": "002203",
+        "strategy": "kdj_oversold",
+        "trades": 2,
+        "wins": 1,
+        "win_rate": 50.0,
+        "avg_return_pct": -0.1,
+        "trade_list": [
+          {
+            "entry_date": "2025-09-05",
+            "exit_date": "2025-09-12",
+            "entry_price": 11.62,
+            "exit_price": 12.64,
+            "return_pct": 8.78,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "kdj_oversold",
+            "strategy_name": "KDJ超卖反弹"
+          },
+          {
+            "entry_date": "2025-10-29",
+            "exit_date": "2025-11-03",
+            "entry_price": 12.03,
+            "exit_price": 10.95,
+            "return_pct": -8.98,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 3,
+            "strategy": "kdj_oversold",
+            "strategy_name": "KDJ超卖反弹"
+          }
+        ],
+        "name": "海亮股份"
+      },
+      {
+        "code": "000032",
+        "strategy": "volume_breakout",
+        "trades": 16,
+        "wins": 4,
+        "win_rate": 25.0,
+        "avg_return_pct": -2.96,
+        "trade_list": [
+          {
+            "entry_date": "2025-12-12",
+            "exit_date": "2025-12-19",
+            "entry_price": 19.39,
+            "exit_price": 18.5,
+            "return_pct": -4.59,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2025-12-22",
+            "exit_date": "2025-12-29",
+            "entry_price": 18.91,
+            "exit_price": 19.71,
+            "return_pct": 4.23,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-01-05",
+            "exit_date": "2026-01-12",
+            "entry_price": 20.5,
+            "exit_price": 22.8,
+            "return_pct": 11.22,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-01-14",
+            "exit_date": "2026-01-19",
+            "entry_price": 23.24,
+            "exit_price": 21.36,
+            "return_pct": -8.09,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 3,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-01-22",
+            "exit_date": "2026-01-29",
+            "entry_price": 21.73,
+            "exit_price": 21.39,
+            "return_pct": -1.56,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-02-27",
+            "exit_date": "2026-03-03",
+            "entry_price": 20.63,
+            "exit_price": 18.39,
+            "return_pct": -10.86,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 2,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-03-19",
+            "exit_date": "2026-03-23",
+            "entry_price": 18.94,
+            "exit_price": 17.16,
+            "return_pct": -9.4,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 2,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-04-08",
+            "exit_date": "2026-04-15",
+            "entry_price": 18.28,
+            "exit_price": 18.58,
+            "return_pct": 1.64,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-05-11",
+            "exit_date": "2026-05-18",
+            "entry_price": 19.04,
+            "exit_price": 18.88,
+            "return_pct": -0.84,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-05-20",
+            "exit_date": "2026-05-26",
+            "entry_price": 19.98,
+            "exit_price": 18.29,
+            "return_pct": -8.46,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 4,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          }
+        ],
+        "name": "深桑达Ａ"
+      },
+      {
+        "code": "000032",
+        "strategy": "ma_bullish",
+        "trades": 6,
+        "wins": 2,
+        "win_rate": 33.3,
+        "avg_return_pct": -1.2,
+        "trade_list": [
+          {
+            "entry_date": "2025-07-22",
+            "exit_date": "2025-07-29",
+            "entry_price": 21.32,
+            "exit_price": 22.91,
+            "return_pct": 7.46,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-08-01",
+            "exit_date": "2025-08-08",
+            "entry_price": 24.75,
+            "exit_price": 24.16,
+            "return_pct": -2.38,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-08-20",
+            "exit_date": "2025-08-27",
+            "entry_price": 24.82,
+            "exit_price": 26.08,
+            "return_pct": 5.08,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-08-28",
+            "exit_date": "2025-09-02",
+            "entry_price": 27.91,
+            "exit_price": 23.18,
+            "return_pct": -16.95,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 3,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2026-01-09",
+            "exit_date": "2026-01-16",
+            "entry_price": 21.75,
+            "exit_price": 21.66,
+            "return_pct": -0.41,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2026-05-18",
+            "exit_date": "2026-05-25",
+            "entry_price": 18.88,
+            "exit_price": 18.88,
+            "return_pct": 0.0,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          }
+        ],
+        "name": "深桑达Ａ"
+      },
+      {
+        "code": "000032",
+        "strategy": "macd_golden_cross",
+        "trades": 7,
+        "wins": 4,
+        "win_rate": 57.1,
+        "avg_return_pct": -1.99,
+        "trade_list": [
+          {
+            "entry_date": "2025-08-28",
+            "exit_date": "2025-09-02",
+            "entry_price": 27.91,
+            "exit_price": 23.18,
+            "return_pct": -16.95,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 3,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2025-10-27",
+            "exit_date": "2025-11-03",
+            "entry_price": 20.61,
+            "exit_price": 21.04,
+            "return_pct": 2.09,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2025-11-25",
+            "exit_date": "2025-12-02",
+            "entry_price": 20.1,
+            "exit_price": 19.88,
+            "return_pct": -1.09,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2025-12-23",
+            "exit_date": "2025-12-30",
+            "entry_price": 19.42,
+            "exit_price": 19.52,
+            "return_pct": 0.51,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-03-25",
+            "exit_date": "2026-04-01",
+            "entry_price": 18.4,
+            "exit_price": 18.28,
+            "return_pct": -0.65,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-04-08",
+            "exit_date": "2026-04-15",
+            "entry_price": 18.28,
+            "exit_price": 18.58,
+            "return_pct": 1.64,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-05-08",
+            "exit_date": "2026-05-15",
+            "entry_price": 18.27,
+            "exit_price": 18.37,
+            "return_pct": 0.55,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          }
+        ],
+        "name": "深桑达Ａ"
+      },
+      {
+        "code": "000032",
+        "strategy": "kdj_oversold",
+        "trades": 3,
+        "wins": 2,
+        "win_rate": 66.7,
+        "avg_return_pct": 3.39,
+        "trade_list": [
+          {
+            "entry_date": "2025-10-23",
+            "exit_date": "2025-10-30",
+            "entry_price": 20.59,
+            "exit_price": 20.22,
+            "return_pct": -1.8,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "kdj_oversold",
+            "strategy_name": "KDJ超卖反弹"
+          },
+          {
+            "entry_date": "2025-11-24",
+            "exit_date": "2025-12-01",
+            "entry_price": 19.36,
+            "exit_price": 20.16,
+            "return_pct": 4.13,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "kdj_oversold",
+            "strategy_name": "KDJ超卖反弹"
+          },
+          {
+            "entry_date": "2025-12-19",
+            "exit_date": "2025-12-26",
+            "entry_price": 18.5,
+            "exit_price": 19.95,
+            "return_pct": 7.84,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "kdj_oversold",
+            "strategy_name": "KDJ超卖反弹"
+          }
+        ],
+        "name": "深桑达Ａ"
+      },
+      {
+        "code": "603014",
+        "strategy": "volume_breakout",
+        "trades": 8,
+        "wins": 5,
+        "win_rate": 62.5,
+        "avg_return_pct": 0.46,
+        "trade_list": [
+          {
+            "entry_date": "2025-07-04",
+            "exit_date": "2025-07-11",
+            "entry_price": 36.86,
+            "exit_price": 36.94,
+            "return_pct": 0.22,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2025-07-25",
+            "exit_date": "2025-08-01",
+            "entry_price": 37.96,
+            "exit_price": 38.88,
+            "return_pct": 2.42,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2025-08-07",
+            "exit_date": "2025-08-14",
+            "entry_price": 40.26,
+            "exit_price": 39.03,
+            "return_pct": -3.06,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2025-09-01",
+            "exit_date": "2025-09-08",
+            "entry_price": 40.49,
+            "exit_price": 40.89,
+            "return_pct": 0.99,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2025-10-14",
+            "exit_date": "2025-11-04",
+            "entry_price": 38.44,
+            "exit_price": 46.17,
+            "return_pct": 20.11,
+            "win": true,
+            "exit_reason": "take_profit",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-01-05",
+            "exit_date": "2026-01-12",
+            "entry_price": 41.13,
+            "exit_price": 41.22,
+            "return_pct": 0.22,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-01-26",
+            "exit_date": "2026-02-02",
+            "entry_price": 41.88,
+            "exit_price": 39.53,
+            "return_pct": -5.61,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          },
+          {
+            "entry_date": "2026-05-28",
+            "exit_date": "2026-06-03",
+            "entry_price": 36.41,
+            "exit_price": 32.18,
+            "return_pct": -11.62,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 4,
+            "strategy": "volume_breakout",
+            "strategy_name": "放量上涨"
+          }
+        ],
+        "name": "威高血净"
+      },
+      {
+        "code": "603014",
+        "strategy": "ma_bullish",
+        "trades": 7,
+        "wins": 2,
+        "win_rate": 28.6,
+        "avg_return_pct": -2.24,
+        "trade_list": [
+          {
+            "entry_date": "2025-07-08",
+            "exit_date": "2025-07-15",
+            "entry_price": 37.59,
+            "exit_price": 36.56,
+            "return_pct": -2.74,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-07-24",
+            "exit_date": "2025-07-31",
+            "entry_price": 37.15,
+            "exit_price": 38.37,
+            "return_pct": 3.28,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-08-04",
+            "exit_date": "2025-08-11",
+            "entry_price": 38.94,
+            "exit_price": 40.4,
+            "return_pct": 3.75,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-08-12",
+            "exit_date": "2025-08-19",
+            "entry_price": 40.45,
+            "exit_price": 39.5,
+            "return_pct": -2.35,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-09-08",
+            "exit_date": "2025-09-15",
+            "entry_price": 40.89,
+            "exit_price": 39.33,
+            "return_pct": -3.82,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-11-07",
+            "exit_date": "2025-11-14",
+            "entry_price": 44.91,
+            "exit_price": 41.22,
+            "return_pct": -8.22,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2026-01-26",
+            "exit_date": "2026-02-02",
+            "entry_price": 41.88,
+            "exit_price": 39.53,
+            "return_pct": -5.61,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          }
+        ],
+        "name": "威高血净"
+      },
+      {
+        "code": "603014",
+        "strategy": "macd_golden_cross",
+        "trades": 10,
+        "wins": 4,
+        "win_rate": 40.0,
+        "avg_return_pct": -0.63,
+        "trade_list": [
+          {
+            "entry_date": "2025-07-24",
+            "exit_date": "2025-07-31",
+            "entry_price": 37.15,
+            "exit_price": 38.37,
+            "return_pct": 3.28,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2025-09-02",
+            "exit_date": "2025-09-09",
+            "entry_price": 42.14,
+            "exit_price": 40.02,
+            "return_pct": -5.03,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2025-10-15",
+            "exit_date": "2025-11-04",
+            "entry_price": 38.7,
+            "exit_price": 46.17,
+            "return_pct": 19.3,
+            "win": true,
+            "exit_reason": "take_profit",
+            "hold_days": 4,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2025-12-08",
+            "exit_date": "2025-12-15",
+            "entry_price": 41.12,
+            "exit_price": 41.24,
+            "return_pct": 0.29,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-01-06",
+            "exit_date": "2026-01-13",
+            "entry_price": 41.62,
+            "exit_price": 41.03,
+            "return_pct": -1.42,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-02-13",
+            "exit_date": "2026-03-02",
+            "entry_price": 40.37,
+            "exit_price": 39.36,
+            "return_pct": -2.5,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-03-13",
+            "exit_date": "2026-03-20",
+            "entry_price": 39.18,
+            "exit_price": 37.76,
+            "return_pct": -3.62,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-04-08",
+            "exit_date": "2026-04-15",
+            "entry_price": 37.15,
+            "exit_price": 37.32,
+            "return_pct": 0.46,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-05-11",
+            "exit_date": "2026-05-18",
+            "entry_price": 36.19,
+            "exit_price": 34.22,
+            "return_pct": -5.44,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          },
+          {
+            "entry_date": "2026-05-28",
+            "exit_date": "2026-06-03",
+            "entry_price": 36.41,
+            "exit_price": 32.18,
+            "return_pct": -11.62,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 4,
+            "strategy": "macd_golden_cross",
+            "strategy_name": "MACD金叉"
+          }
+        ],
+        "name": "威高血净"
+      },
+      {
+        "code": "603014",
+        "strategy": "kdj_oversold",
+        "trades": 4,
+        "wins": 4,
+        "win_rate": 100.0,
+        "avg_return_pct": 0.98,
+        "trade_list": [
+          {
+            "entry_date": "2025-08-28",
+            "exit_date": "2025-09-04",
+            "entry_price": 38.83,
+            "exit_price": 39.26,
+            "return_pct": 1.11,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "kdj_oversold",
+            "strategy_name": "KDJ超卖反弹"
+          },
+          {
+            "entry_date": "2025-09-24",
+            "exit_date": "2025-10-09",
+            "entry_price": 38.18,
+            "exit_price": 38.29,
+            "return_pct": 0.29,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "kdj_oversold",
+            "strategy_name": "KDJ超卖反弹"
+          },
+          {
+            "entry_date": "2025-11-25",
+            "exit_date": "2025-12-02",
+            "entry_price": 40.44,
+            "exit_price": 40.49,
+            "return_pct": 0.12,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "kdj_oversold",
+            "strategy_name": "KDJ超卖反弹"
+          },
+          {
+            "entry_date": "2026-03-10",
+            "exit_date": "2026-03-17",
+            "entry_price": 38.64,
+            "exit_price": 39.57,
+            "return_pct": 2.41,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "kdj_oversold",
+            "strategy_name": "KDJ超卖反弹"
+          }
+        ],
+        "name": "威高血净"
+      },
+      {
+        "code": "600067",
+        "strategy": "ma_bullish",
+        "trades": 9,
+        "wins": 5,
+        "win_rate": 55.6,
+        "avg_return_pct": 0.6,
+        "trade_list": [
+          {
+            "entry_date": "2025-07-24",
+            "exit_date": "2025-07-31",
+            "entry_price": 2.86,
+            "exit_price": 2.77,
+            "return_pct": -3.15,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-08-08",
+            "exit_date": "2025-08-15",
+            "entry_price": 2.88,
+            "exit_price": 2.89,
+            "return_pct": 0.35,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-08-19",
+            "exit_date": "2025-08-26",
+            "entry_price": 2.98,
+            "exit_price": 3.14,
+            "return_pct": 5.37,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-09-17",
+            "exit_date": "2025-09-24",
+            "entry_price": 3.22,
+            "exit_price": 3.06,
+            "return_pct": -4.97,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-10-16",
+            "exit_date": "2025-10-20",
+            "entry_price": 3.74,
+            "exit_price": 3.38,
+            "return_pct": -9.63,
+            "win": false,
+            "exit_reason": "stop_loss",
+            "hold_days": 2,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-10-24",
+            "exit_date": "2025-10-31",
+            "entry_price": 3.5,
+            "exit_price": 3.9,
+            "return_pct": 11.43,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-11-03",
+            "exit_date": "2025-11-10",
+            "entry_price": 4.03,
+            "exit_price": 4.55,
+            "return_pct": 12.9,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2025-11-11",
+            "exit_date": "2025-11-18",
+            "entry_price": 4.76,
+            "exit_price": 4.39,
+            "return_pct": -7.77,
+            "win": false,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          },
+          {
+            "entry_date": "2026-01-20",
+            "exit_date": "2026-01-27",
+            "entry_price": 4.47,
+            "exit_price": 4.51,
+            "return_pct": 0.89,
+            "win": true,
+            "exit_reason": "hold_expire",
+            "hold_days": 5,
+            "strategy": "ma_bullish",
+            "strategy_name": "均线多头"
+          }
+        ],
+        "name": "冠城新材"
+      }
+    ]
+  },
+  "meta": {
+    "engine": "stock-quant",
+    "inspired_by": "InStock (myhhub/stock)",
+    "data_sources": [
+      "hhxg.top",
+      "eastmoney"
+    ]
+  }
+};
+    let activeView = "market";
+    let pickSearch = "";
+    let indSearch = "";
+
+    function pctClass(v) {
+      if (v == null || v === "") return "";
+      return Number(v) >= 0 ? "up" : "down";
+    }
+
+    function fmtPct(v) {
+      if (v == null || v === "") return "—";
+      const n = Number(v);
+      return (n >= 0 ? "+" : "") + n.toFixed(2) + "%";
+    }
+
+    function signalTag(label, type) {
+      const cls = type || "neutral";
+      return `<span class="tag ${cls}">${label}</span>`;
+    }
+
+    function renderMetrics() {
+      const m = DATA.snapshot?.market || {};
+      const scan = DATA.scan || {};
+      const bt = DATA.backtest?.overall || {};
+      document.getElementById("page-subtitle").textContent =
+        `数据日期 ${DATA.market_date || "—"} · 生成于 ${(DATA.generated_at || "").slice(0, 19).replace("T", " ")} UTC`;
+      document.getElementById("metrics-row").innerHTML = `
+        <div class="metric-card">
+          <div class="metric-value">${m.sentiment_index ?? "—"}${m.sentiment_index != null ? "%" : ""}</div>
+          <div class="metric-label">赚钱效应</div>
+          <div class="metric-sub">${m.sentiment_label || ""}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value up">${m.limit_up ?? "—"}</div>
+          <div class="metric-label">涨停</div>
+          <div class="metric-sub">炸板 ${m.fried ?? "—"} · 跌停 ${m.limit_down ?? "—"}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">${scan.pick_count ?? 0}</div>
+          <div class="metric-label">策略命中</div>
+          <div class="metric-sub">扫描 ${scan.universe_size ?? 0} 只</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">${bt.best_strategy?.win_rate ?? "—"}${bt.best_strategy ? "%" : ""}</div>
+          <div class="metric-label">最优策略胜率</div>
+          <div class="metric-sub">${bt.best_strategy?.name || "待回测"}</div>
+        </div>`;
+    }
+
+    function renderMarket() {
+      const snap = DATA.snapshot || {};
+      const themes = snap.hot_themes || [];
+      const ladderDetail = snap.ladder_detail || {};
+      const ladderLevels = ladderDetail.levels || [];
+      const sectors = snap.sectors || [];
+      const news = snap.news || [];
+
+      const themeHtml = themes.length ? themes.slice(0, 8).map((t, i) => `
+        <div class="theme-row">
+          <span><strong>${i + 1}. ${t.name || t.theme || "—"}</strong></span>
+          <span>涨停 ${t.limitup_count ?? t.limit_up ?? t.count ?? "—"} · 龙头 ${(t.top_stocks || t.leaders || []).map(l => l.name).join(" / ") || "—"}</span>
+        </div>`).join("") : `<p style="color:var(--muted)">暂无题材数据</p>`;
+
+      const ladderRows = [];
+      for (const level of ladderLevels) {
+        for (const item of (level.stocks || []).filter(s => s.is_success !== false)) {
+          ladderRows.push({ boards: level.boards, name: item.name, code: item.code });
+        }
+      }
+      const ladderHtml = ladderRows.length ? `
+        <table><thead><tr><th>连板</th><th>股票</th><th>代码</th></tr></thead><tbody>
+        ${ladderRows.slice(0, 20).map(item => `
+          <tr><td>${item.boards ?? "—"}</td>
+          <td>${item.name || "—"}</td>
+          <td>${item.code || "—"}</td></tr>`).join("")}
+        </tbody></table>` : `<p style="color:var(--muted);padding:16px">暂无连板数据</p>`;
+
+      const sectorHtml = sectors.length ? `
+        <table><thead><tr><th>行业</th><th>净流入(亿)</th><th>涨跌幅</th></tr></thead><tbody>
+        ${sectors.slice(0, 12).map(s => `
+          <tr><td>${s.name || s.sector || "—"}</td>
+          <td class="${pctClass(s.net_yi ?? s.net_inflow)}">${s.net_yi ?? s.net_inflow ?? "—"}</td>
+          <td class="${pctClass(s.change_pct)}">${fmtPct(s.change_pct)}</td></tr>`).join("")}
+        </tbody></table>` : `<p style="color:var(--muted);padding:16px">暂无行业资金</p>`;
+
+      const newsHtml = news.length ? news.map(n => `
+        <div class="news-item">
+          <span class="news-time">${n.time || n.date || ""}</span>${n.title || n.content || n.text || ""}
+        </div>`).join("") : `<p style="color:var(--muted)">暂无快讯</p>`;
+
+      document.getElementById("market-panel").innerHTML = `
+        ${snap.ai_summary ? `<div class="card"><h2>AI 市场摘要</h2><p style="font-size:0.9rem">${snap.ai_summary}</p></div>` : ""}
+        <div class="card"><h2>热门题材</h2><div class="theme-list">${themeHtml}</div></div>
+        <div class="table-wrap"><div style="padding:16px 20px;border-bottom:1px solid var(--border)"><h2>连板天梯</h2></div>
+        <div class="table-scroll">${ladderHtml}</div></div>
+        <div class="table-wrap"><div style="padding:16px 20px;border-bottom:1px solid var(--border)"><h2>行业资金</h2></div>
+        <div class="table-scroll">${sectorHtml}</div></div>
+        <div class="card"><h2>焦点快讯</h2>${newsHtml}</div>`;
+    }
+
+    function renderStockCard(stock, showInd = false) {
+      const l = stock.latest || {};
+      const chg = l.change_pct;
+      const strategies = stock.strategies || [];
+      const sig = l.signals || {};
+      return `
+        <div class="card stock-card">
+          <div class="stock-header">
+            <div>
+              <span class="stock-title">${stock.name}</span>
+              <span class="stock-code">${stock.code}</span>
+            </div>
+            <div>
+              <span class="price-badge ${pctClass(chg)}">${l.close ?? "—"}</span>
+              <span class="price-badge ${pctClass(chg)}" style="margin-left:6px;font-size:0.9rem">${fmtPct(chg)}</span>
+            </div>
+          </div>
+          ${strategies.length ? `<div class="tags">${strategies.map(s =>
+            `<span class="tag buy">${s.name} · ${s.score}分</span>`).join("")}</div>
+            <div class="reason">${strategies[0].reason || ""}</div>` : `<div class="tags"><span class="tag neutral">暂无策略命中</span></div>`}
+          ${showInd ? `
+          <div class="ind-grid">
+            <div class="ind-item"><div class="ind-val">${l.kdj_k?.toFixed?.(1) ?? "—"}</div><div class="ind-label">KDJ-K ${sig.kdj || ""}</div></div>
+            <div class="ind-item"><div class="ind-val">${l.rsi6?.toFixed?.(1) ?? "—"}</div><div class="ind-label">RSI6 ${sig.rsi || ""}</div></div>
+            <div class="ind-item"><div class="ind-val">${l.macd_dif?.toFixed?.(3) ?? "—"}</div><div class="ind-label">MACD ${sig.macd || ""}</div></div>
+            <div class="ind-item"><div class="ind-val">${l.volume_ratio?.toFixed?.(2) ?? "—"}</div><div class="ind-label">量比</div></div>
+            <div class="ind-item"><div class="ind-val">${l.ma5?.toFixed?.(2) ?? "—"}</div><div class="ind-label">MA5</div></div>
+            <div class="ind-item"><div class="ind-val">${l.ma20?.toFixed?.(2) ?? "—"}</div><div class="ind-label">MA20</div></div>
+            <div class="ind-item"><div class="ind-val">${l.amount_yi ?? "—"}</div><div class="ind-label">成交额(亿)</div></div>
+            <div class="ind-item"><div class="ind-val">${l.boll_mid?.toFixed?.(2) ?? "—"}</div><div class="ind-label">BOLL中轨</div></div>
+          </div>` : ""}
+        </div>`;
+    }
+
+    function renderPicks() {
+      const picks = (DATA.scan?.picks || []).filter(s => {
+        if (!pickSearch.trim()) return true;
+        const q = pickSearch.trim().toLowerCase();
+        return (s.name || "").toLowerCase().includes(q) || (s.code || "").includes(q);
+      });
+      document.getElementById("stats-bar").textContent =
+        `策略命中 ${picks.length} 只 · 参考 InStock 放量上涨/均线多头/MACD金叉/KDJ超卖/突破平台`;
+      document.getElementById("picks-panel").innerHTML = `
+        <div class="toolbar">
+          <input type="search" id="pick-search" placeholder="搜索股票代码或名称…" value="${pickSearch.replace(/"/g, "&quot;")}" />
+        </div>
+        ${picks.length ? picks.map(s => renderStockCard(s)).join("") :
+          `<div class="card"><p style="color:var(--muted);text-align:center;padding:24px">当前无策略命中，可扩大 watchlist 或等待行情触发</p></div>`}`;
+      const el = document.getElementById("pick-search");
+      if (el) el.addEventListener("input", e => { pickSearch = e.target.value; renderPicks(); });
+    }
+
+    function renderIndicators() {
+      const all = (DATA.scan?.all_results || []).filter(s => {
+        if (!indSearch.trim()) return true;
+        const q = indSearch.trim().toLowerCase();
+        return (s.name || "").toLowerCase().includes(q) || (s.code || "").includes(q);
+      });
+      document.getElementById("stats-bar").textContent = `共 ${all.length} 只个股技术指标 · MACD/KDJ/RSI/BOLL/均线`;
+      document.getElementById("indicators-panel").innerHTML = `
+        <div class="toolbar">
+          <input type="search" id="ind-search" placeholder="搜索股票…" value="${indSearch.replace(/"/g, "&quot;")}" />
+        </div>
+        ${all.map(s => renderStockCard(s, true)).join("")}`;
+      const el = document.getElementById("ind-search");
+      if (el) el.addEventListener("input", e => { indSearch = e.target.value; renderIndicators(); });
+    }
+
+    function renderBacktest() {
+      const summary = DATA.backtest?.summary || [];
+      const stocks = DATA.backtest?.stock_results || [];
+      document.getElementById("stats-bar").textContent =
+        `回测 ${summary.length} 种策略 · 持有期/止盈止损见 config.yaml`;
+      const sumTable = summary.length ? `
+        <table><thead><tr><th>策略</th><th>交易次数</th><th>胜率</th><th>均收益</th></tr></thead><tbody>
+        ${summary.map(s => `
+          <tr><td>${s.name}</td><td>${s.trades}</td>
+          <td class="${s.win_rate >= 50 ? "up" : "down"}" style="color:${s.win_rate >= 50 ? "var(--green)" : "var(--red)"}">${s.win_rate}%</td>
+          <td class="${pctClass(s.avg_return_pct)}">${fmtPct(s.avg_return_pct)}</td></tr>`).join("")}
+        </tbody></table>` : `<p style="padding:20px;color:var(--muted)">暂无回测数据</p>`;
+
+      const stockTable = stocks.length ? `
+        <table><thead><tr><th>股票</th><th>策略</th><th>交易</th><th>胜率</th><th>均收益</th></tr></thead><tbody>
+        ${stocks.map(s => `
+          <tr><td>${s.name} (${s.code})</td><td>${s.strategy}</td><td>${s.trades}</td>
+          <td>${s.win_rate}%</td><td class="${pctClass(s.avg_return_pct)}">${fmtPct(s.avg_return_pct)}</td></tr>`).join("")}
+        </tbody></table>` : "";
+
+      document.getElementById("backtest-panel").innerHTML = `
+        <div class="table-wrap"><div style="padding:16px 20px;border-bottom:1px solid var(--border)"><h2>策略汇总</h2></div>
+        <div class="table-scroll">${sumTable}</div></div>
+        ${stockTable ? `<div class="table-wrap"><div style="padding:16px 20px;border-bottom:1px solid var(--border)"><h2>个股明细</h2></div>
+        <div class="table-scroll">${stockTable}</div></div>` : ""}
+        <div class="card"><p style="font-size:0.82rem;color:var(--muted)">
+          回测逻辑：信号日收盘买入，默认持有 5 个交易日，止损 -8%、止盈 +15%。
+          仅供策略验证，历史表现不代表未来收益。
+        </p></div>`;
+    }
+
+    function switchView(view) {
+      activeView = view;
+      document.querySelectorAll(".view-tab").forEach(b => b.classList.toggle("active", b.dataset.view === view));
+      ["market", "picks", "indicators", "backtest"].forEach(v => {
+        document.getElementById(v + "-panel").classList.toggle("active", v === view);
+      });
+      document.getElementById("stats-bar").style.display = view === "market" ? "none" : "block";
+      if (view === "market") renderMarket();
+      else if (view === "picks") renderPicks();
+      else if (view === "indicators") renderIndicators();
+      else renderBacktest();
+    }
+
+    document.querySelectorAll(".view-tab").forEach(btn => {
+      btn.addEventListener("click", () => switchView(btn.dataset.view));
+    });
+
+    renderMetrics();
+    renderMarket();
+  </script>
+</body>
+</html>

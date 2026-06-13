@@ -1,0 +1,1462 @@
+{
+  "meta": {
+    "provider": "hhxg.top",
+    "provider_name": "恢恢量化",
+    "update_time": "2026-06-13T21:10:34",
+    "market": "CN-A",
+    "language": "zh-CN",
+    "schema_version": 3,
+    "usage": "AI market analysis reference"
+  },
+  "date": "2026-06-12",
+  "disclaimer": "数据仅供研究参考，不构成投资建议",
+  "ai_summary": {
+    "market_state": "赚钱效应 72.7%（强）",
+    "focus_direction": "银行、小金属、保险 方向资金集中",
+    "theme_focus": "无人机、有色金属、小金属概念 等题材活跃",
+    "hotmoney_state": "游资净买入 21亿，索辰科技领涨",
+    "news_highlight": "本周大盘主力资金累计净流入-1900.95亿元，小金属、能源金属板块净流入居前，个股海光信息、天华新能净流入最多。",
+    "cta": "以上为精简摘要，查看完整技术指标、资金流向、题材复盘请访问恢恢量化日报"
+  },
+  "market": {
+    "date": "2026-06-12",
+    "sentiment_index": 72.7,
+    "sentiment_label": "强",
+    "struct_diff": 2.1,
+    "total": 5286,
+    "buckets": [
+      {
+        "name": "小涨",
+        "count": 2810,
+        "prev": 954,
+        "dir": "up"
+      },
+      {
+        "name": "中涨",
+        "count": 816,
+        "prev": 272,
+        "dir": "up"
+      },
+      {
+        "name": "大涨",
+        "count": 216,
+        "prev": 156,
+        "dir": "up"
+      },
+      {
+        "name": "小跌",
+        "count": 977,
+        "prev": 2701,
+        "dir": "down"
+      },
+      {
+        "name": "中跌",
+        "count": 363,
+        "prev": 1032,
+        "dir": "down"
+      },
+      {
+        "name": "大跌",
+        "count": 104,
+        "prev": 169,
+        "dir": "down"
+      }
+    ],
+    "limit_up": 89,
+    "fried": 48,
+    "limit_down": 15,
+    "promotion_rate": "14%"
+  },
+  "hot_themes": [
+    {
+      "name": "无人机",
+      "limitup_count": 17,
+      "net_yi": 7.16,
+      "top_stocks": [
+        {
+          "name": "晨曦航空",
+          "net_yi": 1.44
+        },
+        {
+          "name": "蓝箭电子",
+          "net_yi": 1.24
+        }
+      ],
+      "related_themes": [
+        {
+          "name": "军民融合",
+          "count": 6
+        },
+        {
+          "name": "小米概念",
+          "count": 5
+        },
+        {
+          "name": "高端装备",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "name": "有色金属",
+      "limitup_count": 16,
+      "net_yi": -6.29,
+      "top_stocks": [
+        {
+          "name": "铜陵有色",
+          "net_yi": 2.73
+        },
+        {
+          "name": "盛龙股份",
+          "net_yi": 1.31
+        }
+      ],
+      "related_themes": [
+        {
+          "name": "小金属概念",
+          "count": 36
+        },
+        {
+          "name": "铜缆高速连接",
+          "count": 5
+        },
+        {
+          "name": "养老概念",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name": "小金属概念",
+      "limitup_count": 15,
+      "net_yi": -5.24,
+      "top_stocks": [
+        {
+          "name": "铜陵有色",
+          "net_yi": 2.73
+        },
+        {
+          "name": "盛龙股份",
+          "net_yi": 1.31
+        }
+      ],
+      "related_themes": [
+        {
+          "name": "有色金属",
+          "count": 36
+        },
+        {
+          "name": "铜缆高速连接",
+          "count": 6
+        },
+        {
+          "name": "基础化工",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "name": "铜缆高速连接",
+      "limitup_count": 12,
+      "net_yi": -0.75,
+      "top_stocks": [
+        {
+          "name": "铜陵有色",
+          "net_yi": 2.73
+        },
+        {
+          "name": "盛龙股份",
+          "net_yi": 1.31
+        }
+      ],
+      "related_themes": [
+        {
+          "name": "小金属概念",
+          "count": 6
+        },
+        {
+          "name": "有色金属",
+          "count": 5
+        },
+        {
+          "name": "高端装备",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "name": "黄金概念",
+      "limitup_count": 12,
+      "net_yi": 2.73,
+      "top_stocks": [
+        {
+          "name": "铜陵有色",
+          "net_yi": 2.73
+        },
+        {
+          "name": "招金黄金",
+          "net_yi": 0.0
+        }
+      ],
+      "related_themes": [
+        {
+          "name": "小金属概念",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "基础化工",
+      "limitup_count": 11,
+      "net_yi": 0.16,
+      "top_stocks": [
+        {
+          "name": "肯特催化",
+          "net_yi": 0.7
+        },
+        {
+          "name": "和远气体",
+          "net_yi": 0.3
+        }
+      ],
+      "related_themes": [
+        {
+          "name": "化学制品",
+          "count": 18
+        },
+        {
+          "name": "氢能源",
+          "count": 13
+        },
+        {
+          "name": "氟化工概念",
+          "count": 6
+        }
+      ]
+    }
+  ],
+  "sectors": [
+    {
+      "label": "行业",
+      "strong": [
+        {
+          "name": "银行",
+          "net_yi": 57.0,
+          "leader": "西安银行",
+          "bias_pct": 3.7
+        },
+        {
+          "name": "小金属",
+          "net_yi": 38.0,
+          "leader": "金天钛业",
+          "bias_pct": 4.0
+        },
+        {
+          "name": "保险",
+          "net_yi": 15.0,
+          "leader": "中国人寿",
+          "bias_pct": 3.8
+        },
+        {
+          "name": "能源金属",
+          "net_yi": 8.0,
+          "leader": "融捷股份",
+          "bias_pct": 1.2
+        },
+        {
+          "name": "金属新材料",
+          "net_yi": -5.0,
+          "leader": "新莱福",
+          "bias_pct": 2.0
+        }
+      ],
+      "weak": [
+        {
+          "name": "通信设备",
+          "net_yi": -64.0,
+          "leader": "东土科技",
+          "bias_pct": -5.1
+        },
+        {
+          "name": "光学光电子",
+          "net_yi": -51.0,
+          "leader": "福光股份",
+          "bias_pct": -4.2
+        },
+        {
+          "name": "消费电子",
+          "net_yi": -21.0,
+          "leader": "智动力",
+          "bias_pct": -5.9
+        },
+        {
+          "name": "通用设备",
+          "net_yi": -20.0,
+          "leader": "思看科技",
+          "bias_pct": -4.7
+        },
+        {
+          "name": "光伏设备",
+          "net_yi": -19.0,
+          "leader": "赛伍技术",
+          "bias_pct": -7.9
+        }
+      ]
+    },
+    {
+      "label": "板块",
+      "strong": [
+        {
+          "name": "稀土永磁",
+          "net_yi": 33.0,
+          "leader": "新莱福",
+          "bias_pct": 0.7
+        },
+        {
+          "name": "芬太尼",
+          "net_yi": 0.0,
+          "leader": "万孚生物",
+          "bias_pct": 0.2
+        },
+        {
+          "name": "PET铜箔",
+          "net_yi": -13.0,
+          "leader": "嘉元科技",
+          "bias_pct": 3.6
+        },
+        {
+          "name": "光刻机",
+          "net_yi": -14.0,
+          "leader": "福光股份",
+          "bias_pct": 2.9
+        },
+        {
+          "name": "氟化工概念",
+          "net_yi": -22.0,
+          "leader": "华盛锂电",
+          "bias_pct": 2.0
+        }
+      ],
+      "weak": [
+        {
+          "name": "芯片概念",
+          "net_yi": -295.0,
+          "leader": "新莱福",
+          "bias_pct": -2.6
+        },
+        {
+          "name": "汽车电子",
+          "net_yi": -167.0,
+          "leader": "逸豪新材",
+          "bias_pct": -5.1
+        },
+        {
+          "name": "消费电子概念",
+          "net_yi": -130.0,
+          "leader": "新莱福",
+          "bias_pct": -4.2
+        },
+        {
+          "name": "OLED",
+          "net_yi": -127.0,
+          "leader": "智动力",
+          "bias_pct": -1.3
+        },
+        {
+          "name": "华为概念",
+          "net_yi": -127.0,
+          "leader": "新莱福",
+          "bias_pct": -5.5
+        }
+      ]
+    }
+  ],
+  "ladder": {
+    "total_limit_up": 89,
+    "max_streak": 4,
+    "top_streak": {
+      "name": "和远气体",
+      "boards": 4,
+      "industry": "化学制品"
+    }
+  },
+  "ladder_detail": {
+    "levels": [
+      {
+        "boards": 4,
+        "count": 2,
+        "fail_count": 2,
+        "stocks": [
+          {
+            "name": "和远气体",
+            "code": "002971.SZ",
+            "industry": "化学制品",
+            "area": "湖北",
+            "concept": "基础化工",
+            "is_success": true
+          },
+          {
+            "name": "XD宿迁联",
+            "code": "603065.SH",
+            "industry": "化学制品",
+            "area": "江苏",
+            "concept": "基础化工",
+            "is_success": true
+          },
+          {
+            "name": "中化国际",
+            "code": "600500.SH",
+            "industry": "化学制品",
+            "area": "上海",
+            "concept": "基础化工",
+            "is_success": false
+          },
+          {
+            "name": "京基智农",
+            "code": "000048.SZ",
+            "industry": "养殖业",
+            "area": "深圳",
+            "concept": "乡村振兴",
+            "is_success": false
+          }
+        ]
+      },
+      {
+        "boards": 3,
+        "count": 0,
+        "fail_count": 7,
+        "stocks": [
+          {
+            "name": "康强电子",
+            "code": "002119.SZ",
+            "industry": "半导体",
+            "area": "浙江",
+            "concept": "先进封装",
+            "is_success": false
+          },
+          {
+            "name": "雅克科技",
+            "code": "002409.SZ",
+            "industry": "半导体",
+            "area": "江苏",
+            "concept": "MiniLED",
+            "is_success": false
+          },
+          {
+            "name": "红 宝 丽",
+            "code": "002165.SZ",
+            "industry": "化学制品",
+            "area": "江苏",
+            "concept": "基础化工",
+            "is_success": false
+          },
+          {
+            "name": "新亚强",
+            "code": "603155.SH",
+            "industry": "化学制品",
+            "area": "江苏",
+            "concept": "基础化工",
+            "is_success": false
+          },
+          {
+            "name": "昊华科技",
+            "code": "600378.SH",
+            "industry": "化学制品",
+            "area": "四川",
+            "concept": "基础化工",
+            "is_success": false
+          },
+          {
+            "name": "东安动力",
+            "code": "600178.SH",
+            "industry": "汽车零部件",
+            "area": "黑龙江",
+            "concept": "无人机",
+            "is_success": false
+          },
+          {
+            "name": "天地源",
+            "code": "600665.SH",
+            "industry": "房地产开发",
+            "area": "陕西",
+            "concept": "物业管理",
+            "is_success": false
+          }
+        ]
+      },
+      {
+        "boards": 2,
+        "count": 8,
+        "fail_count": 50,
+        "stocks": [
+          {
+            "name": "盛龙股份",
+            "code": "001257.SZ",
+            "industry": "小金属",
+            "area": "河南",
+            "concept": "有色金属",
+            "is_success": true
+          },
+          {
+            "name": "海亮股份",
+            "code": "002203.SZ",
+            "industry": "工业金属",
+            "area": "浙江",
+            "concept": "有色金属",
+            "is_success": true
+          },
+          {
+            "name": "宗申动力",
+            "code": "001696.SZ",
+            "industry": "通用设备",
+            "area": "重庆",
+            "concept": "氢能源",
+            "is_success": true
+          },
+          {
+            "name": "冠城新材",
+            "code": "600067.SH",
+            "industry": "电网设备",
+            "area": "福建",
+            "concept": "氢能源",
+            "is_success": true
+          },
+          {
+            "name": "新金路",
+            "code": "000510.SZ",
+            "industry": "化学原料",
+            "area": "四川",
+            "concept": "基础化工",
+            "is_success": true
+          },
+          {
+            "name": "深桑达Ａ",
+            "code": "000032.SZ",
+            "industry": "专业工程",
+            "area": "深圳",
+            "concept": "MiniLED",
+            "is_success": true
+          },
+          {
+            "name": "金钼股份",
+            "code": "601958.SH",
+            "industry": "小金属",
+            "area": "陕西",
+            "concept": "MiniLED",
+            "is_success": true
+          },
+          {
+            "name": "威高血净",
+            "code": "603014.SH",
+            "industry": "医疗器械",
+            "area": "山东",
+            "concept": "医疗器械概念",
+            "is_success": true
+          }
+        ]
+      },
+      {
+        "boards": 1,
+        "count": 79,
+        "fail_count": 0,
+        "stocks": [
+          {
+            "name": "中信海直",
+            "code": "000099.SZ",
+            "industry": "",
+            "area": "深圳",
+            "concept": "交通运输",
+            "is_success": true
+          },
+          {
+            "name": "中成股份",
+            "code": "000151.SZ",
+            "industry": "",
+            "area": "北京",
+            "concept": "中俄贸易概念",
+            "is_success": true
+          },
+          {
+            "name": "招金黄金",
+            "code": "000506.SZ",
+            "industry": "",
+            "area": "山东",
+            "concept": "小金属概念",
+            "is_success": true
+          },
+          {
+            "name": "航天发展",
+            "code": "000547.SZ",
+            "industry": "",
+            "area": "福建",
+            "concept": "F5G概念",
+            "is_success": true
+          },
+          {
+            "name": "铜陵有色",
+            "code": "000630.SZ",
+            "industry": "",
+            "area": "安徽",
+            "concept": "F5G概念",
+            "is_success": true
+          },
+          {
+            "name": "北方铜业",
+            "code": "000737.SZ",
+            "industry": "",
+            "area": "山西",
+            "concept": "PCB概念",
+            "is_success": true
+          },
+          {
+            "name": "锌业股份",
+            "code": "000751.SZ",
+            "industry": "",
+            "area": "辽宁",
+            "concept": "小金属概念",
+            "is_success": true
+          },
+          {
+            "name": "中色股份",
+            "code": "000758.SZ",
+            "industry": "",
+            "area": "北京",
+            "concept": "小金属概念",
+            "is_success": true
+          }
+        ]
+      }
+    ],
+    "lb_rates_map": {
+      "1": "13.8%",
+      "3": "50.0%",
+      "0": "65.3%"
+    },
+    "area_counts": {
+      "浙江": 9,
+      "江苏": 8,
+      "深圳": 7,
+      "山东": 6,
+      "安徽": 6,
+      "福建": 5,
+      "陕西": 5,
+      "北京": 5,
+      "广东": 5,
+      "四川": 4
+    },
+    "concept_counts": {
+      "无人机": 17,
+      "有色金属": 16,
+      "小金属概念": 15,
+      "铜缆高速连接": 12,
+      "深成500": 12,
+      "黄金概念": 12,
+      "工业金属": 11,
+      "基础化工": 11,
+      "F5G概念": 10,
+      "通信技术": 10
+    }
+  },
+  "focus_news": [
+    {
+      "t": "2026-06-13T20:00:02",
+      "cat": "市场",
+      "title": "本周大盘主力资金累计净流入-1900.95亿元，小金属、能源金属板块净流入居前，个股海光信息、天华新能净流入最多。"
+    },
+    {
+      "t": "2026-06-13T19:55:21",
+      "cat": "焦点",
+      "title": "【6月13日《新闻联播》主要内容】今天《新闻联播》主要内容有：1.【新思想引领新征程】守护文化瑰宝 赓续中华文脉； 2.第十八届海峡论坛大会在厦门举行 王沪宁出…"
+    },
+    {
+      "t": "2026-06-12T23:50:47",
+      "cat": "焦点",
+      "title": "SPACEX股价攀升至162美元，较IPO发行价上涨20%。"
+    },
+    {
+      "t": "2026-06-12T23:48:54",
+      "cat": "市场",
+      "title": "SpaceX 开盘大涨，马斯克成为全球首位万亿富豪。"
+    },
+    {
+      "t": "2026-06-12T23:42:30",
+      "cat": "焦点",
+      "title": "交易及航运业内消息称，海湾原油日减产规模维持在 500 万至 600 万桶，远低于此前预估的 1200 万至 1500 万桶。"
+    },
+    {
+      "t": "2026-06-12T23:29:34",
+      "cat": "市场",
+      "title": "【软件股迈向二十年来最长连跌，AI扰动之忧再度来袭】软件公司股价下跌，延续了近期的低迷走势，该板块正迈向约二十年来最长的连跌纪录。安硕扩展科技-软件部门ETF在…"
+    },
+    {
+      "t": "2026-06-12T23:27:22",
+      "cat": "市场",
+      "title": "现货白银日内涨1%，现报67.98美元/盎司。"
+    },
+    {
+      "t": "2026-06-12T23:27:22",
+      "cat": "焦点",
+      "title": "现货白银突破68美元/盎司，日内涨1.04%。"
+    },
+    {
+      "t": "2026-06-12T23:25:21",
+      "cat": "焦点",
+      "title": "白银连续主力合约日内涨4%，现报16298.00元。"
+    },
+    {
+      "t": "2026-06-12T23:15:22",
+      "cat": "焦点",
+      "title": "白银连续主力合约日内涨3%，现报16141.00元。"
+    }
+  ],
+  "macro_news": [
+    {
+      "t": "2026-06-09T23:33:02",
+      "cat": "宏观",
+      "title": "美国财政部拍卖六周期国债，得标利率3.6%，投标倍数3.25。拍卖52周期国债，得标利率3.750%，投标倍数3.34。"
+    },
+    {
+      "t": "2026-06-09T22:58:45",
+      "cat": "宏观",
+      "title": "【苏州：坚定不移招大引强、培优育强，充分释放服务业发展潜能】6月9日，苏州市服务业大会召开。苏州市委书记范波强调，要突出需求牵引，推进生产性服务业向专业化和价值…"
+    },
+    {
+      "t": "2026-06-08T23:32:30",
+      "cat": "宏观",
+      "title": "美国财政部拍卖三个月期国债，得标利率3.640%，投标倍数2.79。拍卖六个月期国债，得标利率3.690%，投标倍数2.75。"
+    }
+  ],
+  "hotmoney": {
+    "date": "2026-06-12",
+    "total_net_yi": 20.54,
+    "top_net_buy": [
+      {
+        "name": "索辰科技",
+        "net_yi": 5.05,
+        "ratio_pct": 75.7
+      },
+      {
+        "name": "康强电子",
+        "net_yi": 4.93,
+        "ratio_pct": 42.8
+      },
+      {
+        "name": "富信科技",
+        "net_yi": 4.06,
+        "ratio_pct": 39.9
+      },
+      {
+        "name": "兴福电子",
+        "net_yi": 3.47,
+        "ratio_pct": 16.7
+      },
+      {
+        "name": "隆华科技",
+        "net_yi": 3.03,
+        "ratio_pct": 18.2
+      }
+    ],
+    "seats": [
+      {
+        "name": "成都系",
+        "stocks": [
+          {
+            "name": "深桑达Ａ",
+            "net_yi": 0.8
+          },
+          {
+            "name": "中化国际",
+            "net_yi": -1.36
+          }
+        ]
+      },
+      {
+        "name": "温州帮",
+        "stocks": [
+          {
+            "name": "财达证券",
+            "net_yi": 0.23
+          },
+          {
+            "name": "盛龙股份",
+            "net_yi": 0.23
+          },
+          {
+            "name": "蓝箭电子",
+            "net_yi": 0.21
+          },
+          {
+            "name": "肯特催化",
+            "net_yi": 0.16
+          },
+          {
+            "name": "通易航天",
+            "net_yi": 0.07
+          },
+          {
+            "name": "ST金鸿顺",
+            "net_yi": 0.05
+          },
+          {
+            "name": "新睿电子",
+            "net_yi": 0.05
+          },
+          {
+            "name": "退市熊猫",
+            "net_yi": -0.0
+          },
+          {
+            "name": "佳创视讯",
+            "net_yi": -0.1
+          },
+          {
+            "name": "五方光电",
+            "net_yi": -0.1
+          },
+          {
+            "name": "逸豪新材",
+            "net_yi": -0.13
+          }
+        ]
+      },
+      {
+        "name": "章盟主",
+        "stocks": [
+          {
+            "name": "沃格光电",
+            "net_yi": 1.35
+          },
+          {
+            "name": "退市太和",
+            "net_yi": 0.0
+          },
+          {
+            "name": "退市熊猫",
+            "net_yi": 0.0
+          },
+          {
+            "name": "退市华嵘",
+            "net_yi": -0.0
+          }
+        ]
+      },
+      {
+        "name": "量化基金",
+        "stocks": [
+          {
+            "name": "索辰科技",
+            "net_yi": 3.51
+          },
+          {
+            "name": "富信科技",
+            "net_yi": 3.5
+          },
+          {
+            "name": "中巨芯",
+            "net_yi": 1.84
+          },
+          {
+            "name": "三安光电",
+            "net_yi": 1.75
+          },
+          {
+            "name": "西安奕材",
+            "net_yi": 1.65
+          },
+          {
+            "name": "彩虹股份",
+            "net_yi": 1.45
+          },
+          {
+            "name": "欧莱新材",
+            "net_yi": 1.26
+          },
+          {
+            "name": "沃格光电",
+            "net_yi": 1.03
+          },
+          {
+            "name": "福光股份",
+            "net_yi": 0.76
+          },
+          {
+            "name": "嘉德利",
+            "net_yi": 0.74
+          },
+          {
+            "name": "中化国际",
+            "net_yi": 0.72
+          },
+          {
+            "name": "石英股份",
+            "net_yi": 0.54
+          },
+          {
+            "name": "中重科技",
+            "net_yi": 0.53
+          },
+          {
+            "name": "江化微",
+            "net_yi": 0.38
+          },
+          {
+            "name": "肯特催化",
+            "net_yi": 0.25
+          },
+          {
+            "name": "快克智能",
+            "net_yi": 0.23
+          },
+          {
+            "name": "威高血净",
+            "net_yi": 0.21
+          },
+          {
+            "name": "华特气体",
+            "net_yi": 0.19
+          },
+          {
+            "name": "京能置业",
+            "net_yi": 0.15
+          },
+          {
+            "name": "风语筑",
+            "net_yi": 0.15
+          },
+          {
+            "name": "赛伦生物",
+            "net_yi": 0.14
+          },
+          {
+            "name": "冠城新材",
+            "net_yi": 0.14
+          },
+          {
+            "name": "三孚股份",
+            "net_yi": 0.03
+          },
+          {
+            "name": "ST金鸿顺",
+            "net_yi": 0.03
+          },
+          {
+            "name": "红板科技",
+            "net_yi": 0.0
+          },
+          {
+            "name": "丰林集团",
+            "net_yi": -0.03
+          },
+          {
+            "name": "春光科技",
+            "net_yi": -0.03
+          },
+          {
+            "name": "爱普股份",
+            "net_yi": -0.06
+          },
+          {
+            "name": "同兴达",
+            "net_yi": -0.06
+          },
+          {
+            "name": "长华集团",
+            "net_yi": -0.12
+          },
+          {
+            "name": "恩捷股份",
+            "net_yi": -0.17
+          },
+          {
+            "name": "晋拓股份",
+            "net_yi": -0.19
+          },
+          {
+            "name": "宿迁联盛",
+            "net_yi": -0.21
+          },
+          {
+            "name": "天娱数科",
+            "net_yi": -0.25
+          },
+          {
+            "name": "科思科技",
+            "net_yi": -0.26
+          },
+          {
+            "name": "永杉锂业",
+            "net_yi": -0.45
+          },
+          {
+            "name": "天创时尚",
+            "net_yi": -0.48
+          },
+          {
+            "name": "兴福电子",
+            "net_yi": -0.85
+          }
+        ]
+      },
+      {
+        "name": "机构专用",
+        "stocks": [
+          {
+            "name": "兴福电子",
+            "net_yi": 4.59
+          },
+          {
+            "name": "康强电子",
+            "net_yi": 2.77
+          },
+          {
+            "name": "隆华科技",
+            "net_yi": 1.82
+          },
+          {
+            "name": "凡拓数创",
+            "net_yi": 1.46
+          },
+          {
+            "name": "恩捷股份",
+            "net_yi": 1.39
+          },
+          {
+            "name": "铜陵有色",
+            "net_yi": 1.17
+          },
+          {
+            "name": "宗申动力",
+            "net_yi": 0.74
+          },
+          {
+            "name": "阿石创",
+            "net_yi": 0.63
+          },
+          {
+            "name": "富信科技",
+            "net_yi": 0.57
+          },
+          {
+            "name": "天娱数科",
+            "net_yi": 0.5
+          },
+          {
+            "name": "华特气体",
+            "net_yi": 0.44
+          },
+          {
+            "name": "粤桂股份",
+            "net_yi": 0.37
+          },
+          {
+            "name": "五方光电",
+            "net_yi": 0.29
+          },
+          {
+            "name": "深桑达Ａ",
+            "net_yi": 0.28
+          },
+          {
+            "name": "川金诺",
+            "net_yi": 0.23
+          },
+          {
+            "name": "同兴达",
+            "net_yi": 0.17
+          },
+          {
+            "name": "火星人",
+            "net_yi": 0.15
+          },
+          {
+            "name": "肯特催化",
+            "net_yi": 0.12
+          },
+          {
+            "name": "京能置业",
+            "net_yi": 0.11
+          },
+          {
+            "name": "科力股份",
+            "net_yi": 0.11
+          },
+          {
+            "name": "金戈新材",
+            "net_yi": 0.1
+          },
+          {
+            "name": "蓝箭电子",
+            "net_yi": 0.09
+          },
+          {
+            "name": "彩客科技",
+            "net_yi": 0.07
+          },
+          {
+            "name": "新睿电子",
+            "net_yi": -0.01
+          },
+          {
+            "name": "盛龙股份",
+            "net_yi": -0.03
+          },
+          {
+            "name": "和远气体",
+            "net_yi": -0.06
+          },
+          {
+            "name": "津膜科技",
+            "net_yi": -0.07
+          },
+          {
+            "name": "新莱福",
+            "net_yi": -0.07
+          },
+          {
+            "name": "赢时胜",
+            "net_yi": -0.16
+          },
+          {
+            "name": "利和兴",
+            "net_yi": -0.16
+          },
+          {
+            "name": "快克智能",
+            "net_yi": -0.18
+          },
+          {
+            "name": "康达新材",
+            "net_yi": -0.18
+          },
+          {
+            "name": "威高血净",
+            "net_yi": -0.18
+          },
+          {
+            "name": "逸豪新材",
+            "net_yi": -0.28
+          },
+          {
+            "name": "晨曦航空",
+            "net_yi": -0.31
+          },
+          {
+            "name": "翔鹭钨业",
+            "net_yi": -0.34
+          },
+          {
+            "name": "红板科技",
+            "net_yi": -0.36
+          },
+          {
+            "name": "北玻股份",
+            "net_yi": -0.48
+          },
+          {
+            "name": "佳创视讯",
+            "net_yi": -0.52
+          },
+          {
+            "name": "达实智能",
+            "net_yi": -0.53
+          },
+          {
+            "name": "中重科技",
+            "net_yi": -0.55
+          },
+          {
+            "name": "福光股份",
+            "net_yi": -0.56
+          },
+          {
+            "name": "西安奕材",
+            "net_yi": -0.64
+          },
+          {
+            "name": "新金路",
+            "net_yi": -0.7
+          },
+          {
+            "name": "金钼股份",
+            "net_yi": -0.77
+          },
+          {
+            "name": "中工国际",
+            "net_yi": -1.27
+          },
+          {
+            "name": "石英股份",
+            "net_yi": -1.45
+          },
+          {
+            "name": "天创时尚",
+            "net_yi": -1.6
+          },
+          {
+            "name": "中巨芯",
+            "net_yi": -2.08
+          },
+          {
+            "name": "沃格光电",
+            "net_yi": -2.5
+          },
+          {
+            "name": "海亮股份",
+            "net_yi": -4.95
+          },
+          {
+            "name": "彩虹股份",
+            "net_yi": -7.85
+          }
+        ]
+      },
+      {
+        "name": "沪股通专用",
+        "stocks": [
+          {
+            "name": "沃格光电",
+            "net_yi": 2.27
+          },
+          {
+            "name": "索辰科技",
+            "net_yi": 2.01
+          },
+          {
+            "name": "中巨芯",
+            "net_yi": 1.52
+          },
+          {
+            "name": "风语筑",
+            "net_yi": 1.46
+          },
+          {
+            "name": "石英股份",
+            "net_yi": 1.03
+          },
+          {
+            "name": "江化微",
+            "net_yi": 0.96
+          },
+          {
+            "name": "中化国际",
+            "net_yi": 0.64
+          },
+          {
+            "name": "财达证券",
+            "net_yi": 0.6
+          },
+          {
+            "name": "中重科技",
+            "net_yi": 0.53
+          },
+          {
+            "name": "香江控股",
+            "net_yi": 0.33
+          },
+          {
+            "name": "金钼股份",
+            "net_yi": 0.25
+          },
+          {
+            "name": "福光股份",
+            "net_yi": 0.2
+          },
+          {
+            "name": "三孚股份",
+            "net_yi": 0.19
+          },
+          {
+            "name": "彩虹股份",
+            "net_yi": 0.18
+          },
+          {
+            "name": "龙溪股份",
+            "net_yi": 0.16
+          },
+          {
+            "name": "科思科技",
+            "net_yi": 0.04
+          },
+          {
+            "name": "华特气体",
+            "net_yi": 0.03
+          },
+          {
+            "name": "长华集团",
+            "net_yi": -0.04
+          },
+          {
+            "name": "晋拓股份",
+            "net_yi": -0.08
+          },
+          {
+            "name": "快克智能",
+            "net_yi": -0.2
+          },
+          {
+            "name": "三安光电",
+            "net_yi": -0.34
+          },
+          {
+            "name": "永杉锂业",
+            "net_yi": -0.58
+          },
+          {
+            "name": "兴福电子",
+            "net_yi": -1.85
+          }
+        ]
+      },
+      {
+        "name": "深股通专用",
+        "stocks": [
+          {
+            "name": "康强电子",
+            "net_yi": 2.16
+          },
+          {
+            "name": "铜陵有色",
+            "net_yi": 1.56
+          },
+          {
+            "name": "深桑达Ａ",
+            "net_yi": 1.55
+          },
+          {
+            "name": "阿石创",
+            "net_yi": 1.36
+          },
+          {
+            "name": "隆华科技",
+            "net_yi": 1.3
+          },
+          {
+            "name": "天娱数科",
+            "net_yi": 1.02
+          },
+          {
+            "name": "粤桂股份",
+            "net_yi": 0.8
+          },
+          {
+            "name": "宗申动力",
+            "net_yi": 0.57
+          },
+          {
+            "name": "和远气体",
+            "net_yi": 0.49
+          },
+          {
+            "name": "利和兴",
+            "net_yi": 0.49
+          },
+          {
+            "name": "神剑股份",
+            "net_yi": 0.34
+          },
+          {
+            "name": "蓝箭电子",
+            "net_yi": 0.26
+          },
+          {
+            "name": "同兴达",
+            "net_yi": 0.21
+          },
+          {
+            "name": "晨曦航空",
+            "net_yi": 0.19
+          },
+          {
+            "name": "新莱福",
+            "net_yi": 0.09
+          },
+          {
+            "name": "火星人",
+            "net_yi": 0.07
+          },
+          {
+            "name": "川金诺",
+            "net_yi": 0.01
+          },
+          {
+            "name": "盛龙股份",
+            "net_yi": -0.15
+          },
+          {
+            "name": "赢时胜",
+            "net_yi": -0.31
+          },
+          {
+            "name": "中工国际",
+            "net_yi": -0.68
+          },
+          {
+            "name": "恩捷股份",
+            "net_yi": -1.45
+          },
+          {
+            "name": "海亮股份",
+            "net_yi": -3.21
+          },
+          {
+            "name": "达实智能",
+            "net_yi": -3.86
+          }
+        ]
+      }
+    ]
+  },
+  "comparison": {
+    "yesterday": {
+      "limit_up": 69
+    },
+    "trend_label": "近7日中位区间"
+  },
+  "signals_count": {
+    "jiuzhuan": 105,
+    "multi_factor": 50,
+    "emotion_sync": 59,
+    "volatility_alert": null,
+    "free_day": "每周一",
+    "xuangu_url": "https://hhxg.top/xuangu.html",
+    "backtest_url": "https://hhxg.top/xuangu.html#backtest"
+  },
+  "links": {
+    "stock_picker": {
+      "title": "AI量化选股",
+      "url": "https://hhxg.top/xuangu.html",
+      "desc": "多因子筛选、策略回测、智能选股"
+    },
+    "etf": {
+      "title": "ETF工具",
+      "url": "https://hhxg.top/etf.html",
+      "desc": "ETF涨跌、资金流向、持仓分析"
+    },
+    "hotmoney": {
+      "title": "游资追踪",
+      "url": "https://hhxg.top/youzi.html",
+      "desc": "知名游资席位动向、龙虎榜深度分析"
+    },
+    "margin": {
+      "title": "两融数据",
+      "url": "https://hhxg.top/rzrq.html",
+      "desc": "融资融券余额变化、个股两融排名"
+    },
+    "volatility": {
+      "title": "异动监控",
+      "url": "https://hhxg.top/yidong.html",
+      "desc": "盘中异动实时捕捉、波动率预警"
+    },
+    "analysis": {
+      "title": "深度分析",
+      "url": "https://hhxg.top/analysis.html",
+      "desc": "行业深度研报、策略复盘"
+    },
+    "website": {
+      "title": "恢恢量化官网",
+      "url": "https://hhxg.top",
+      "desc": "更多量化工具与数据"
+    }
+  },
+  "_synced_at": "2026-06-13T14:12:49.340844+00:00"
+}
