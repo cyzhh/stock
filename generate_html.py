@@ -9,6 +9,7 @@ from pathlib import Path
 
 from app_config import path_from_config
 from enrich_factors import enrich_scan_data
+from fund_flow_report import build_fund_flow_report
 from kline_patterns import registry_for_ui
 try:
     from kline_patterns import HAS_TALIB
@@ -96,6 +97,7 @@ def build_dashboard_payload(enrich: bool = True) -> dict:
             "registry": registry_for_ui(),
             "selection": _load_json(path_from_config("pattern_selection", "data/pattern_selection.json")),
         },
+        "fund_flow": build_fund_flow_report(snapshot),
     }
 
 

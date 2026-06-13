@@ -261,6 +261,45 @@
     .pattern-preset:hover, .pattern-preset.active {
       border-color: var(--accent); color: var(--text);
     }
+    .pattern-preset:hover, .pattern-preset.active {
+      border-color: var(--accent); color: var(--text);
+    }
+    .flow-hbar { margin-bottom: 12px; }
+    .flow-hbar-head { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px; }
+    .flow-hbar-track { height: 22px; background: rgba(255,255,255,0.06); border-radius: 6px; overflow: hidden; }
+    .flow-hbar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding: 0 8px; font-size: 0.72rem; font-weight: 700; min-width: 48px; }
+    .flow-hbar-fill.in { background: linear-gradient(90deg, #16a34a, #22c55e); }
+    .flow-hbar-fill.out { background: linear-gradient(90deg, #dc2626, #ef4444); justify-content: flex-end; margin-left: auto; }
+    .flow-hbar-meta { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+    .report-section { margin-bottom: 18px; }
+    .report-section h3 { font-size: 0.9rem; color: var(--accent); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+    .report-section ul { list-style: none; font-size: 0.84rem; color: #cbd5e1; line-height: 1.65; }
+    .report-section li { padding: 6px 0 6px 14px; position: relative; border-bottom: 1px solid rgba(255,255,255,0.03); }
+    .report-section li::before { content: "▸"; position: absolute; left: 0; color: var(--accent); }
+    .report-section li strong { color: var(--text); }
+    .mood-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700;
+      background: rgba(56,189,248,0.15); color: var(--accent); border: 1px solid rgba(56,189,248,0.35);
+    }
+    .mood-badge.attack { background: rgba(34,197,94,0.15); color: var(--green); border-color: rgba(34,197,94,0.35); }
+    .mood-badge.defense { background: rgba(239,68,68,0.15); color: var(--red); border-color: rgba(239,68,68,0.35); }
+    .anomaly-card {
+      padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; font-size: 0.8rem;
+      border-left: 3px solid var(--accent);
+      background: rgba(56,189,248,0.06);
+    }
+    .anomaly-card.warn { border-color: var(--yellow); background: rgba(234,179,8,0.08); }
+    .anomaly-card.danger { border-color: var(--red); background: rgba(239,68,68,0.08); }
+    .anomaly-card .atype { font-size: 0.72rem; color: var(--muted); margin-bottom: 4px; }
+    .trend-mini { display: flex; gap: 8px; align-items: flex-end; height: 80px; margin-top: 8px; }
+    .trend-col { flex: 1; text-align: center; min-width: 0; }
+    .trend-bar-wrap { display: flex; gap: 3px; align-items: flex-end; justify-content: center; height: 56px; }
+    .trend-bar { width: 10px; border-radius: 3px 3px 0 0; min-height: 4px; }
+    .trend-bar.curr { background: var(--accent); }
+    .trend-bar.prev { background: rgba(255,255,255,0.2); }
+    .trend-delta { font-size: 0.68rem; margin-top: 4px; }
+    .trend-delta.up { color: var(--green); }
+    .trend-delta.down { color: var(--red); }
     @media (max-width: 600px) {
       .stock-header { flex-direction: column; }
     }
@@ -277,6 +316,7 @@
     <div class="metrics-row" id="metrics-row"></div>
     <div class="view-tabs">
       <button class="view-tab active" data-view="market">📊 市场概览</button>
+      <button class="view-tab" data-view="fundflow">💰 资金流向</button>
       <button class="view-tab" data-view="picks">🎯 策略选股</button>
       <button class="view-tab" data-view="indicators">📈 个股指标</button>
       <button class="view-tab" data-view="patterns">🕯️ K线形态</button>
@@ -284,6 +324,7 @@
     </div>
     <div class="stats-bar" id="stats-bar"></div>
     <div class="panel active" id="market-panel"></div>
+    <div class="panel" id="fundflow-panel"></div>
     <div class="panel" id="picks-panel"></div>
     <div class="panel" id="indicators-panel"></div>
     <div class="panel" id="patterns-panel"></div>
@@ -296,7 +337,7 @@
   </div>
   <script>
     const DATA = {
-  "generated_at": "2026-06-13T15:51:22.590682+00:00",
+  "generated_at": "2026-06-13T16:00:40.721666+00:00",
   "market_date": "2026-06-12",
   "snapshot": {
     "meta": {
@@ -4770,6 +4811,223 @@
       "lookback_days": 3,
       "comment": "enabled 可为 \"all\" 或形态 id 数组，如 [\"hammer\", \"engulfing\", \"morning_star\"]"
     }
+  },
+  "fund_flow": {
+    "title": "A股每日资金流向复盘 · 2026-06-12",
+    "date": "2026-06-12",
+    "mood": "积极进攻",
+    "metrics": {
+      "sentiment": 72.7,
+      "up_count": 3842,
+      "down_count": 1444,
+      "up_down_ratio": 2.66,
+      "limit_up": 89,
+      "fried_rate": 35.0,
+      "main_fund_weekly_yi": -1900.95,
+      "hotmoney_net_yi": 20.54,
+      "concentration": "分化撕裂"
+    },
+    "charts": {
+      "sector_inflow": [
+        {
+          "name": "行业·银行",
+          "value": 57.0,
+          "pct": 19.3,
+          "bias_pct": 3.7,
+          "leader": "西安银行"
+        },
+        {
+          "name": "行业·小金属",
+          "value": 38.0,
+          "pct": 12.9,
+          "bias_pct": 4.0,
+          "leader": "金天钛业"
+        },
+        {
+          "name": "板块·稀土永磁",
+          "value": 33.0,
+          "pct": 11.2,
+          "bias_pct": 0.7,
+          "leader": "新莱福"
+        }
+      ],
+      "sector_outflow": [
+        {
+          "name": "板块·芯片概念",
+          "value": -295.0,
+          "pct": 100.0,
+          "bias_pct": -2.6,
+          "leader": "新莱福"
+        },
+        {
+          "name": "板块·汽车电子",
+          "value": -167.0,
+          "pct": 56.6,
+          "bias_pct": -5.1,
+          "leader": "逸豪新材"
+        },
+        {
+          "name": "板块·消费电子概念",
+          "value": -130.0,
+          "pct": 44.1,
+          "bias_pct": -4.2,
+          "leader": "新莱福"
+        }
+      ],
+      "theme_flow": [
+        {
+          "name": "无人机",
+          "value": 7.16,
+          "limitup": 17,
+          "pct": 100.0
+        },
+        {
+          "name": "有色金属",
+          "value": -6.29,
+          "limitup": 16,
+          "pct": 87.8
+        },
+        {
+          "name": "小金属概念",
+          "value": -5.24,
+          "limitup": 15,
+          "pct": 73.2
+        },
+        {
+          "name": "铜缆高速连接",
+          "value": -0.75,
+          "limitup": 12,
+          "pct": 10.5
+        },
+        {
+          "name": "黄金概念",
+          "value": 2.73,
+          "limitup": 12,
+          "pct": 38.1
+        },
+        {
+          "name": "基础化工",
+          "value": 0.16,
+          "limitup": 11,
+          "pct": 2.2
+        }
+      ],
+      "bucket_trend": [
+        {
+          "name": "小涨",
+          "count": 2810,
+          "prev": 954,
+          "delta": 1856,
+          "dir": "up"
+        },
+        {
+          "name": "中涨",
+          "count": 816,
+          "prev": 272,
+          "delta": 544,
+          "dir": "up"
+        },
+        {
+          "name": "大涨",
+          "count": 216,
+          "prev": 156,
+          "delta": 60,
+          "dir": "up"
+        },
+        {
+          "name": "小跌",
+          "count": 977,
+          "prev": 2701,
+          "delta": -1724,
+          "dir": "down"
+        },
+        {
+          "name": "中跌",
+          "count": 363,
+          "prev": 1032,
+          "delta": -669,
+          "dir": "down"
+        },
+        {
+          "name": "大跌",
+          "count": 104,
+          "prev": 169,
+          "delta": -65,
+          "dir": "down"
+        }
+      ]
+    },
+    "anomalies": [
+      {
+        "type": "量价背离",
+        "level": "warn",
+        "text": "赚钱效应 72.7% 偏强，但主力资金大幅净流出 1901 亿，指数与资金出现背离。"
+      },
+      {
+        "type": "抽血效应",
+        "level": "danger",
+        "text": "芯片概念 单日净流出 295 亿，对其他板块形成抽血，警惕跟风失血。"
+      },
+      {
+        "type": "题材分歧",
+        "level": "info",
+        "text": "题材游资净额分化：无人机 +7.2亿 vs 有色金属 -6.3亿。"
+      }
+    ],
+    "sections": [
+      {
+        "id": "market",
+        "title": "1. 大盘资金大局观",
+        "points": [
+          "**涨跌结构**：涨 3842 家 / 跌 1444 家（涨跌比 2.7）",
+          "**涨停生态**：涨停 89 · 炸板 48（炸板率 35.0%） · 跌停 15",
+          "**赚钱效应**：72.7%（强），较昨日结构差 2.1pp",
+          "**资金定性**：当前处于 **积极进攻** 阶段",
+          "**主力资金**：周累计净流入 **-1901 亿**，大资金偏防守",
+          "**游资龙虎榜**：单日净买入 **+20.5 亿**（短线情绪指标）"
+        ]
+      },
+      {
+        "id": "sector",
+        "title": "2. 板块资金风向标",
+        "points": [
+          "**吸金 #1 行业·银行**：净流入 **+57 亿**，板块涨跌 +3.7%，龙头 西安银行，判定 **主线抱团**",
+          "**吸金 #2 行业·小金属**：净流入 **+38 亿**，板块涨跌 +4.0%，龙头 金天钛业，判定 **主线抱团**",
+          "**吸金 #3 板块·稀土永磁**：净流入 **+33 亿**，板块涨跌 +0.7%，龙头 新莱福，判定 **主线抱团**",
+          "**失血 #1 板块·芯片概念**：净流出 **-295 亿**，板块涨跌 -2.6%，判定 **高位派发**",
+          "**失血 #2 板块·汽车电子**：净流出 **-167 亿**，板块涨跌 -5.1%，判定 **高位派发**",
+          "**失血 #3 板块·消费电子概念**：净流出 **-130 亿**，板块涨跌 -4.2%，判定 **高位派发**",
+          "**抱团 vs 轮动**：题材资金呈 **分化撕裂**（3 个题材净流入 / 3 个净流出）"
+        ]
+      },
+      {
+        "id": "anomaly",
+        "title": "3. 异常与异动信号",
+        "points": [
+          "赚钱效应 72.7% 偏强，但主力资金大幅净流出 1901 亿，指数与资金出现背离。",
+          "芯片概念 单日净流出 295 亿，对其他板块形成抽血，警惕跟风失血。",
+          "题材游资净额分化：无人机 +7.2亿 vs 有色金属 -6.3亿。"
+        ]
+      },
+      {
+        "id": "outlook",
+        "title": "4. 明日观察与策略",
+        "points": [
+          "**防守观察**：赚钱效应 72.7% 区间，短线不宜盲目追高",
+          "**明日盯盘**：重点关注 **银行、小金属**（资金惯性 + 龙头效应）",
+          "**方向参考**：银行、小金属、保险 方向资金集中",
+          "**风险警示**：主力资金净流出 1901 亿，增量资金不足；芯片概念 大幅失血，拖累相关产业链"
+        ]
+      }
+    ],
+    "watchlist": [
+      "银行",
+      "小金属"
+    ],
+    "risks": [
+      "主力资金净流出 1901 亿，增量资金不足",
+      "芯片概念 大幅失血，拖累相关产业链"
+    ]
   }
 };
     let activeView = "market";
@@ -5018,6 +5276,132 @@
         <div class="card"><div class="section-title"><span>焦点快讯</span></div>${newsHtml}</div>`;
     }
 
+    function renderHBar(items, dir) {
+      if (!items?.length) return `<p style="color:var(--muted);font-size:0.82rem">暂无数据</p>`;
+      return items.map(it => {
+        const val = it.value ?? 0;
+        const label = dir === "in" ? `+${val}亿` : `${val}亿`;
+        const meta = [it.bias_pct != null ? `涨跌 ${it.bias_pct >= 0 ? "+" : ""}${it.bias_pct}%` : "",
+          it.leader ? `龙头 ${it.leader}` : ""].filter(Boolean).join(" · ");
+        return `<div class="flow-hbar">
+          <div class="flow-hbar-head"><span>${it.name}</span><span style="font-weight:700;color:${dir === "in" ? "var(--green)" : "var(--red)"}">${label}</span></div>
+          <div class="flow-hbar-track"><div class="flow-hbar-fill ${dir}" style="width:${Math.max(it.pct || 0, 12)}%">${label}</div></div>
+          ${meta ? `<div class="flow-hbar-meta">${meta}</div>` : ""}
+        </div>`;
+      }).join("");
+    }
+
+    function renderBucketTrend(buckets) {
+      if (!buckets?.length) return "";
+      const max = Math.max(...buckets.flatMap(b => [b.count || 0, b.prev || 0]), 1);
+      return `<div class="trend-mini">${buckets.map(b => {
+        const ch = Math.round(((b.count || 0) / max) * 56);
+        const ph = Math.round(((b.prev || 0) / max) * 56);
+        const d = b.delta || 0;
+        const dCls = d >= 0 ? "up" : "down";
+        return `<div class="trend-col">
+          <div class="trend-bar-wrap">
+            <div class="trend-bar prev" style="height:${ph}px" title="昨日 ${b.prev}"></div>
+            <div class="trend-bar curr" style="height:${ch}px" title="今日 ${b.count}"></div>
+          </div>
+          <div class="bucket-label">${b.name}</div>
+          <div class="trend-delta ${dCls}">${d >= 0 ? "+" : ""}${d}</div>
+        </div>`;
+      }).join("")}</div>`;
+    }
+
+    function renderReportPoint(text) {
+      return text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    }
+
+    function renderFundFlow() {
+      const r = DATA.fund_flow || {};
+      const m = r.metrics || {};
+      const charts = r.charts || {};
+      const mood = r.mood || "—";
+      const moodCls = mood === "积极进攻" ? "attack" : (mood === "防御撤退" ? "defense" : "");
+
+      const kpi = `
+        <div class="metrics-row" style="margin-bottom:18px">
+          <div class="metric-card">
+            <div class="metric-value">${m.sentiment ?? "—"}${m.sentiment != null ? "%" : ""}</div>
+            <div class="metric-label">赚钱效应</div>
+            <div class="metric-sub"><span class="mood-badge ${moodCls}">${mood}</span></div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value up">${m.up_count ?? "—"}</div>
+            <div class="metric-label">上涨家数</div>
+            <div class="metric-sub">跌 ${m.down_count ?? "—"} · 比 ${m.up_down_ratio ?? "—"}</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">${m.main_fund_weekly_yi != null ? (m.main_fund_weekly_yi >= 0 ? "+" : "") + m.main_fund_weekly_yi + "亿" : "—"}</div>
+            <div class="metric-label">主力周累计</div>
+            <div class="metric-sub">游资日净 ${m.hotmoney_net_yi != null ? m.hotmoney_net_yi + "亿" : "—"}</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">${m.concentration || "—"}</div>
+            <div class="metric-label">板块风格</div>
+            <div class="metric-sub">炸板率 ${m.fried_rate != null ? m.fried_rate + "%" : "—"}</div>
+          </div>
+        </div>`;
+
+      const anomalyHtml = (r.anomalies || []).map(a =>
+        `<div class="anomaly-card ${a.level || ""}"><div class="atype">${a.type || "异动"}</div>${a.text || ""}</div>`
+      ).join("") || `<p style="color:var(--muted);font-size:0.82rem">暂无明显异动</p>`;
+
+      const themeBars = (charts.theme_flow || []).map(t => {
+        const pos = (t.value || 0) >= 0;
+        return `<div class="flow-hbar">
+          <div class="flow-hbar-head"><span>${t.name} · 涨停${t.limitup ?? "—"}</span>
+            <span style="color:${pos ? "var(--green)" : "var(--red)"}">${pos ? "+" : ""}${t.value}亿</span></div>
+          <div class="flow-hbar-track"><div class="flow-hbar-fill ${pos ? "in" : "out"}" style="width:${Math.max(t.pct || 0, 10)}%"></div></div>
+        </div>`;
+      }).join("");
+
+      const sectionsHtml = (r.sections || []).map(sec => `
+        <div class="report-section">
+          <h3>${sec.title || ""}</h3>
+          <ul>${(sec.points || []).map(p => `<li>${renderReportPoint(p)}</li>`).join("")}</ul>
+        </div>`).join("");
+
+      document.getElementById("fundflow-panel").innerHTML = `
+        <div class="card" style="border-color:rgba(56,189,248,0.25)">
+          <div class="section-title"><span>${r.title || "A股每日资金流向复盘"}</span>
+            <a href="https://hhxg.top" target="_blank" rel="noopener">完整数据 →</a></div>
+          <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">四维度资金面复盘 · 数据来源恢恢量化 · 仅供研究</p>
+          ${kpi}
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-title"><span>吸金先锋 TOP3</span></div>
+            ${renderHBar(charts.sector_inflow, "in")}
+          </div>
+          <div class="card">
+            <div class="section-title"><span>失血重灾区 TOP3</span></div>
+            ${renderHBar(charts.sector_outflow, "out")}
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-title"><span>题材游资净额</span></div>
+            ${themeBars || `<p style="color:var(--muted)">暂无</p>`}
+          </div>
+          <div class="card">
+            <div class="section-title"><span>涨跌分布 · 近一日对比</span></div>
+            <p style="font-size:0.78rem;color:var(--muted);margin-bottom:8px">灰柱=昨日 · 蓝柱=今日 · 数字为家数变化</p>
+            ${renderBucketTrend(charts.bucket_trend)}
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title"><span>异常与异动信号</span></div>
+          ${anomalyHtml}
+        </div>
+        <div class="card">
+          <div class="section-title"><span>专业复盘报告</span></div>
+          ${sectionsHtml || `<p style="color:var(--muted)">暂无报告</p>`}
+        </div>`;
+    }
+
     function factorBar(name, score) {
       if (score == null || score === undefined || score === "") {
         return `<div class="ind-item"><div class="ind-val">—</div><div class="ind-label">${name}</div></div>`;
@@ -5242,11 +5626,12 @@
     function switchView(view) {
       activeView = view;
       document.querySelectorAll(".view-tab").forEach(b => b.classList.toggle("active", b.dataset.view === view));
-      ["market", "picks", "indicators", "patterns", "backtest"].forEach(v => {
+      ["market", "fundflow", "picks", "indicators", "patterns", "backtest"].forEach(v => {
         document.getElementById(v + "-panel").classList.toggle("active", v === view);
       });
-      document.getElementById("stats-bar").style.display = view === "market" ? "none" : "block";
+      document.getElementById("stats-bar").style.display = (view === "market" || view === "fundflow") ? "none" : "block";
       if (view === "market") renderMarket();
+      else if (view === "fundflow") renderFundFlow();
       else if (view === "picks") renderPicks();
       else if (view === "indicators") renderIndicators();
       else if (view === "patterns") renderPatterns();
