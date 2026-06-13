@@ -16,17 +16,21 @@ log = setup_logging("stock_quant.build")
 
 def main() -> None:
     try:
-        print(">>> 1/4 同步市场快照 (hhxg)")
-        sync_market()
-        print(">>> 2/4 策略扫描 + 技术指标")
+        try:
+            print(">>> 1/5 同步市场快照 (hhxg)")
+            sync_market()
+            print(">>> 2/5 同步板块20日资金排行")
+            from sync_sector_flow import main as sync_sector_flow
+            sync_sector_flow()
+            print(">>> 3/5 策略扫描 + 技术指标")
         scan = run_scan()
         print(f"    扫描 {scan.get('universe_size', 0)} 只，命中 {scan.get('pick_count', 0)} 只")
-        print(">>> 3/4 策略回测验证")
+        print(">>> 4/5 策略回测验证")
         bt = run_backtest(scan)
         best = (bt.get("overall") or {}).get("best_strategy")
         if best:
             print(f"    最优策略: {best.get('name')} 胜率 {best.get('win_rate')}%")
-        print(">>> 4/4 生成 index.html")
+        print(">>> 5/5 生成 index.html")
         gen_html()
         print("完成。浏览器打开 stock-quant/index.html")
     except Exception:

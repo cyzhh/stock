@@ -59,6 +59,7 @@ def build_dashboard_payload(enrich: bool = True) -> dict:
             "title": item.get("title") or item.get("content") or item.get("text") or "",
         })
     ai_raw = snapshot.get("ai_summary")
+    sector_flow = _load_json(path_from_config("sector_flow_20d", "data/sector_flow_20d.json"))
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "market_date": snapshot.get("date") or scan.get("market_date"),
@@ -98,6 +99,7 @@ def build_dashboard_payload(enrich: bool = True) -> dict:
             "selection": _load_json(path_from_config("pattern_selection", "data/pattern_selection.json")),
         },
         "fund_flow": build_fund_flow_report(snapshot),
+        "sector_flow_20d": sector_flow,
     }
 
 

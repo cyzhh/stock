@@ -300,6 +300,25 @@
     .trend-delta { font-size: 0.68rem; margin-top: 4px; }
     .trend-delta.up { color: var(--green); }
     .trend-delta.down { color: var(--red); }
+    .rank-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .rank-table th, .rank-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; }
+    .rank-table th { color: var(--muted); font-weight: 600; background: rgba(0,0,0,0.12); }
+    .rank-num {
+      display: inline-flex; width: 26px; height: 26px; align-items: center; justify-content: center;
+      border-radius: 6px; font-weight: 800; font-size: 0.78rem;
+      background: rgba(56,189,248,0.15); color: var(--accent);
+    }
+    .rank-num.gold { background: rgba(245,158,11,0.2); color: var(--gold); }
+    .spark-row { display: flex; align-items: flex-end; gap: 2px; height: 36px; min-width: 120px; }
+    .spark-bar { width: 5px; border-radius: 2px 2px 0 0; min-height: 2px; }
+    .spark-bar.pos { background: var(--green); }
+    .spark-bar.neg { background: var(--red); }
+    .board-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
+    .board-toggle button {
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      padding: 6px 14px; border-radius: 16px; cursor: pointer; font-size: 0.8rem;
+    }
+    .board-toggle button.active { border-color: var(--accent); color: var(--text); background: rgba(56,189,248,0.1); }
     @media (max-width: 600px) {
       .stock-header { flex-direction: column; }
     }
@@ -317,6 +336,7 @@
     <div class="view-tabs">
       <button class="view-tab active" data-view="market">📊 市场概览</button>
       <button class="view-tab" data-view="fundflow">💰 资金流向</button>
+      <button class="view-tab" data-view="sector20">📈 板块20日</button>
       <button class="view-tab" data-view="picks">🎯 策略选股</button>
       <button class="view-tab" data-view="indicators">📈 个股指标</button>
       <button class="view-tab" data-view="patterns">🕯️ K线形态</button>
@@ -325,6 +345,7 @@
     <div class="stats-bar" id="stats-bar"></div>
     <div class="panel active" id="market-panel"></div>
     <div class="panel" id="fundflow-panel"></div>
+    <div class="panel" id="sector20-panel"></div>
     <div class="panel" id="picks-panel"></div>
     <div class="panel" id="indicators-panel"></div>
     <div class="panel" id="patterns-panel"></div>
@@ -709,6 +730,86 @@
         </div>`;
     }
 
+    let sector20Board = "industry";
+
+    function renderSparkline(series) {
+      if (!series?.length) return "—";
+      const vals = series.map(s => s.main_yi || 0);
+      const max = Math.max(...vals.map(Math.abs), 1);
+      return `<div class="spark-row">${vals.map(v => {
+        const h = Math.max(Math.round(Math.abs(v) / max * 32), 2);
+        return `<div class="spark-bar ${v >= 0 ? "pos" : "neg"}" style="height:${h}px" title="${v}亿"></div>`;
+      }).join("")}</div>`;
+    }
+
+    function renderSector20Table(board) {
+      const top = board?.top || [];
+      if (!top.length) return `<p style="color:var(--muted);padding:20px">暂无板块数据，请运行 sync_sector_flow.py</p>`;
+      const maxTotal = Math.max(...top.map(t => Math.abs(t.total_main_yi || 0)), 1);
+      return `<table class="rank-table"><thead><tr>
+        <th>排名</th><th>板块</th><th>近20日主力净流入</th><th>近5日</th><th>今日</th><th>涨跌%</th><th>20日走势</th>
+      </thead><tbody>
+      ${top.map(item => {
+        const rankCls = item.rank <= 3 ? " gold" : "";
+        const total = item.total_main_yi ?? 0;
+        const w = Math.max(Math.round(Math.abs(total) / maxTotal * 100), 8);
+        const totalColor = total >= 0 ? "var(--green)" : "var(--red)";
+        const today = item.today_main_yi;
+        const r5 = item.recent5_main_yi;
+        return `<tr>
+          <td><span class="rank-num${rankCls}">${item.rank}</span></td>
+          <td><strong>${item.name}</strong><div style="font-size:0.7rem;color:var(--muted)">${item.code || ""}</div></td>
+          <td>
+            <div style="font-weight:800;color:${totalColor}">${total >= 0 ? "+" : ""}${total} 亿</div>
+            <div class="flow-hbar-track" style="height:8px;margin-top:4px"><div class="flow-hbar-fill ${total >= 0 ? "in" : "out"}" style="width:${w}%;height:100%"></div></div>
+          </td>
+          <td class="${r5 >= 0 ? "up" : "down"}" style="font-weight:600">${r5 != null ? (r5 >= 0 ? "+" : "") + r5 + "亿" : "—"}</td>
+          <td class="${(today || 0) >= 0 ? "up" : "down"}">${today != null ? (today >= 0 ? "+" : "") + today + "亿" : "—"}</td>
+          <td class="${pctClass(item.change_pct)}">${item.change_pct != null ? (item.change_pct >= 0 ? "+" : "") + item.change_pct + "%" : "—"}</td>
+          <td>${renderSparkline(item.series)}<div style="font-size:0.68rem;color:var(--muted)">${(item.series||[]).length}日样本</div></td>
+        </tr>`;
+      }).join("")}
+      </tbody></table>`;
+    }
+
+    function renderSector20() {
+      const data = DATA.sector_flow_20d || {};
+      const board = sector20Board === "concept" ? data.concept : data.industry;
+      const dr = data.date_range || {};
+      const label = board?.board_label || (sector20Board === "concept" ? "概念" : "行业");
+      const scanned = board?.count_scanned ?? 0;
+
+      document.getElementById("sector20-panel").innerHTML = `
+        <div class="card">
+          <div class="section-title">
+            <span>近 ${data.days || 20} 日 · 十大${label}主力净流入排行</span>
+            <a href="https://hhxg.top" target="_blank" rel="noopener">恢恢量化 →</a>
+          </div>
+          <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">
+            数据区间 ${dr.start || "—"} ~ ${dr.end || "—"} · 来源东方财富 · 扫描 ${scanned} 个${label}板块
+          </p>
+          <div class="board-toggle">
+            <button class="${sector20Board === "industry" ? "active" : ""}" data-board="industry">行业 TOP10</button>
+            <button class="${sector20Board === "concept" ? "active" : ""}" data-board="concept">概念 TOP10</button>
+          </div>
+          <div class="table-scroll">${renderSector20Table(board)}</div>
+        </div>
+        <div class="card">
+          <p style="font-size:0.8rem;color:var(--muted);line-height:1.6">
+            <strong>说明：</strong>主力净流入 = 超大单 + 大单净流入合计（东财口径）。
+            近20日累计反映中线资金偏好（东财 f180 口径）；近5日/近10日列可对照短期动能。
+            迷你走势图为近几个交易日日度主力净流入（绿入红出）。
+          </p>
+        </div>`;
+
+      document.querySelectorAll("#sector20-panel .board-toggle button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          sector20Board = btn.dataset.board;
+          renderSector20();
+        });
+      });
+    }
+
     function factorBar(name, score) {
       if (score == null || score === undefined || score === "") {
         return `<div class="ind-item"><div class="ind-val">—</div><div class="ind-label">${name}</div></div>`;
@@ -933,12 +1034,13 @@
     function switchView(view) {
       activeView = view;
       document.querySelectorAll(".view-tab").forEach(b => b.classList.toggle("active", b.dataset.view === view));
-      ["market", "fundflow", "picks", "indicators", "patterns", "backtest"].forEach(v => {
+      ["market", "fundflow", "sector20", "picks", "indicators", "patterns", "backtest"].forEach(v => {
         document.getElementById(v + "-panel").classList.toggle("active", v === view);
       });
-      document.getElementById("stats-bar").style.display = (view === "market" || view === "fundflow") ? "none" : "block";
+      document.getElementById("stats-bar").style.display = (view === "market" || view === "fundflow" || view === "sector20") ? "none" : "block";
       if (view === "market") renderMarket();
       else if (view === "fundflow") renderFundFlow();
+      else if (view === "sector20") renderSector20();
       else if (view === "picks") renderPicks();
       else if (view === "indicators") renderIndicators();
       else if (view === "patterns") renderPatterns();

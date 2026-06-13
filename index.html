@@ -300,6 +300,25 @@
     .trend-delta { font-size: 0.68rem; margin-top: 4px; }
     .trend-delta.up { color: var(--green); }
     .trend-delta.down { color: var(--red); }
+    .rank-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .rank-table th, .rank-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; }
+    .rank-table th { color: var(--muted); font-weight: 600; background: rgba(0,0,0,0.12); }
+    .rank-num {
+      display: inline-flex; width: 26px; height: 26px; align-items: center; justify-content: center;
+      border-radius: 6px; font-weight: 800; font-size: 0.78rem;
+      background: rgba(56,189,248,0.15); color: var(--accent);
+    }
+    .rank-num.gold { background: rgba(245,158,11,0.2); color: var(--gold); }
+    .spark-row { display: flex; align-items: flex-end; gap: 2px; height: 36px; min-width: 120px; }
+    .spark-bar { width: 5px; border-radius: 2px 2px 0 0; min-height: 2px; }
+    .spark-bar.pos { background: var(--green); }
+    .spark-bar.neg { background: var(--red); }
+    .board-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
+    .board-toggle button {
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      padding: 6px 14px; border-radius: 16px; cursor: pointer; font-size: 0.8rem;
+    }
+    .board-toggle button.active { border-color: var(--accent); color: var(--text); background: rgba(56,189,248,0.1); }
     @media (max-width: 600px) {
       .stock-header { flex-direction: column; }
     }
@@ -317,6 +336,7 @@
     <div class="view-tabs">
       <button class="view-tab active" data-view="market">📊 市场概览</button>
       <button class="view-tab" data-view="fundflow">💰 资金流向</button>
+      <button class="view-tab" data-view="sector20">📈 板块20日</button>
       <button class="view-tab" data-view="picks">🎯 策略选股</button>
       <button class="view-tab" data-view="indicators">📈 个股指标</button>
       <button class="view-tab" data-view="patterns">🕯️ K线形态</button>
@@ -325,6 +345,7 @@
     <div class="stats-bar" id="stats-bar"></div>
     <div class="panel active" id="market-panel"></div>
     <div class="panel" id="fundflow-panel"></div>
+    <div class="panel" id="sector20-panel"></div>
     <div class="panel" id="picks-panel"></div>
     <div class="panel" id="indicators-panel"></div>
     <div class="panel" id="patterns-panel"></div>
@@ -337,7 +358,7 @@
   </div>
   <script>
     const DATA = {
-  "generated_at": "2026-06-13T16:00:40.721666+00:00",
+  "generated_at": "2026-06-13T16:18:51.637707+00:00",
   "market_date": "2026-06-12",
   "snapshot": {
     "meta": {
@@ -5028,6 +5049,817 @@
       "主力资金净流出 1901 亿，增量资金不足",
       "芯片概念 大幅失血，拖累相关产业链"
     ]
+  },
+  "sector_flow_20d": {
+    "days": 20,
+    "top_n": 10,
+    "date_range": {
+      "start": "2026-06-05",
+      "end": "2026-06-14"
+    },
+    "industry": {
+      "board_type": "industry",
+      "board_label": "行业",
+      "days": 20,
+      "top_n": 10,
+      "metric": "近20日主力净流入",
+      "source": "eastmoney",
+      "count_scanned": 10,
+      "top": [
+        {
+          "code": "BK1036",
+          "name": "半导体",
+          "total_main_yi": 235.56,
+          "today_main_yi": -33.38,
+          "recent5_main_yi": -399.36,
+          "recent10_main_yi": 5.75,
+          "change_pct": -1.6,
+          "bias_pct": -0.71,
+          "leader": "蓝箭电子",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": 18.72
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -49.26
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 127.38
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -219.33
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -302.04
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 1
+        },
+        {
+          "code": "BK0448",
+          "name": "通信设备",
+          "total_main_yi": 231.64,
+          "today_main_yi": -95.03,
+          "recent5_main_yi": -184.71,
+          "recent10_main_yi": 194.43,
+          "change_pct": -0.28,
+          "bias_pct": -3.94,
+          "leader": "东土科技",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -120.52
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -152.56
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 90.42
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -98.35
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -108.76
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 2
+        },
+        {
+          "code": "BK1591",
+          "name": "通信网络设备及器件",
+          "total_main_yi": 225.17,
+          "today_main_yi": -69.87,
+          "recent5_main_yi": -185.65,
+          "recent10_main_yi": 159.16,
+          "change_pct": -0.82,
+          "bias_pct": -4.4,
+          "leader": "太辰光",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -56.17
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -80.86
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 54.3
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -84.69
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -77.05
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 3
+        },
+        {
+          "code": "BK1215",
+          "name": "通信",
+          "total_main_yi": 223.89,
+          "today_main_yi": -99.27,
+          "recent5_main_yi": -197.43,
+          "recent10_main_yi": 187.38,
+          "change_pct": -0.14,
+          "bias_pct": -3.85,
+          "leader": "东土科技",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -133.23
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -146.51
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 87.67
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -110.54
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -113.4
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 4
+        },
+        {
+          "code": "BK1331",
+          "name": "数字芯片设计",
+          "total_main_yi": 193.52,
+          "today_main_yi": 56.72,
+          "recent5_main_yi": -186.9,
+          "recent10_main_yi": 21.68,
+          "change_pct": -0.94,
+          "bias_pct": 3.44,
+          "leader": "星宸科技",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -11.85
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -40.19
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 34.27
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -76.91
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -141.25
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 5
+        },
+        {
+          "code": "BK1201",
+          "name": "电子",
+          "total_main_yi": 169.05,
+          "today_main_yi": -111.29,
+          "recent5_main_yi": -815.26,
+          "recent10_main_yi": 59.03,
+          "change_pct": -1.06,
+          "bias_pct": -1.17,
+          "leader": "泰晶科技",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -68.8
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -372.52
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 263.47
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -447.06
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -487.45
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 6
+        },
+        {
+          "code": "BK0735",
+          "name": "计算机设备",
+          "total_main_yi": 44.61,
+          "today_main_yi": -10.05,
+          "recent5_main_yi": -54.9,
+          "recent10_main_yi": 31.48,
+          "change_pct": 0.28,
+          "bias_pct": -3.16,
+          "leader": "航天智装",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -20.35
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -18.7
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": -5.09
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -27.72
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -8.71
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 7
+        },
+        {
+          "code": "BK1329",
+          "name": "集成电路制造",
+          "total_main_yi": 39.71,
+          "today_main_yi": -10.17,
+          "recent5_main_yi": -69.33,
+          "recent10_main_yi": 6.09,
+          "change_pct": -1.03,
+          "bias_pct": -2.95,
+          "leader": "晶合集成",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -0.38
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -7.29
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 13.79
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -28.79
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -45.48
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 8
+        },
+        {
+          "code": "BK1446",
+          "name": "其他计算机设备",
+          "total_main_yi": 39.03,
+          "today_main_yi": -10.14,
+          "recent5_main_yi": -51.9,
+          "recent10_main_yi": 28.45,
+          "change_pct": 0.6,
+          "bias_pct": -3.94,
+          "leader": "航天智装",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -18.46
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -18.8
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": -4.84
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -25.38
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -10.87
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 9
+        },
+        {
+          "code": "BK0438",
+          "name": "食品饮料",
+          "total_main_yi": 37.29,
+          "today_main_yi": -1.43,
+          "recent5_main_yi": -39.77,
+          "recent10_main_yi": -1.36,
+          "change_pct": 1.67,
+          "bias_pct": -0.42,
+          "leader": "紫燕食品",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -5.35
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -0.94
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": -1.39
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -12.62
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -3.4
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 10
+        }
+      ]
+    },
+    "concept": {
+      "board_type": "concept",
+      "board_label": "概念",
+      "days": 20,
+      "top_n": 10,
+      "metric": "近20日主力净流入",
+      "source": "eastmoney",
+      "count_scanned": 10,
+      "top": [
+        {
+          "code": "BK1059",
+          "name": "百元股",
+          "total_main_yi": 635.77,
+          "today_main_yi": 17.14,
+          "recent5_main_yi": -915.69,
+          "recent10_main_yi": 250.03,
+          "change_pct": -0.45,
+          "bias_pct": 0.2,
+          "leader": "索辰科技",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -180.57
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -303.54
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 195.76
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -357.92
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -502.61
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 1
+        },
+        {
+          "code": "BK1637",
+          "name": "东方财富热股",
+          "total_main_yi": 456.17,
+          "today_main_yi": -198.65,
+          "recent5_main_yi": -970.58,
+          "recent10_main_yi": 315.15,
+          "change_pct": -0.67,
+          "bias_pct": -3.44,
+          "leader": "宿迁联盛",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -184.26
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -338.0
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 59.74
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -173.51
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -365.16
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 2
+        },
+        {
+          "code": "BK1665",
+          "name": "大盘成长",
+          "total_main_yi": 435.54,
+          "today_main_yi": 11.41,
+          "recent5_main_yi": -590.19,
+          "recent10_main_yi": 184.92,
+          "change_pct": 0.69,
+          "bias_pct": 0.24,
+          "leader": "联合动力",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -164.28
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -222.86
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 127.96
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -222.4
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -428.72
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 3
+        },
+        {
+          "code": "BK1663",
+          "name": "大盘股",
+          "total_main_yi": 421.81,
+          "today_main_yi": 187.12,
+          "recent5_main_yi": -1046.16,
+          "recent10_main_yi": 149.68,
+          "change_pct": 1.29,
+          "bias_pct": 1.73,
+          "leader": "中航西飞",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -283.98
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -445.52
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 154.66
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -475.05
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -667.46
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 4
+        },
+        {
+          "code": "BK0742",
+          "name": "创业板综",
+          "total_main_yi": 396.74,
+          "today_main_yi": -35.16,
+          "recent5_main_yi": -887.82,
+          "recent10_main_yi": 180.92,
+          "change_pct": 0.91,
+          "bias_pct": -0.44,
+          "leader": "蓝箭电子",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -169.46
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -281.99
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 146.29
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -321.2
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -263.72
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 5
+        },
+        {
+          "code": "BK0536",
+          "name": "基金重仓",
+          "total_main_yi": 382.54,
+          "today_main_yi": -43.35,
+          "recent5_main_yi": -415.59,
+          "recent10_main_yi": 223.23,
+          "change_pct": 0.4,
+          "bias_pct": -1.01,
+          "leader": "XD思瑞浦",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -151.05
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -162.13
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 96.08
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -148.86
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -283.41
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 6
+        },
+        {
+          "code": "BK0500",
+          "name": "HS300_",
+          "total_main_yi": 381.3,
+          "today_main_yi": 137.12,
+          "recent5_main_yi": -978.9,
+          "recent10_main_yi": 137.03,
+          "change_pct": 1.55,
+          "bias_pct": 1.57,
+          "leader": "中航西飞",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -252.15
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -375.93
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 97.4
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -388.19
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -528.78
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 7
+        },
+        {
+          "code": "BK0638",
+          "name": "创业成份",
+          "total_main_yi": 342.84,
+          "today_main_yi": -28.36,
+          "recent5_main_yi": -568.28,
+          "recent10_main_yi": 150.35,
+          "change_pct": 0.9,
+          "bias_pct": -0.82,
+          "leader": "中航成飞",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -128.94
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -154.37
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 61.02
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -192.31
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -239.75
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 8
+        },
+        {
+          "code": "BK0743",
+          "name": "深证100R",
+          "total_main_yi": 312.78,
+          "today_main_yi": -5.98,
+          "recent5_main_yi": -561.02,
+          "recent10_main_yi": 184.68,
+          "change_pct": 1.22,
+          "bias_pct": -0.16,
+          "leader": "中航西飞",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -182.24
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -228.95
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 77.77
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -235.24
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -286.33
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 9
+        },
+        {
+          "code": "BK1134",
+          "name": "算力概念",
+          "total_main_yi": 308.39,
+          "today_main_yi": -60.18,
+          "recent5_main_yi": -450.2,
+          "recent10_main_yi": 142.58,
+          "change_pct": 0.16,
+          "bias_pct": -1.93,
+          "leader": "金田股份",
+          "series": [
+            {
+              "date": "2026-06-11",
+              "main_yi": -129.04
+            },
+            {
+              "date": "2026-06-10",
+              "main_yi": -84.5
+            },
+            {
+              "date": "2026-06-09",
+              "main_yi": 76.77
+            },
+            {
+              "date": "2026-06-08",
+              "main_yi": -174.08
+            },
+            {
+              "date": "2026-06-05",
+              "main_yi": -208.01
+            },
+            {
+              "date": "2026-06-14",
+              "main_yi": 0.0
+            }
+          ],
+          "days": 6,
+          "rank": 10
+        }
+      ]
+    },
+    "synced_at": "2026-06-13T16:14:57.656591+00:00"
   }
 };
     let activeView = "market";
@@ -5402,6 +6234,86 @@
         </div>`;
     }
 
+    let sector20Board = "industry";
+
+    function renderSparkline(series) {
+      if (!series?.length) return "—";
+      const vals = series.map(s => s.main_yi || 0);
+      const max = Math.max(...vals.map(Math.abs), 1);
+      return `<div class="spark-row">${vals.map(v => {
+        const h = Math.max(Math.round(Math.abs(v) / max * 32), 2);
+        return `<div class="spark-bar ${v >= 0 ? "pos" : "neg"}" style="height:${h}px" title="${v}亿"></div>`;
+      }).join("")}</div>`;
+    }
+
+    function renderSector20Table(board) {
+      const top = board?.top || [];
+      if (!top.length) return `<p style="color:var(--muted);padding:20px">暂无板块数据，请运行 sync_sector_flow.py</p>`;
+      const maxTotal = Math.max(...top.map(t => Math.abs(t.total_main_yi || 0)), 1);
+      return `<table class="rank-table"><thead><tr>
+        <th>排名</th><th>板块</th><th>近20日主力净流入</th><th>近5日</th><th>今日</th><th>涨跌%</th><th>20日走势</th>
+      </thead><tbody>
+      ${top.map(item => {
+        const rankCls = item.rank <= 3 ? " gold" : "";
+        const total = item.total_main_yi ?? 0;
+        const w = Math.max(Math.round(Math.abs(total) / maxTotal * 100), 8);
+        const totalColor = total >= 0 ? "var(--green)" : "var(--red)";
+        const today = item.today_main_yi;
+        const r5 = item.recent5_main_yi;
+        return `<tr>
+          <td><span class="rank-num${rankCls}">${item.rank}</span></td>
+          <td><strong>${item.name}</strong><div style="font-size:0.7rem;color:var(--muted)">${item.code || ""}</div></td>
+          <td>
+            <div style="font-weight:800;color:${totalColor}">${total >= 0 ? "+" : ""}${total} 亿</div>
+            <div class="flow-hbar-track" style="height:8px;margin-top:4px"><div class="flow-hbar-fill ${total >= 0 ? "in" : "out"}" style="width:${w}%;height:100%"></div></div>
+          </td>
+          <td class="${r5 >= 0 ? "up" : "down"}" style="font-weight:600">${r5 != null ? (r5 >= 0 ? "+" : "") + r5 + "亿" : "—"}</td>
+          <td class="${(today || 0) >= 0 ? "up" : "down"}">${today != null ? (today >= 0 ? "+" : "") + today + "亿" : "—"}</td>
+          <td class="${pctClass(item.change_pct)}">${item.change_pct != null ? (item.change_pct >= 0 ? "+" : "") + item.change_pct + "%" : "—"}</td>
+          <td>${renderSparkline(item.series)}<div style="font-size:0.68rem;color:var(--muted)">${(item.series||[]).length}日样本</div></td>
+        </tr>`;
+      }).join("")}
+      </tbody></table>`;
+    }
+
+    function renderSector20() {
+      const data = DATA.sector_flow_20d || {};
+      const board = sector20Board === "concept" ? data.concept : data.industry;
+      const dr = data.date_range || {};
+      const label = board?.board_label || (sector20Board === "concept" ? "概念" : "行业");
+      const scanned = board?.count_scanned ?? 0;
+
+      document.getElementById("sector20-panel").innerHTML = `
+        <div class="card">
+          <div class="section-title">
+            <span>近 ${data.days || 20} 日 · 十大${label}主力净流入排行</span>
+            <a href="https://hhxg.top" target="_blank" rel="noopener">恢恢量化 →</a>
+          </div>
+          <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">
+            数据区间 ${dr.start || "—"} ~ ${dr.end || "—"} · 来源东方财富 · 扫描 ${scanned} 个${label}板块
+          </p>
+          <div class="board-toggle">
+            <button class="${sector20Board === "industry" ? "active" : ""}" data-board="industry">行业 TOP10</button>
+            <button class="${sector20Board === "concept" ? "active" : ""}" data-board="concept">概念 TOP10</button>
+          </div>
+          <div class="table-scroll">${renderSector20Table(board)}</div>
+        </div>
+        <div class="card">
+          <p style="font-size:0.8rem;color:var(--muted);line-height:1.6">
+            <strong>说明：</strong>主力净流入 = 超大单 + 大单净流入合计（东财口径）。
+            近20日累计反映中线资金偏好（东财 f180 口径）；近5日/近10日列可对照短期动能。
+            迷你走势图为近几个交易日日度主力净流入（绿入红出）。
+          </p>
+        </div>`;
+
+      document.querySelectorAll("#sector20-panel .board-toggle button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          sector20Board = btn.dataset.board;
+          renderSector20();
+        });
+      });
+    }
+
     function factorBar(name, score) {
       if (score == null || score === undefined || score === "") {
         return `<div class="ind-item"><div class="ind-val">—</div><div class="ind-label">${name}</div></div>`;
@@ -5626,12 +6538,13 @@
     function switchView(view) {
       activeView = view;
       document.querySelectorAll(".view-tab").forEach(b => b.classList.toggle("active", b.dataset.view === view));
-      ["market", "fundflow", "picks", "indicators", "patterns", "backtest"].forEach(v => {
+      ["market", "fundflow", "sector20", "picks", "indicators", "patterns", "backtest"].forEach(v => {
         document.getElementById(v + "-panel").classList.toggle("active", v === view);
       });
-      document.getElementById("stats-bar").style.display = (view === "market" || view === "fundflow") ? "none" : "block";
+      document.getElementById("stats-bar").style.display = (view === "market" || view === "fundflow" || view === "sector20") ? "none" : "block";
       if (view === "market") renderMarket();
       else if (view === "fundflow") renderFundFlow();
+      else if (view === "sector20") renderSector20();
       else if (view === "picks") renderPicks();
       else if (view === "indicators") renderIndicators();
       else if (view === "patterns") renderPatterns();

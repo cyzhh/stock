@@ -35,6 +35,7 @@ jobs:
       - name: 构建量化看板
         run: |
           python sync_market.py || true
+          python sync_sector_flow.py || true
           python scanner.py --fast || true
           python backtest.py --fast || true
           python generate_html.py
