@@ -27,4 +27,8 @@ if (-not $Message) {
 git commit -m $Message
 git push origin main
 
+Write-Host ">>> 3/3 deploy gh-pages..." -ForegroundColor Cyan
+& "$PSScriptRoot\deploy-pages.ps1"
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
 Write-Host "Done. Pages: https://cyzhh.github.io/stock/" -ForegroundColor Green

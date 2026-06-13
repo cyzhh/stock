@@ -13,6 +13,9 @@
       --muted: #8b95a8;
       --accent: #38bdf8;
       --accent2: #a78bfa;
+      /* A 股习惯：红涨绿跌 */
+      --rise: #ef4444;
+      --fall: #22c55e;
       --green: #22c55e;
       --red: #ef4444;
       --yellow: #eab308;
@@ -60,8 +63,8 @@
       padding: 16px 18px; text-align: center;
     }
     .metric-value { font-size: 1.6rem; font-weight: 800; color: var(--accent); line-height: 1.2; }
-    .metric-value.up { color: var(--green); }
-    .metric-value.down { color: var(--red); }
+    .metric-value.up { color: var(--rise); }
+    .metric-value.down { color: var(--fall); }
     .metric-label { font-size: 0.82rem; color: var(--text); margin-top: 6px; font-weight: 600; }
     .metric-sub { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
     .view-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -93,16 +96,16 @@
       padding: 4px 12px; border-radius: 8px;
       background: rgba(79,172,254,0.15); color: var(--accent);
     }
-    .price-badge.up { background: rgba(34,197,94,0.15); color: var(--green); }
-    .price-badge.down { background: rgba(239,68,68,0.15); color: var(--red); }
+    .price-badge.up { background: rgba(239,68,68,0.15); color: var(--rise); }
+    .price-badge.down { background: rgba(34,197,94,0.15); color: var(--fall); }
     .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
     .tag {
       font-size: 0.76rem; padding: 4px 10px; border-radius: 16px; font-weight: 600;
     }
-    .tag.buy { background: rgba(34,197,94,0.18); color: #4ade80; border: 1px solid rgba(34,197,94,0.35); }
+    .tag.buy { background: rgba(239,68,68,0.18); color: #f87171; border: 1px solid rgba(239,68,68,0.35); }
     .tag.neutral { background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid var(--border); }
     .tag.warn { background: rgba(234,179,8,0.18); color: #facc15; border: 1px solid rgba(234,179,8,0.35); }
-    .tag.sell { background: rgba(239,68,68,0.18); color: #f87171; border: 1px solid rgba(239,68,68,0.35); }
+    .tag.sell { background: rgba(34,197,94,0.18); color: #4ade80; border: 1px solid rgba(34,197,94,0.35); }
     .ind-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       gap: 10px; margin-top: 12px;
@@ -145,22 +148,22 @@
     @media (max-width: 700px) { .sentiment-panel { grid-template-columns: 1fr; } }
     .sentiment-ring {
       width: 160px; height: 160px; margin: 0 auto; border-radius: 50%;
-      background: conic-gradient(var(--green) calc(var(--pct) * 1%), rgba(255,255,255,0.06) 0);
+      background: conic-gradient(var(--rise) calc(var(--pct) * 1%), rgba(255,255,255,0.06) 0);
       display: flex; align-items: center; justify-content: center; position: relative;
     }
     .sentiment-ring::before {
       content: ""; position: absolute; inset: 14px; border-radius: 50%; background: var(--card);
     }
     .sentiment-inner { position: relative; text-align: center; z-index: 1; }
-    .sentiment-inner .val { font-size: 2rem; font-weight: 800; color: var(--green); line-height: 1; }
+    .sentiment-inner .val { font-size: 2rem; font-weight: 800; color: var(--rise); line-height: 1; }
     .sentiment-inner .lbl { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
     .bucket-bars { display: flex; align-items: flex-end; gap: 6px; height: 120px; padding-top: 8px; }
     .bucket-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
     .bucket-bar {
       width: 100%; max-width: 48px; border-radius: 4px 4px 0 0; min-height: 4px;
-      background: linear-gradient(180deg, var(--green), rgba(34,197,94,0.35));
+      background: linear-gradient(180deg, var(--rise), rgba(239,68,68,0.35));
     }
-    .bucket-bar.down { background: linear-gradient(180deg, var(--red), rgba(239,68,68,0.35)); }
+    .bucket-bar.down { background: linear-gradient(180deg, var(--fall), rgba(34,197,94,0.35)); }
     .bucket-label { font-size: 0.68rem; color: var(--muted); text-align: center; }
     .bucket-count { font-size: 0.72rem; font-weight: 700; color: var(--text); }
     .harvest-block {
@@ -186,8 +189,8 @@
     .flow-badge {
       display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 600;
     }
-    .flow-badge.up { background: rgba(34,197,94,0.15); color: var(--green); }
-    .flow-badge.down { background: rgba(239,68,68,0.15); color: var(--red); }
+    .flow-badge.up { background: rgba(239,68,68,0.15); color: var(--rise); }
+    .flow-badge.down { background: rgba(34,197,94,0.15); color: var(--fall); }
     .sector-block { margin-bottom: 16px; }
     .sector-block h4 { font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; }
     .sector-row {
@@ -268,8 +271,8 @@
     .flow-hbar-head { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px; }
     .flow-hbar-track { height: 22px; background: rgba(255,255,255,0.06); border-radius: 6px; overflow: hidden; }
     .flow-hbar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding: 0 8px; font-size: 0.72rem; font-weight: 700; min-width: 48px; }
-    .flow-hbar-fill.in { background: linear-gradient(90deg, #16a34a, #22c55e); }
-    .flow-hbar-fill.out { background: linear-gradient(90deg, #dc2626, #ef4444); justify-content: flex-end; margin-left: auto; }
+    .flow-hbar-fill.in { background: linear-gradient(90deg, #dc2626, #ef4444); }
+    .flow-hbar-fill.out { background: linear-gradient(90deg, #16a34a, #22c55e); justify-content: flex-end; margin-left: auto; }
     .flow-hbar-meta { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
     .report-section { margin-bottom: 18px; }
     .report-section h3 { font-size: 0.9rem; color: var(--accent); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
@@ -281,8 +284,8 @@
       display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700;
       background: rgba(56,189,248,0.15); color: var(--accent); border: 1px solid rgba(56,189,248,0.35);
     }
-    .mood-badge.attack { background: rgba(34,197,94,0.15); color: var(--green); border-color: rgba(34,197,94,0.35); }
-    .mood-badge.defense { background: rgba(239,68,68,0.15); color: var(--red); border-color: rgba(239,68,68,0.35); }
+    .mood-badge.attack { background: rgba(239,68,68,0.15); color: var(--rise); border-color: rgba(239,68,68,0.35); }
+    .mood-badge.defense { background: rgba(34,197,94,0.15); color: var(--fall); border-color: rgba(34,197,94,0.35); }
     .anomaly-card {
       padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; font-size: 0.8rem;
       border-left: 3px solid var(--accent);
@@ -298,8 +301,8 @@
     .trend-bar.curr { background: var(--accent); }
     .trend-bar.prev { background: rgba(255,255,255,0.2); }
     .trend-delta { font-size: 0.68rem; margin-top: 4px; }
-    .trend-delta.up { color: var(--green); }
-    .trend-delta.down { color: var(--red); }
+    .trend-delta.up { color: var(--rise); }
+    .trend-delta.down { color: var(--fall); }
     .rank-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
     .rank-table th, .rank-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; }
     .rank-table th { color: var(--muted); font-weight: 600; background: rgba(0,0,0,0.12); }
@@ -311,8 +314,8 @@
     .rank-num.gold { background: rgba(245,158,11,0.2); color: var(--gold); }
     .spark-row { display: flex; align-items: flex-end; gap: 2px; height: 36px; min-width: 120px; }
     .spark-bar { width: 5px; border-radius: 2px 2px 0 0; min-height: 2px; }
-    .spark-bar.pos { background: var(--green); }
-    .spark-bar.neg { background: var(--red); }
+    .spark-bar.pos { background: var(--rise); }
+    .spark-bar.neg { background: var(--fall); }
     .board-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
     .board-toggle button {
       background: transparent; border: 1px solid var(--border); color: var(--muted);
@@ -494,7 +497,7 @@
     function renderHotmoney(hm) {
       if (!hm?.top_net_buy?.length) return `<p style="color:var(--muted);font-size:0.82rem">暂无龙虎榜数据</p>`;
       const head = hm.total_net_yi != null
-        ? `<p style="font-size:0.82rem;margin-bottom:10px">单日净买入 <strong style="color:var(--green)">${hm.total_net_yi} 亿</strong></p>` : "";
+        ? `<p style="font-size:0.82rem;margin-bottom:10px">单日净买入 <strong style="color:var(--rise)">${hm.total_net_yi} 亿</strong></p>` : "";
       const rows = hm.top_net_buy.slice(0, 6).map(s => `
         <div class="hotmoney-row">
           <span>${s.name || "—"}</span>
@@ -568,8 +571,8 @@
             </div>
             <div>
               <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px;font-size:0.82rem;color:var(--muted)">
-                <span>涨 <strong style="color:var(--green)">${upDown ?? "—"}</strong></span>
-                <span>跌 <strong style="color:var(--red)">${downCnt ?? "—"}</strong></span>
+                <span>涨 <strong style="color:var(--rise)">${upDown ?? "—"}</strong></span>
+                <span>跌 <strong style="color:var(--fall)">${downCnt ?? "—"}</strong></span>
                 <span>涨停 <strong>${m.limit_up ?? "—"}</strong></span>
                 <span>炸板率 ${m.fried && m.limit_up ? ((m.fried / (m.limit_up + m.fried)) * 100).toFixed(1) + "%" : "—"}</span>
                 <span>最高 ${ladderSum.max_streak ?? "—"} 板 · ${ladderSum.top_streak?.name || ""}</span>
@@ -612,7 +615,7 @@
         const meta = [it.bias_pct != null ? `涨跌 ${it.bias_pct >= 0 ? "+" : ""}${it.bias_pct}%` : "",
           it.leader ? `龙头 ${it.leader}` : ""].filter(Boolean).join(" · ");
         return `<div class="flow-hbar">
-          <div class="flow-hbar-head"><span>${it.name}</span><span style="font-weight:700;color:${dir === "in" ? "var(--green)" : "var(--red)"}">${label}</span></div>
+          <div class="flow-hbar-head"><span>${it.name}</span><span style="font-weight:700;color:${dir === "in" ? "var(--rise)" : "var(--fall)"}">${label}</span></div>
           <div class="flow-hbar-track"><div class="flow-hbar-fill ${dir}" style="width:${Math.max(it.pct || 0, 12)}%">${label}</div></div>
           ${meta ? `<div class="flow-hbar-meta">${meta}</div>` : ""}
         </div>`;
@@ -681,7 +684,7 @@
         const pos = (t.value || 0) >= 0;
         return `<div class="flow-hbar">
           <div class="flow-hbar-head"><span>${t.name} · 涨停${t.limitup ?? "—"}</span>
-            <span style="color:${pos ? "var(--green)" : "var(--red)"}">${pos ? "+" : ""}${t.value}亿</span></div>
+            <span style="color:${pos ? "var(--rise)" : "var(--fall)"}">${pos ? "+" : ""}${t.value}亿</span></div>
           <div class="flow-hbar-track"><div class="flow-hbar-fill ${pos ? "in" : "out"}" style="width:${Math.max(t.pct || 0, 10)}%"></div></div>
         </div>`;
       }).join("");
@@ -753,7 +756,7 @@
         const rankCls = item.rank <= 3 ? " gold" : "";
         const total = item.total_main_yi ?? 0;
         const w = Math.max(Math.round(Math.abs(total) / maxTotal * 100), 8);
-        const totalColor = total >= 0 ? "var(--green)" : "var(--red)";
+        const totalColor = total >= 0 ? "var(--rise)" : "var(--fall)";
         const today = item.today_main_yi;
         const r5 = item.recent5_main_yi;
         return `<tr>
@@ -798,7 +801,7 @@
           <p style="font-size:0.8rem;color:var(--muted);line-height:1.6">
             <strong>说明：</strong>主力净流入 = 超大单 + 大单净流入合计（东财口径）。
             近20日累计反映中线资金偏好（东财 f180 口径）；近5日/近10日列可对照短期动能。
-            迷你走势图为近几个交易日日度主力净流入（绿入红出）。
+            迷你走势图为近几个交易日日度主力净流入（红入绿出）。
           </p>
         </div>`;
 
