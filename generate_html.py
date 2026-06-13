@@ -47,18 +47,33 @@ def build_dashboard_payload(enrich: bool = True) -> dict:
         scan = enrich_scan_data(scan, fetch_kline=fetch_kline)
     backtest = _load_json(path_from_config("backtest_report", "output/backtest_report.json"))
     market = snapshot.get("market") or {}
+    raw_news = snapshot.get("news") or snapshot.get("focus_news") or []
+    news = []
+    for item in raw_news[:12]:
+        if not isinstance(item, dict):
+            continue
+        news.append({
+            "time": (item.get("t") or item.get("time") or item.get("date") or "")[:16].replace("T", " "),
+            "cat": item.get("cat") or item.get("category") or "",
+            "title": item.get("title") or item.get("content") or item.get("text") or "",
+        })
+    ai_raw = snapshot.get("ai_summary")
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "market_date": snapshot.get("date") or scan.get("market_date"),
         "snapshot": {
+            "meta": snapshot.get("meta") or {},
             "market": market,
             "hot_themes": snapshot.get("hot_themes") or [],
             "ladder_detail": snapshot.get("ladder_detail") or {},
             "ladder_summary": snapshot.get("ladder") or {},
             "hotmoney": snapshot.get("hotmoney") if isinstance(snapshot.get("hotmoney"), dict) else {},
             "sectors": snapshot.get("sectors") or [],
-            "news": (snapshot.get("news") or snapshot.get("focus_news") or [])[:8],
-            "ai_summary": _format_ai_summary(snapshot.get("ai_summary")),
+            "comparison": snapshot.get("comparison") or {},
+            "links": snapshot.get("links") or {},
+            "news": news,
+            "ai_summary": _format_ai_summary(ai_raw),
+            "ai_summary_detail": ai_raw if isinstance(ai_raw, dict) else {},
         },
         "scan": {
             "universe_size": scan.get("universe_size", 0),
