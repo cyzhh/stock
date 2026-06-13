@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from app_config import path_from_config, scanner_config
+from factor_model import compute_multi_factor
 from indicators import compute_all
 from kline_fetcher import bars_to_dicts, fetch_klines
 from sq_logging import setup_logging
@@ -79,16 +80,22 @@ def analyze_stock(stock: dict[str, str], cfg: dict) -> dict[str, Any] | None:
         return None
     bar_dicts = bars_to_dicts(bars)
     ind = compute_all(bar_dicts)
+    mf = compute_multi_factor(bar_dicts, cfg)
     hits = run_all_strategies(bar_dicts, cfg)
     latest = ind.get("latest") or {}
+    composite = mf.get("composite_score", 0)
+    min_composite = float(cfg.get("min_composite_score", 0))
     return {
         "code": code,
         "name": stock.get("name", code),
         "market": stock.get("market", ""),
         "latest": latest,
+        "multi_factor": mf,
         "strategies": hits,
         "strategy_count": len(hits),
-        "top_score": hits[0]["score"] if hits else 0,
+        "top_score": max(composite, hits[0]["score"] if hits else 0),
+        "composite_score": composite,
+        "qualified": composite >= min_composite or len(hits) > 0,
     }
 
 
@@ -112,14 +119,20 @@ def run_scan(snapshot: dict | None = None) -> dict[str, Any]:
     results: list[dict] = []
     for i, stock in enumerate(universe):
         if i > 0:
-            time.sleep(0.15)
+            time.sleep(0.35)
         row = analyze_stock(stock, cfg)
         if row:
             results.append(row)
         log.info("扫描 %s %s → %s 策略命中", stock.get("code"), stock.get("name"), row["strategy_count"] if row else 0)
 
-    results.sort(key=lambda r: (r.get("top_score", 0), r.get("strategy_count", 0)), reverse=True)
-    picks = [r for r in results if r.get("strategy_count", 0) > 0]
+    results.sort(
+        key=lambda r: (r.get("composite_score", 0), r.get("strategy_count", 0)),
+        reverse=True,
+    )
+    picks = [
+        r for r in results
+        if r.get("qualified") and (r.get("composite_score", 0) >= float(cfg.get("min_composite_score", 62)) or r.get("strategy_count", 0) > 0)
+    ]
 
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(),

@@ -126,7 +126,15 @@
     .reason { font-size: 0.82rem; color: var(--muted); margin-top: 8px; }
     .score-bar { display: flex; align-items: center; gap: 8px; min-width: 100px; }
     .score-track { flex: 1; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+    .factor-chip {
+      font-size: 0.72rem; padding: 3px 8px; border-radius: 10px;
+      background: rgba(79,172,254,0.1); color: #93c5fd; border: 1px solid rgba(79,172,254,0.22);
+    }
     .score-fill { height: 100%; background: linear-gradient(90deg, #4facfe, #00f2fe); border-radius: 3px; }
+    .composite-badge {
+      font-size: 0.88rem; font-weight: 700; color: #fbbf24;
+      margin-left: 8px;
+    }
     @media (max-width: 600px) {
       .stock-header { flex-direction: column; }
     }
@@ -158,7 +166,7 @@
   </div>
   <script>
     const DATA = {
-  "generated_at": "2026-06-13T14:12:55.197724+00:00",
+  "generated_at": "2026-06-13T14:43:05.768944+00:00",
   "market_date": "2026-06-12",
   "snapshot": {
     "market": {
@@ -5134,9 +5142,9 @@
           <div class="metric-sub">扫描 ${scan.universe_size ?? 0} 只</div>
         </div>
         <div class="metric-card">
-          <div class="metric-value">${bt.best_strategy?.win_rate ?? "—"}${bt.best_strategy ? "%" : ""}</div>
-          <div class="metric-label">最优策略胜率</div>
-          <div class="metric-sub">${bt.best_strategy?.name || "待回测"}</div>
+          <div class="metric-value">${bt.best_profit_factor?.profit_factor ?? bt.best_strategy?.profit_factor ?? "—"}</div>
+          <div class="metric-label">最优盈亏比</div>
+          <div class="metric-sub">${bt.best_profit_factor?.name || bt.best_strategy?.name || "待回测"}</div>
         </div>`;
     }
 
@@ -5191,36 +5199,52 @@
         <div class="card"><h2>焦点快讯</h2>${newsHtml}</div>`;
     }
 
+    function factorBar(name, score) {
+      const s = Number(score) || 0;
+      return `<div class="ind-item">
+        <div class="ind-val">${s.toFixed(0)}</div>
+        <div class="ind-label">${name}</div>
+        <div class="score-bar" style="margin-top:6px"><div class="score-track"><div class="score-fill" style="width:${s}%"></div></div></div>
+      </div>`;
+    }
+
     function renderStockCard(stock, showInd = false) {
       const l = stock.latest || {};
       const chg = l.change_pct;
       const strategies = stock.strategies || [];
       const sig = l.signals || {};
+      const mf = stock.multi_factor || {};
+      const factors = mf.factors || {};
+      const factorLabels = { momentum: "动能", volume: "量能", trend: "趋势", pullback: "回调", reversal: "反转" };
       return `
         <div class="card stock-card">
           <div class="stock-header">
             <div>
               <span class="stock-title">${stock.name}</span>
               <span class="stock-code">${stock.code}</span>
+              ${mf.composite_score != null ? `<span class="composite-badge">综合 ${mf.composite_score} · ${mf.signal_strength || ""}</span>` : ""}
             </div>
             <div>
               <span class="price-badge ${pctClass(chg)}">${l.close ?? "—"}</span>
               <span class="price-badge ${pctClass(chg)}" style="margin-left:6px;font-size:0.9rem">${fmtPct(chg)}</span>
             </div>
           </div>
+          ${Object.keys(factors).length ? `<div class="player-chips" style="margin-top:8px">${Object.entries(factors).map(([k,v]) =>
+            `<span class="factor-chip">${factorLabels[k] || k} ${Number(v).toFixed(0)}</span>`).join("")}</div>` : ""}
           ${strategies.length ? `<div class="tags">${strategies.map(s =>
             `<span class="tag buy">${s.name} · ${s.score}分</span>`).join("")}</div>
             <div class="reason">${strategies[0].reason || ""}</div>` : `<div class="tags"><span class="tag neutral">暂无策略命中</span></div>`}
           ${showInd ? `
           <div class="ind-grid">
+            ${factorBar("动能", factors.momentum)}
+            ${factorBar("量能", factors.volume)}
+            ${factorBar("趋势", factors.trend)}
+            ${factorBar("回调", factors.pullback)}
+            ${factorBar("反转", factors.reversal)}
             <div class="ind-item"><div class="ind-val">${l.kdj_k?.toFixed?.(1) ?? "—"}</div><div class="ind-label">KDJ-K ${sig.kdj || ""}</div></div>
             <div class="ind-item"><div class="ind-val">${l.rsi6?.toFixed?.(1) ?? "—"}</div><div class="ind-label">RSI6 ${sig.rsi || ""}</div></div>
             <div class="ind-item"><div class="ind-val">${l.macd_dif?.toFixed?.(3) ?? "—"}</div><div class="ind-label">MACD ${sig.macd || ""}</div></div>
             <div class="ind-item"><div class="ind-val">${l.volume_ratio?.toFixed?.(2) ?? "—"}</div><div class="ind-label">量比</div></div>
-            <div class="ind-item"><div class="ind-val">${l.ma5?.toFixed?.(2) ?? "—"}</div><div class="ind-label">MA5</div></div>
-            <div class="ind-item"><div class="ind-val">${l.ma20?.toFixed?.(2) ?? "—"}</div><div class="ind-label">MA20</div></div>
-            <div class="ind-item"><div class="ind-val">${l.amount_yi ?? "—"}</div><div class="ind-label">成交额(亿)</div></div>
-            <div class="ind-item"><div class="ind-val">${l.boll_mid?.toFixed?.(2) ?? "—"}</div><div class="ind-label">BOLL中轨</div></div>
           </div>` : ""}
         </div>`;
     }
@@ -5232,7 +5256,7 @@
         return (s.name || "").toLowerCase().includes(q) || (s.code || "").includes(q);
       });
       document.getElementById("stats-bar").textContent =
-        `策略命中 ${picks.length} 只 · 参考 InStock 放量上涨/均线多头/MACD金叉/KDJ超卖/突破平台`;
+        `多因子选股 ${picks.length} 只 · 涨停回调 / 高动能 / 多因子共振 + 经典策略`;
       document.getElementById("picks-panel").innerHTML = `
         <div class="toolbar">
           <input type="search" id="pick-search" placeholder="搜索股票代码或名称…" value="${pickSearch.replace(/"/g, "&quot;")}" />
@@ -5249,7 +5273,7 @@
         const q = indSearch.trim().toLowerCase();
         return (s.name || "").toLowerCase().includes(q) || (s.code || "").includes(q);
       });
-      document.getElementById("stats-bar").textContent = `共 ${all.length} 只个股技术指标 · MACD/KDJ/RSI/BOLL/均线`;
+      document.getElementById("stats-bar").textContent = `共 ${all.length} 只 · 五维因子：动能/量能/趋势/回调/反转`;
       document.getElementById("indicators-panel").innerHTML = `
         <div class="toolbar">
           <input type="search" id="ind-search" placeholder="搜索股票…" value="${indSearch.replace(/"/g, "&quot;")}" />
@@ -5265,18 +5289,21 @@
       document.getElementById("stats-bar").textContent =
         `回测 ${summary.length} 种策略 · 持有期/止盈止损见 config.yaml`;
       const sumTable = summary.length ? `
-        <table><thead><tr><th>策略</th><th>交易次数</th><th>胜率</th><th>均收益</th></tr></thead><tbody>
+        <table><thead><tr><th>策略</th><th>交易</th><th>胜率</th><th>盈亏比</th><th>均收益</th><th>综合分</th></tr></thead><tbody>
         ${summary.map(s => `
           <tr><td>${s.name}</td><td>${s.trades}</td>
-          <td class="${s.win_rate >= 50 ? "up" : "down"}" style="color:${s.win_rate >= 50 ? "var(--green)" : "var(--red)"}">${s.win_rate}%</td>
-          <td class="${pctClass(s.avg_return_pct)}">${fmtPct(s.avg_return_pct)}</td></tr>`).join("")}
+          <td style="color:${s.win_rate >= 50 ? "var(--green)" : "var(--red)"}">${s.win_rate}%</td>
+          <td style="color:${s.profit_factor >= 1.2 ? "var(--green)" : "var(--yellow)"}">${s.profit_factor ?? "—"}</td>
+          <td class="${pctClass(s.avg_return_pct)}">${fmtPct(s.avg_return_pct)}</td>
+          <td>${s.score ?? "—"}</td></tr>`).join("")}
         </tbody></table>` : `<p style="padding:20px;color:var(--muted)">暂无回测数据</p>`;
 
       const stockTable = stocks.length ? `
-        <table><thead><tr><th>股票</th><th>策略</th><th>交易</th><th>胜率</th><th>均收益</th></tr></thead><tbody>
+        <table><thead><tr><th>股票</th><th>策略</th><th>交易</th><th>胜率</th><th>盈亏比</th><th>均收益</th></tr></thead><tbody>
         ${stocks.map(s => `
           <tr><td>${s.name} (${s.code})</td><td>${s.strategy}</td><td>${s.trades}</td>
-          <td>${s.win_rate}%</td><td class="${pctClass(s.avg_return_pct)}">${fmtPct(s.avg_return_pct)}</td></tr>`).join("")}
+          <td>${s.win_rate}%</td><td>${s.profit_factor ?? "—"}</td>
+          <td class="${pctClass(s.avg_return_pct)}">${fmtPct(s.avg_return_pct)}</td></tr>`).join("")}
         </tbody></table>` : "";
 
       document.getElementById("backtest-panel").innerHTML = `
@@ -5285,8 +5312,8 @@
         ${stockTable ? `<div class="table-wrap"><div style="padding:16px 20px;border-bottom:1px solid var(--border)"><h2>个股明细</h2></div>
         <div class="table-scroll">${stockTable}</div></div>` : ""}
         <div class="card"><p style="font-size:0.82rem;color:var(--muted)">
-          回测逻辑：信号日收盘买入，默认持有 5 个交易日，止损 -8%、止盈 +15%。
-          仅供策略验证，历史表现不代表未来收益。
+          回测逻辑：信号日收盘买入，持有 5 日；止损 -6%、止盈 +12%、移动止损 -5%。
+          入场需综合分 ≥ 65。盈亏比 = 平均盈利 / 平均亏损。
         </p></div>`;
     }
 

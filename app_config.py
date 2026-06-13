@@ -109,5 +109,13 @@ def backtest_config() -> dict[str, Any]:
     return get_section("backtest")
 
 
+def factors_config() -> dict[str, Any]:
+    return get_section("factors")
+
+
+def strategies_config() -> dict[str, Any]:
+    return get_section("strategies")
+
+
 def logging_config() -> dict[str, Any]:
     return get_section("logging")

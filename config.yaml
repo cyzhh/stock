@@ -14,16 +14,40 @@ sync:
   hhxg_skill_dir: ../.cursor/skills/hhxg-market/scripts
   kline_days: 120
   timeout_sec: 20
-  retries: 2
+  retries: 3
 
 scanner:
-  min_amount_yi: 1.0
-  volume_ratio_min: 1.5
+  min_amount_yi: 0.8
+  volume_ratio_min: 1.2
+  min_composite_score: 62
+
+factors:
+  weights:
+    momentum: 0.28
+    volume: 0.18
+    trend: 0.22
+    pullback: 0.17
+    reversal: 0.15
+  synergy_threshold: 55
+  synergy_bonus: 8
+  min_active_factors: 3
+
+strategies:
+  limit_up_pct: 9.5
+  limit_up_lookback: 10
+  pullback_min_pct: 3.0
+  pullback_max_pct: 12.0
+  pullback_shrink_vol: 0.85
+  momentum_ret_5d: 6.0
+  momentum_ret_10d: 10.0
+  composite_min_score: 68
 
 backtest:
   hold_days: 5
-  stop_loss_pct: 0.08
-  take_profit_pct: 0.15
+  stop_loss_pct: 0.06
+  take_profit_pct: 0.12
+  trailing_stop_pct: 0.05
+  min_composite_score: 65
 
 logging:
   level: INFO

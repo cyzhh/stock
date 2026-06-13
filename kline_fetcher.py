@@ -51,10 +51,10 @@ def _request(url: str, params: dict[str, Any]) -> dict:
             req = urllib.request.Request(full, headers=headers)
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 return json.loads(resp.read().decode("utf-8"))
-        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as e:
+        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, ConnectionResetError, OSError) as e:
             last_err = e
             if attempt < retries:
-                time.sleep(1.0)
+                time.sleep(1.5 * (attempt + 1))
     raise RuntimeError(f"K线请求失败 {code_hint(params)}: {last_err}")
 
 
