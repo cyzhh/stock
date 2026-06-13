@@ -12,6 +12,7 @@ python build_all.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host ">>> 2/2 git push..." -ForegroundColor Cyan
+git remote set-url origin ssh://git@github.com/cyzhh/stock.git
 git add -A
 $staged = git diff --cached --name-only
 if (-not $staged) {
