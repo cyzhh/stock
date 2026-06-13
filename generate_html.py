@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from app_config import path_from_config
+from enrich_factors import enrich_scan_data
 from sq_logging import setup_logging
 
 log = setup_logging("stock_quant.generate_html")
@@ -32,9 +33,13 @@ def _format_ai_summary(raw) -> str:
     return ""
 
 
-def build_dashboard_payload() -> dict:
+def build_dashboard_payload(enrich: bool = True) -> dict:
     snapshot = _load_json(path_from_config("market_snapshot", "data/market_snapshot.json"))
     scan = _load_json(path_from_config("scan_results", "output/scan_results.json"))
+    if enrich and scan:
+        import os
+        fetch_kline = os.environ.get("CI_FAST") != "1"
+        scan = enrich_scan_data(scan, fetch_kline=fetch_kline)
     backtest = _load_json(path_from_config("backtest_report", "output/backtest_report.json"))
     market = snapshot.get("market") or {}
     return {

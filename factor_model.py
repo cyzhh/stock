@@ -275,3 +275,66 @@ def compute_multi_factor(bars: list[dict], cfg: dict | None = None) -> dict[str,
             "强" if composite >= 75 else "中" if composite >= 62 else "弱"
         ),
     }
+
+
+def estimate_factors_from_latest(latest: dict[str, Any]) -> dict[str, Any]:
+    """无 K 线历史时，用 latest 指标近似估算五维因子（供看板展示）。"""
+    if not latest:
+        return {"composite_score": 0, "factors": {}, "signal_strength": "弱", "estimated": True}
+
+    fcfg = factors_config()
+    weights = dict(fcfg.get("weights") or {})
+    default_w = {"momentum": 0.28, "volume": 0.18, "trend": 0.22, "pullback": 0.17, "reversal": 0.15}
+    for k, v in default_w.items():
+        weights.setdefault(k, v)
+
+    change = float(latest.get("change_pct") or 0)
+    vol_ratio = float(latest.get("volume_ratio") or 1)
+    amount_yi = float(latest.get("amount_yi") or 0)
+    rsi6 = float(latest.get("rsi6") or 50)
+    kdj_k = float(latest.get("kdj_k") or 50)
+
+    momentum = _clamp(abs(change) * 6 + rsi6 * 0.35, 0, 100)
+    volume = _clamp((vol_ratio - 0.5) * 35 + amount_yi * 4, 0, 100)
+
+    trend = 25.0
+    ma5, ma10, ma20 = latest.get("ma5"), latest.get("ma10"), latest.get("ma20")
+    close = float(latest.get("close") or 0)
+    if ma5 and ma10 and ma20:
+        if ma5 > ma10 > ma20:
+            trend += 35
+        if close > ma5:
+            trend += 15
+        if close > ma20:
+            trend += 10
+    dif, dea = latest.get("macd_dif"), latest.get("macd_dea")
+    if dif is not None and dea is not None and dif > dea:
+        trend += 15
+    trend = _clamp(trend, 0, 100)
+
+    pullback = 0.0
+    if change >= 9.5:
+        pullback = _clamp(45 + vol_ratio * 8, 0, 70)
+    elif -4 <= change <= 2:
+        pullback = _clamp(50 + (2 - abs(change)) * 10, 0, 85)
+
+    reversal = _clamp(100 - abs(kdj_k - 52) * 1.2 - abs(rsi6 - 55) * 1.0, 0, 100)
+
+    factors = {
+        "momentum": round(momentum, 1),
+        "volume": round(volume, 1),
+        "trend": round(trend, 1),
+        "pullback": round(pullback, 1),
+        "reversal": round(reversal, 1),
+    }
+    composite = round(sum(factors[k] * weights.get(k, 0) for k in factors), 1)
+    active = sum(1 for v in factors.values() if v >= 55)
+    ranked = sorted(factors.items(), key=lambda x: x[1], reverse=True)
+    return {
+        "composite_score": composite,
+        "factors": factors,
+        "active_factors": active,
+        "top_factors": [k for k, _ in ranked[:3]],
+        "signal_strength": "强" if composite >= 75 else "中" if composite >= 62 else "弱",
+        "estimated": True,
+    }

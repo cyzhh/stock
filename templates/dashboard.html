@@ -267,6 +267,9 @@
     }
 
     function factorBar(name, score) {
+      if (score == null || score === undefined || score === "") {
+        return `<div class="ind-item"><div class="ind-val">—</div><div class="ind-label">${name}</div></div>`;
+      }
       const s = Number(score) || 0;
       return `<div class="ind-item">
         <div class="ind-val">${s.toFixed(0)}</div>
@@ -297,7 +300,7 @@
             </div>
           </div>
           ${Object.keys(factors).length ? `<div class="player-chips" style="margin-top:8px">${Object.entries(factors).map(([k,v]) =>
-            `<span class="factor-chip">${factorLabels[k] || k} ${Number(v).toFixed(0)}</span>`).join("")}</div>` : ""}
+            `<span class="factor-chip">${factorLabels[k] || k} ${Number(v).toFixed(0)}${mf.estimated ? "≈" : ""}</span>`).join("")}${mf.estimated ? `<span class="factor-chip" style="opacity:0.7">估算</span>` : ""}</div>` : ""}
           ${strategies.length ? `<div class="tags">${strategies.map(s =>
             `<span class="tag buy">${s.name} · ${s.score}分</span>`).join("")}</div>
             <div class="reason">${strategies[0].reason || ""}</div>` : `<div class="tags"><span class="tag neutral">暂无策略命中</span></div>`}
