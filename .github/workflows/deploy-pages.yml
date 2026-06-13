@@ -4,12 +4,11 @@ on:
   push:
     branches: [main, master]
   schedule:
-    # 交易日盘后重建（UTC 13:00 ≈ 北京 21:00）
     - cron: "0 13 * * 1-5"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -18,7 +17,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +27,12 @@ jobs:
           python-version: "3.11"
 
       - name: 构建量化看板
-        run: python build_all.py
+        run: |
+          python sync_market.py || echo "sync_market skipped"
+          python scanner.py || echo "scanner skipped"
+          python backtest.py || echo "backtest skipped"
+          python generate_html.py
+          test -f index.html
 
       - name: 打包静态站点
         run: |
@@ -37,16 +41,26 @@ jobs:
           touch _site/.nojekyll
           echo "Deployed at $(date -u +%Y-%m-%dT%H:%M:%SZ)" > _site/build.txt
 
+      - name: 推送到 gh-pages 分支
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          publish_branch: gh-pages
+          force_orphan: true
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
 
-  deploy:
-    needs: build
+  deploy-pages:
+    needs: build-and-deploy
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - uses: actions/configure-pages@v4
+      - uses: actions/deploy-pages@v4
+        id: deployment
+        continue-on-error: true

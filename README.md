@@ -42,6 +42,16 @@ python build_all.py
 
 推送到 `main` 后，GitHub Actions 自动构建并发布到 Pages；工作日 UTC 13:00 也会定时重建。
 
+### 首次启用 Pages（解决 404）
+
+1. 打开 [stock → Settings → Pages](https://github.com/cyzhh/stock/settings/pages)
+2. **Build and deployment → Source** 任选其一：
+   - **推荐**：`Deploy from a branch` → Branch: `gh-pages` → `/ (root)` → Save
+   - 或：`GitHub Actions`（需 Actions 的 deploy 任务成功）
+3. 等待 1–2 分钟，访问 https://cyzhh.github.io/stock/
+
+若仍 404，到 [Actions](https://github.com/cyzhh/stock/actions) 确认最新 workflow 是否绿色。
+
 ## 架构
 
 ```
