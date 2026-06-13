@@ -118,17 +118,21 @@ def backtest_stock(code: str, market: str, strategy_key: str, cfg: dict) -> dict
     }
 
 
-def run_backtest(scan_data: dict | None = None) -> dict[str, Any]:
+def run_backtest(scan_data: dict | None = None, fast: bool = False) -> dict[str, Any]:
     cfg = {**scanner_config(), **backtest_config()}
     scan_path = path_from_config("scan_results", "output/scan_results.json")
     if scan_data is None and scan_path.exists():
         scan_data = json.loads(scan_path.read_text(encoding="utf-8"))
     scan_data = scan_data or {}
     picks = (scan_data.get("picks") or [])[:8]
+    if fast:
+        picks = picks[:2] or [{"code": "600519", "name": "贵州茅台", "market": "sh"}]
     if not picks:
         picks = [{"code": "600519", "name": "贵州茅台", "market": "sh"}]
 
     strategy_keys = [k for k, _ in STRATEGIES]
+    if fast:
+        strategy_keys = ["multi_factor", "limit_up_pullback", "high_momentum"]
     stock_results: list[dict] = []
     strategy_agg: dict[str, dict] = {
         k: {"trades": 0, "wins": 0, "returns": [], "profit_factors": []} for k, _ in STRATEGIES

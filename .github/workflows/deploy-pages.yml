@@ -28,9 +28,9 @@ jobs:
 
       - name: 构建量化看板
         run: |
-          python sync_market.py || echo "sync_market skipped"
-          python scanner.py || echo "scanner skipped"
-          python backtest.py || echo "backtest skipped"
+          python sync_market.py || true
+          python scanner.py || true
+          python backtest.py --fast || true
           python generate_html.py
           test -f index.html
 
