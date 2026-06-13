@@ -135,6 +135,24 @@
       font-size: 0.88rem; font-weight: 700; color: #fbbf24;
       margin-left: 8px;
     }
+    .pattern-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 8px; max-height: 320px; overflow-y: auto; padding: 4px;
+    }
+    .pattern-check {
+      display: flex; align-items: center; gap: 8px; font-size: 0.78rem;
+      padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--card-inner); cursor: pointer;
+    }
+    .pattern-check input { accent-color: var(--accent); }
+    .pattern-check.active { border-color: var(--accent); background: rgba(79,172,254,0.1); }
+    .pattern-preset {
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      padding: 6px 12px; border-radius: 16px; cursor: pointer; font-size: 0.78rem;
+    }
+    .pattern-preset:hover, .pattern-preset.active {
+      border-color: var(--accent); color: var(--text);
+    }
     @media (max-width: 600px) {
       .stock-header { flex-direction: column; }
     }
@@ -151,12 +169,14 @@
       <button class="view-tab active" data-view="market">📊 市场概览</button>
       <button class="view-tab" data-view="picks">🎯 策略选股</button>
       <button class="view-tab" data-view="indicators">📈 个股指标</button>
+      <button class="view-tab" data-view="patterns">🕯️ K线形态</button>
       <button class="view-tab" data-view="backtest">🔬 回测验证</button>
     </div>
     <div class="stats-bar" id="stats-bar"></div>
     <div class="panel active" id="market-panel"></div>
     <div class="panel" id="picks-panel"></div>
     <div class="panel" id="indicators-panel"></div>
+    <div class="panel" id="patterns-panel"></div>
     <div class="panel" id="backtest-panel"></div>
     <footer>
       参考 <a href="https://github.com/myhhub/stock" target="_blank">InStock (myhhub/stock)</a>
@@ -166,7 +186,7 @@
   </div>
   <script>
     const DATA = {
-  "generated_at": "2026-06-13T15:14:51.117727+00:00",
+  "generated_at": "2026-06-13T15:18:22.585974+00:00",
   "market_date": "2026-06-12",
   "snapshot": {
     "market": {
@@ -4192,12 +4212,394 @@
     "data_sources": [
       "hhxg.top",
       "eastmoney"
-    ]
+    ],
+    "talib_available": false
+  },
+  "patterns": {
+    "registry": [
+      {
+        "id": "two_crows",
+        "name": "两只乌鸦",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "three_black_crows",
+        "name": "三只乌鸦",
+        "category": "看跌",
+        "pure_python": true
+      },
+      {
+        "id": "three_inside",
+        "name": "三内部上涨和下跌",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "three_line_strike",
+        "name": "三线打击",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "three_outside",
+        "name": "三外部上涨和下跌",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "three_stars_south",
+        "name": "南方三星",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "three_white_soldiers",
+        "name": "三个白兵",
+        "category": "看涨",
+        "pure_python": true
+      },
+      {
+        "id": "abandoned_baby",
+        "name": "弃婴",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "advance_block",
+        "name": "大敌当前",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "belt_hold",
+        "name": "捉腰带线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "breakaway",
+        "name": "脱离",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "closing_marubozu",
+        "name": "收盘缺影线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "concealing_baby_swallow",
+        "name": "藏婴吞没",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "counterattack",
+        "name": "反击线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "dark_cloud_cover",
+        "name": "乌云压顶",
+        "category": "看跌",
+        "pure_python": true
+      },
+      {
+        "id": "doji",
+        "name": "十字",
+        "category": "中性",
+        "pure_python": true
+      },
+      {
+        "id": "doji_star",
+        "name": "十字星",
+        "category": "中性",
+        "pure_python": false
+      },
+      {
+        "id": "dragonfly_doji",
+        "name": "蜻蜓十字",
+        "category": "看涨",
+        "pure_python": true
+      },
+      {
+        "id": "engulfing",
+        "name": "吞噬模式",
+        "category": "双向",
+        "pure_python": true
+      },
+      {
+        "id": "evening_doji_star",
+        "name": "十字暮星",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "evening_star",
+        "name": "暮星",
+        "category": "看跌",
+        "pure_python": true
+      },
+      {
+        "id": "gap_side_white",
+        "name": "跳空并列阳线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "gravestone_doji",
+        "name": "墓碑十字",
+        "category": "看跌",
+        "pure_python": true
+      },
+      {
+        "id": "hammer",
+        "name": "锤头",
+        "category": "看涨",
+        "pure_python": true
+      },
+      {
+        "id": "hanging_man",
+        "name": "上吊线",
+        "category": "看跌",
+        "pure_python": true
+      },
+      {
+        "id": "harami",
+        "name": "母子线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "harami_cross",
+        "name": "十字孕线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "high_wave",
+        "name": "风高浪大线",
+        "category": "中性",
+        "pure_python": false
+      },
+      {
+        "id": "hikkake",
+        "name": "陷阱",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "hikkake_mod",
+        "name": "修正陷阱",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "homing_pigeon",
+        "name": "家鸽",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "identical_three_crows",
+        "name": "三胞胎乌鸦",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "in_neck",
+        "name": "颈内线",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "inverted_hammer",
+        "name": "倒锤头",
+        "category": "看涨",
+        "pure_python": true
+      },
+      {
+        "id": "kicking",
+        "name": "反冲形态",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "kicking_by_length",
+        "name": "长缺影线反冲",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "ladder_bottom",
+        "name": "梯底",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "long_legged_doji",
+        "name": "长脚十字",
+        "category": "中性",
+        "pure_python": false
+      },
+      {
+        "id": "long_line",
+        "name": "长蜡烛",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "marubozu",
+        "name": "光头光脚",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "matching_low",
+        "name": "相同低价",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "mat_hold",
+        "name": "铺垫",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "morning_doji_star",
+        "name": "十字晨星",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "morning_star",
+        "name": "晨星",
+        "category": "看涨",
+        "pure_python": true
+      },
+      {
+        "id": "on_neck",
+        "name": "颈上线",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "piercing",
+        "name": "刺透形态",
+        "category": "看涨",
+        "pure_python": true
+      },
+      {
+        "id": "rickshaw_man",
+        "name": "黄包车夫",
+        "category": "中性",
+        "pure_python": false
+      },
+      {
+        "id": "rise_fall_three_methods",
+        "name": "上升/下降三法",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "separating_lines",
+        "name": "分离线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "shooting_star",
+        "name": "射击之星",
+        "category": "看跌",
+        "pure_python": true
+      },
+      {
+        "id": "short_line",
+        "name": "短蜡烛",
+        "category": "中性",
+        "pure_python": false
+      },
+      {
+        "id": "spinning_top",
+        "name": "纺锤",
+        "category": "中性",
+        "pure_python": false
+      },
+      {
+        "id": "stalled_pattern",
+        "name": "停顿形态",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "stick_sandwich",
+        "name": "条形三明治",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "takuri",
+        "name": "探水竿",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "tasuki_gap",
+        "name": "跳空并列阴阳线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "thrusting",
+        "name": "插入",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "tristar",
+        "name": "三星",
+        "category": "中性",
+        "pure_python": false
+      },
+      {
+        "id": "unique_three_river",
+        "name": "奇特三河床",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "upside_gap_two_crows",
+        "name": "向上跳空两只乌鸦",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "side_gap_three_methods",
+        "name": "跳空三法",
+        "category": "双向",
+        "pure_python": false
+      }
+    ],
+    "selection": {
+      "enabled": "all",
+      "signal_filter": "all",
+      "lookback_days": 3,
+      "comment": "enabled 可为 \"all\" 或形态 id 数组，如 [\"hammer\", \"engulfing\", \"morning_star\"]"
+    }
   }
 };
     let activeView = "market";
     let pickSearch = "";
     let indSearch = "";
+    const PATTERN_REGISTRY = DATA.patterns?.registry || [];
+    const LS_KEY = "stock_quant_pattern_filter";
+    let selectedPatterns = new Set(JSON.parse(localStorage.getItem(LS_KEY) || "null") || PATTERN_REGISTRY.map(p => p.id));
+    let patternSignalFilter = localStorage.getItem("stock_quant_pattern_signal") || "all";
+    let patternSearch = "";
 
     function pctClass(v) {
       if (v == null || v === "") return "";
@@ -4330,6 +4732,8 @@
           </div>
           ${Object.keys(factors).length ? `<div class="player-chips" style="margin-top:8px">${Object.entries(factors).map(([k,v]) =>
             `<span class="factor-chip">${factorLabels[k] || k} ${Number(v).toFixed(0)}${mf.estimated ? "≈" : ""}</span>`).join("")}${mf.estimated ? `<span class="factor-chip" style="opacity:0.7">估算</span>` : ""}</div>` : ""}
+          ${(stock.pattern_hits || []).length ? `<div class="tags">${(stock.pattern_hits || []).map(p =>
+            `<span class="tag ${p.signal > 0 ? "buy" : "sell"}">${p.name} · ${p.signal_label}</span>`).join("")}</div>` : ""}
           ${strategies.length ? `<div class="tags">${strategies.map(s =>
             `<span class="tag buy">${s.name} · ${s.score}分</span>`).join("")}</div>
             <div class="reason">${strategies[0].reason || ""}</div>` : `<div class="tags"><span class="tag neutral">暂无策略命中</span></div>`}
@@ -4382,6 +4786,104 @@
       if (el) el.addEventListener("input", e => { indSearch = e.target.value; renderIndicators(); });
     }
 
+    function savePatternFilter() {
+      localStorage.setItem(LS_KEY, JSON.stringify([...selectedPatterns]));
+      localStorage.setItem("stock_quant_pattern_signal", patternSignalFilter);
+    }
+
+    function stockPatternHits(stock) {
+      return (stock.pattern_hits || []).filter(h => selectedPatterns.has(h.id));
+    }
+
+    function renderPatterns() {
+      const all = DATA.scan?.all_results || [];
+      const engine = DATA.meta?.talib_available ? "TA-Lib 全量" : "纯Python子集";
+      const filteredRegistry = PATTERN_REGISTRY.filter(p =>
+        !patternSearch.trim() || p.name.includes(patternSearch) || p.id.includes(patternSearch)
+      );
+
+      const hits = all.filter(s => {
+        const ph = stockPatternHits(s);
+        if (!ph.length) return false;
+        if (patternSignalFilter === "bullish") return ph.some(h => h.signal > 0);
+        if (patternSignalFilter === "bearish") return ph.some(h => h.signal < 0);
+        return true;
+      });
+
+      document.getElementById("stats-bar").textContent =
+        `已选 ${selectedPatterns.size}/${PATTERN_REGISTRY.length} 种形态 · 命中 ${hits.length} 只 · 引擎 ${engine}`;
+
+      const checks = filteredRegistry.map(p => {
+        const on = selectedPatterns.has(p.id);
+        return `<label class="pattern-check${on ? " active" : ""}">
+          <input type="checkbox" data-pid="${p.id}" ${on ? "checked" : ""} />
+          <span>${p.name}${p.pure_python ? "" : " *"}</span>
+        </label>`;
+      }).join("");
+
+      const rows = hits.map(s => {
+        const ph = stockPatternHits(s);
+        const tags = ph.map(p =>
+          `<span class="tag ${p.signal > 0 ? "buy" : "sell"}">${p.name} (${p.signal_label})</span>`).join("");
+        return `<div class="card stock-card">
+          <div class="stock-header">
+            <div><span class="stock-title">${s.name}</span><span class="stock-code">${s.code}</span></div>
+            <span class="price-badge ${pctClass(s.latest?.change_pct)}">${fmtPct(s.latest?.change_pct)}</span>
+          </div>
+          <div class="tags">${tags}</div>
+        </div>`;
+      }).join("");
+
+      document.getElementById("patterns-panel").innerHTML = `
+        <div class="card">
+          <h2>自选 K 线形态（61 种，* 需安装 TA-Lib）</h2>
+          <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px">
+            勾选要关注的形态，筛选结果保存在浏览器本地。修改扫描范围请编辑 <code>data/pattern_selection.json</code> 后重新 build。
+          </p>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+            <button class="pattern-preset" data-preset="all">全选</button>
+            <button class="pattern-preset" data-preset="none">清空</button>
+            <button class="pattern-preset" data-preset="classic">经典12形态</button>
+            <button class="pattern-preset" data-preset="bullish">看涨常用</button>
+            <select id="pattern-signal-filter" class="toolbar-select">
+              <option value="all"${patternSignalFilter==="all"?" selected":""}>全部信号</option>
+              <option value="bullish"${patternSignalFilter==="bullish"?" selected":""}>只看买入</option>
+              <option value="bearish"${patternSignalFilter==="bearish"?" selected":""}>只看卖出</option>
+            </select>
+            <input class="toolbar-select" id="pattern-search" placeholder="搜索形态名称…" value="${patternSearch.replace(/"/g,"&quot;")}" />
+          </div>
+          <div class="pattern-grid">${checks}</div>
+        </div>
+        ${rows || `<div class="card"><p style="color:var(--muted);text-align:center;padding:24px">无匹配形态。请勾选形态或运行 scanner 更新数据。</p></div>`}`;
+
+      document.querySelectorAll(".pattern-check input").forEach(inp => {
+        inp.addEventListener("change", () => {
+          const pid = inp.dataset.pid;
+          if (inp.checked) selectedPatterns.add(pid); else selectedPatterns.delete(pid);
+          savePatternFilter(); renderPatterns();
+        });
+      });
+      document.querySelectorAll(".pattern-preset").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const p = btn.dataset.preset;
+          if (p === "all") selectedPatterns = new Set(PATTERN_REGISTRY.map(x => x.id));
+          else if (p === "none") selectedPatterns = new Set();
+          else if (p === "classic") selectedPatterns = new Set([
+            "hammer","engulfing","morning_star","evening_star","three_white_soldiers",
+            "three_black_crows","dark_cloud_cover","piercing","doji","shooting_star","harami","marubozu"
+          ]);
+          else if (p === "bullish") selectedPatterns = new Set(
+            PATTERN_REGISTRY.filter(x => x.category === "看涨" || x.category === "双向").map(x => x.id)
+          );
+          savePatternFilter(); renderPatterns();
+        });
+      });
+      const sf = document.getElementById("pattern-signal-filter");
+      if (sf) sf.addEventListener("change", e => { patternSignalFilter = e.target.value; savePatternFilter(); renderPatterns(); });
+      const ps = document.getElementById("pattern-search");
+      if (ps) ps.addEventListener("input", e => { patternSearch = e.target.value; renderPatterns(); });
+    }
+
     function renderBacktest() {
       const summary = DATA.backtest?.summary || [];
       const stocks = DATA.backtest?.stock_results || [];
@@ -4419,13 +4921,14 @@
     function switchView(view) {
       activeView = view;
       document.querySelectorAll(".view-tab").forEach(b => b.classList.toggle("active", b.dataset.view === view));
-      ["market", "picks", "indicators", "backtest"].forEach(v => {
+      ["market", "picks", "indicators", "patterns", "backtest"].forEach(v => {
         document.getElementById(v + "-panel").classList.toggle("active", v === view);
       });
       document.getElementById("stats-bar").style.display = view === "market" ? "none" : "block";
       if (view === "market") renderMarket();
       else if (view === "picks") renderPicks();
       else if (view === "indicators") renderIndicators();
+      else if (view === "patterns") renderPatterns();
       else renderBacktest();
     }
 

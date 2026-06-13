@@ -26,15 +26,17 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: 安装 TA-Lib（61 种 K 线形态）
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libta-lib-dev
+          pip install numpy TA-Lib
+
       - name: 构建量化看板
-        env:
-          CI_FAST: "1"
         run: |
           python sync_market.py || true
-          if [ -z "$CI_FAST" ]; then
-            python scanner.py || true
-            python backtest.py --fast || true
-          fi
+          python scanner.py --fast || true
+          python backtest.py --fast || true
           python generate_html.py
           test -f index.html
 

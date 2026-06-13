@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-13T15:14:51.117727+00:00",
+  "generated_at": "2026-06-13T15:18:22.585974+00:00",
   "market_date": "2026-06-12",
   "snapshot": {
     "market": {
@@ -4025,6 +4025,383 @@
     "data_sources": [
       "hhxg.top",
       "eastmoney"
-    ]
+    ],
+    "talib_available": false
+  },
+  "patterns": {
+    "registry": [
+      {
+        "id": "two_crows",
+        "name": "两只乌鸦",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "three_black_crows",
+        "name": "三只乌鸦",
+        "category": "看跌",
+        "pure_python": true
+      },
+      {
+        "id": "three_inside",
+        "name": "三内部上涨和下跌",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "three_line_strike",
+        "name": "三线打击",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "three_outside",
+        "name": "三外部上涨和下跌",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "three_stars_south",
+        "name": "南方三星",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "three_white_soldiers",
+        "name": "三个白兵",
+        "category": "看涨",
+        "pure_python": true
+      },
+      {
+        "id": "abandoned_baby",
+        "name": "弃婴",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "advance_block",
+        "name": "大敌当前",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "belt_hold",
+        "name": "捉腰带线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "breakaway",
+        "name": "脱离",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "closing_marubozu",
+        "name": "收盘缺影线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "concealing_baby_swallow",
+        "name": "藏婴吞没",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "counterattack",
+        "name": "反击线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "dark_cloud_cover",
+        "name": "乌云压顶",
+        "category": "看跌",
+        "pure_python": true
+      },
+      {
+        "id": "doji",
+        "name": "十字",
+        "category": "中性",
+        "pure_python": true
+      },
+      {
+        "id": "doji_star",
+        "name": "十字星",
+        "category": "中性",
+        "pure_python": false
+      },
+      {
+        "id": "dragonfly_doji",
+        "name": "蜻蜓十字",
+        "category": "看涨",
+        "pure_python": true
+      },
+      {
+        "id": "engulfing",
+        "name": "吞噬模式",
+        "category": "双向",
+        "pure_python": true
+      },
+      {
+        "id": "evening_doji_star",
+        "name": "十字暮星",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "evening_star",
+        "name": "暮星",
+        "category": "看跌",
+        "pure_python": true
+      },
+      {
+        "id": "gap_side_white",
+        "name": "跳空并列阳线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "gravestone_doji",
+        "name": "墓碑十字",
+        "category": "看跌",
+        "pure_python": true
+      },
+      {
+        "id": "hammer",
+        "name": "锤头",
+        "category": "看涨",
+        "pure_python": true
+      },
+      {
+        "id": "hanging_man",
+        "name": "上吊线",
+        "category": "看跌",
+        "pure_python": true
+      },
+      {
+        "id": "harami",
+        "name": "母子线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "harami_cross",
+        "name": "十字孕线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "high_wave",
+        "name": "风高浪大线",
+        "category": "中性",
+        "pure_python": false
+      },
+      {
+        "id": "hikkake",
+        "name": "陷阱",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "hikkake_mod",
+        "name": "修正陷阱",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "homing_pigeon",
+        "name": "家鸽",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "identical_three_crows",
+        "name": "三胞胎乌鸦",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "in_neck",
+        "name": "颈内线",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "inverted_hammer",
+        "name": "倒锤头",
+        "category": "看涨",
+        "pure_python": true
+      },
+      {
+        "id": "kicking",
+        "name": "反冲形态",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "kicking_by_length",
+        "name": "长缺影线反冲",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "ladder_bottom",
+        "name": "梯底",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "long_legged_doji",
+        "name": "长脚十字",
+        "category": "中性",
+        "pure_python": false
+      },
+      {
+        "id": "long_line",
+        "name": "长蜡烛",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "marubozu",
+        "name": "光头光脚",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "matching_low",
+        "name": "相同低价",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "mat_hold",
+        "name": "铺垫",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "morning_doji_star",
+        "name": "十字晨星",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "morning_star",
+        "name": "晨星",
+        "category": "看涨",
+        "pure_python": true
+      },
+      {
+        "id": "on_neck",
+        "name": "颈上线",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "piercing",
+        "name": "刺透形态",
+        "category": "看涨",
+        "pure_python": true
+      },
+      {
+        "id": "rickshaw_man",
+        "name": "黄包车夫",
+        "category": "中性",
+        "pure_python": false
+      },
+      {
+        "id": "rise_fall_three_methods",
+        "name": "上升/下降三法",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "separating_lines",
+        "name": "分离线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "shooting_star",
+        "name": "射击之星",
+        "category": "看跌",
+        "pure_python": true
+      },
+      {
+        "id": "short_line",
+        "name": "短蜡烛",
+        "category": "中性",
+        "pure_python": false
+      },
+      {
+        "id": "spinning_top",
+        "name": "纺锤",
+        "category": "中性",
+        "pure_python": false
+      },
+      {
+        "id": "stalled_pattern",
+        "name": "停顿形态",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "stick_sandwich",
+        "name": "条形三明治",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "takuri",
+        "name": "探水竿",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "tasuki_gap",
+        "name": "跳空并列阴阳线",
+        "category": "双向",
+        "pure_python": false
+      },
+      {
+        "id": "thrusting",
+        "name": "插入",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "tristar",
+        "name": "三星",
+        "category": "中性",
+        "pure_python": false
+      },
+      {
+        "id": "unique_three_river",
+        "name": "奇特三河床",
+        "category": "看涨",
+        "pure_python": false
+      },
+      {
+        "id": "upside_gap_two_crows",
+        "name": "向上跳空两只乌鸦",
+        "category": "看跌",
+        "pure_python": false
+      },
+      {
+        "id": "side_gap_three_methods",
+        "name": "跳空三法",
+        "category": "双向",
+        "pure_python": false
+      }
+    ],
+    "selection": {
+      "enabled": "all",
+      "signal_filter": "all",
+      "lookback_days": 3,
+      "comment": "enabled 可为 \"all\" 或形态 id 数组，如 [\"hammer\", \"engulfing\", \"morning_star\"]"
+    }
   }
 }

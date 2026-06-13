@@ -9,6 +9,11 @@ from pathlib import Path
 
 from app_config import path_from_config
 from enrich_factors import enrich_scan_data
+from kline_patterns import registry_for_ui
+try:
+    from kline_patterns import HAS_TALIB
+except ImportError:
+    HAS_TALIB = False
 from sq_logging import setup_logging
 
 log = setup_logging("stock_quant.generate_html")
@@ -70,6 +75,11 @@ def build_dashboard_payload(enrich: bool = True) -> dict:
             "engine": "stock-quant",
             "inspired_by": "InStock (myhhub/stock)",
             "data_sources": ["hhxg.top", "eastmoney"],
+            "talib_available": HAS_TALIB,
+        },
+        "patterns": {
+            "registry": registry_for_ui(),
+            "selection": _load_json(path_from_config("pattern_selection", "data/pattern_selection.json")),
         },
     }
 

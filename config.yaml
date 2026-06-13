@@ -4,7 +4,7 @@ paths:
   data_dir: data
   output_dir: output
   logs_dir: logs
-  watchlist: data/watchlist.json
+  pattern_selection: data/pattern_selection.json
   market_snapshot: data/market_snapshot.json
   scan_results: output/scan_results.json
   backtest_report: output/backtest_report.json
@@ -20,6 +20,10 @@ scanner:
   min_amount_yi: 0.8
   volume_ratio_min: 1.2
   min_composite_score: 62
+  pattern_lookback: 3
+
+patterns:
+  signal_filter: all
 
 factors:
   weights:

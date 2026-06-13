@@ -13,6 +13,7 @@ from app_config import path_from_config, scanner_config
 from factor_model import compute_multi_factor
 from indicators import compute_all
 from kline_fetcher import bars_to_dicts, fetch_klines
+from kline_patterns import detect_patterns, load_pattern_selection, registry_for_ui
 from sq_logging import setup_logging
 from strategies import run_all_strategies
 
@@ -85,6 +86,12 @@ def analyze_stock(stock: dict[str, str], cfg: dict) -> dict[str, Any] | None:
     latest = ind.get("latest") or {}
     composite = mf.get("composite_score", 0)
     min_composite = float(cfg.get("min_composite_score", 0))
+    pattern_sel = load_pattern_selection()
+    pat = detect_patterns(
+        bar_dicts,
+        signal_filter=pattern_sel.get("signal_filter", cfg.get("pattern_signal_filter", "all")),
+        lookback=int(pattern_sel.get("lookback_days", cfg.get("pattern_lookback", 3))),
+    )
     return {
         "code": code,
         "name": stock.get("name", code),
@@ -92,14 +99,17 @@ def analyze_stock(stock: dict[str, str], cfg: dict) -> dict[str, Any] | None:
         "latest": latest,
         "multi_factor": mf,
         "strategies": hits,
+        "candlestick_patterns": pat,
+        "pattern_hits": pat.get("hits", []),
         "strategy_count": len(hits),
+        "pattern_count": len(pat.get("hits", [])),
         "top_score": max(composite, hits[0]["score"] if hits else 0),
         "composite_score": composite,
-        "qualified": composite >= min_composite or len(hits) > 0,
+        "qualified": composite >= min_composite or len(hits) > 0 or len(pat.get("hits", [])) > 0,
     }
 
 
-def run_scan(snapshot: dict | None = None) -> dict[str, Any]:
+def run_scan(snapshot: dict | None = None, fast: bool = False) -> dict[str, Any]:
     cfg = scanner_config()
     watchlist = load_watchlist()
     snap_path = path_from_config("market_snapshot", "data/market_snapshot.json")
@@ -109,7 +119,7 @@ def run_scan(snapshot: dict | None = None) -> dict[str, Any]:
 
     universe: list[dict[str, str]] = []
     seen: set[str] = set()
-    for s in watchlist + stocks_from_snapshot(snapshot):
+    for s in watchlist + ([] if fast else stocks_from_snapshot(snapshot)):
         code = str(s.get("code", "")).zfill(6)
         if not code or code in seen:
             continue
@@ -151,7 +161,8 @@ def run_scan(snapshot: dict | None = None) -> dict[str, Any]:
 
 
 def main() -> dict[str, Any]:
-    return run_scan()
+    import sys
+    return run_scan(fast="--fast" in sys.argv)
 
 
 if __name__ == "__main__":

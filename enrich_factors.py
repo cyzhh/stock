@@ -35,7 +35,16 @@ def enrich_stock_row(row: dict[str, Any], cfg: dict, fetch_kline: bool = True) -
             bars = bars_to_dicts(fetch_klines(code, market))
             if len(bars) >= 20:
                 mf = compute_multi_factor(bars, cfg)
-                row = {**row, "multi_factor": mf, "composite_score": mf.get("composite_score", 0)}
+                from kline_patterns import detect_patterns, load_pattern_selection
+                pat = detect_patterns(bars, signal_filter=load_pattern_selection().get("signal_filter", "all"))
+                row = {
+                    **row,
+                    "multi_factor": mf,
+                    "composite_score": mf.get("composite_score", 0),
+                    "candlestick_patterns": pat,
+                    "pattern_hits": pat.get("hits", []),
+                    "pattern_count": len(pat.get("hits", [])),
+                }
                 row["top_score"] = max(row.get("top_score", 0), row["composite_score"])
                 return row
         except Exception as e:

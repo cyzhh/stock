@@ -1,0 +1,6 @@
+{
+  "enabled": "all",
+  "signal_filter": "all",
+  "lookback_days": 3,
+  "comment": "enabled 可为 \"all\" 或形态 id 数组，如 [\"hammer\", \"engulfing\", \"morning_star\"]"
+}

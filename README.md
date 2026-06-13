@@ -14,6 +14,7 @@
 | **多因子共振** | 动能 / 量能 / 趋势 / 回调 / 反转 五维加权 + 协同加分 |
 | **涨停回调** | 近 N 日涨停后缩量回踩 MA/BOLL 支撑 |
 | **高动能** | 5/10 日强势涨幅 + 趋势多头 + 贴近阶段高点 |
+| **K 线形态** | 61 种 TA-Lib 形态，看板可自选筛选（买入/卖出/中性） |
 | 回测验证 | 胜率 + **盈亏比** + 移动止损 |
 
 ## 快速开始
@@ -76,6 +77,27 @@ generate_html.py → index.html（内嵌 JSON）
 | 反转 | KDJ/RSI 共振区间 |
 
 **协同加分**：当 ≥3 个因子同时 ≥55 分时，综合分额外 +8；涨停回调 + 高动能共振再 +5。
+
+## K 线形态（61 种）
+
+对齐 [InStock](https://github.com/myhhub/stock)：两只乌鸦、三只乌鸦、锤头、晨星、暮星、吞噬模式等共 61 种。
+
+- **看板自选**：打开「🕯️ K线形态」Tab，勾选要关注的形态（保存在浏览器）
+- **扫描配置**：编辑 `data/pattern_selection.json` 控制后端扫描哪些形态
+
+```json
+{
+  "enabled": ["hammer", "engulfing", "morning_star"],
+  "signal_filter": "all"
+}
+```
+
+安装 TA-Lib 解锁全部 61 种（未安装时使用纯 Python 子集约 14 种）：
+
+```powershell
+pip install -r requirements-patterns.txt
+# Windows 需先安装 TA-Lib C 库: https://ta-lib.org/install/
+```
 
 ## 配置
 

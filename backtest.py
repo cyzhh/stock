@@ -197,7 +197,9 @@ def run_backtest(scan_data: dict | None = None, fast: bool = False) -> dict[str,
 
 
 def main() -> dict[str, Any]:
-    return run_backtest()
+    import sys
+    fast = "--fast" in sys.argv
+    return run_backtest(fast=fast)
 
 
 if __name__ == "__main__":
