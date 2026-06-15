@@ -53,39 +53,46 @@ python generate_html.py
 | `.\deploy-pages.ps1` | **将 `index.html` 直推 `gh-pages`（推荐，最稳）** |
 | `.\update-and-push.ps1` | 构建 + 提交 `main` + 自动 `deploy-pages.ps1` |
 
-### GitHub Pages 部署说明
+### GitHub Pages 部署说明（解决 404）
 
 线上地址：**https://cyzhh.github.io/stock/**
 
-Pages 内容来自 **`gh-pages` 分支**（根目录 `index.html`）。请先在 [Settings → Pages](https://github.com/cyzhh/stock/settings/pages) 将 Source 设为：
+404 常见原因：**Settings → Pages 未启用**，或 Source 指向了**没有 `index.html` 的目录**（例如 `main /docs` 但 `docs/` 为空）。
 
-- **Deploy from a branch** → Branch: **`gh-pages`** → **`/ (root)`**
+`deploy-pages.ps1` 会同时更新三条发布通道：
 
-#### 推荐：`deploy-pages.ps1`（直推 gh-pages）
+| 通道 | 文件位置 | Pages 设置 |
+|------|----------|------------|
+| A | `gh-pages` 分支根目录 | **Deploy from a branch** → `gh-pages` / `(root)` |
+| B | `main` 分支 `docs/` | **Deploy from a branch** → `main` / **`/docs`** |
+| C | GitHub Actions 构件 | **Source = GitHub Actions** |
 
-GitHub Actions 可能因网络/依赖导致构建失败，`gh-pages` 会停在旧版。本地用 `deploy-pages.ps1` 可**绕过 Actions**，直接把当前 `index.html` 强制推到 `gh-pages`。
+**请任选上表一行，在 [Settings → Pages](https://github.com/cyzhh/stock/settings/pages) 配置并 Save。**
+
+#### 推荐操作（本地）
 
 ```powershell
-python generate_html.py   # 或 python build_all.py
+$env:CI_FAST = "1"
+python generate_html.py
 .\deploy-pages.ps1
 ```
 
-推送成功后访问站点，**Ctrl+F5 强刷**（或无痕窗口）避免浏览器/CDN 缓存。
+然后到 Settings → Pages 选择 **A：`gh-pages / (root)`**（最省事）或 **B：`main / docs`**。
 
-#### 可选：GitHub Actions
+访问后 **Ctrl+F5 强刷**。验证是否最新：
 
-推送到 `main` 会触发 [deploy-pages.yml](.github/workflows/deploy-pages.yml) 自动构建；工作日 UTC 13:00 也会定时重建。若线上仍是旧版，以 `deploy-pages.ps1` 为准。
+```
+https://cyzhh.github.io/stock/build.txt
+```
 
-**如何确认已更新**：打开 https://cyzhh.github.io/stock/build.txt 查看部署时间；看板应包含 Tab：**市场概览 / 资金流向 / 板块20日 / 策略选股 / K线形态 / 回测**。
+`build.txt` 时间应接近刚才部署时间；看板应有 Tab：**市场概览 / 资金流向 / 板块20日 / 策略选股 / K线形态 / 回测**。
 
-### 首次启用 Pages（解决 404）
+#### 仍 404 时检查
 
-1. 打开 [stock → Settings → Pages](https://github.com/cyzhh/stock/settings/pages)
-2. **Build and deployment → Source** → `Deploy from a branch` → Branch: **`gh-pages`** → `/ (root)` → Save
-3. 本地执行 `.\deploy-pages.ps1`（需已生成 `index.html`）
-4. 等待 1–2 分钟，访问 https://cyzhh.github.io/stock/
-
-若仍 404，到 [Actions](https://github.com/cyzhh/stock/actions) 查看 workflow；或再次运行 `.\deploy-pages.ps1`。
+1. 仓库是否为 **Public**（私有仓 Pages 需 GitHub Pro）
+2. Pages 是否显示绿色 **"Your site is live at …"**
+3. [Actions](https://github.com/cyzhh/stock/actions) 最新 workflow 是否成功（绿色）
+4. 换 **无痕窗口** 或手机 4G 访问，排除本地缓存了旧的 404 页
 
 ## 架构
 

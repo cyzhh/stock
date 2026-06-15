@@ -3,8 +3,6 @@ name: 构建并部署 GitHub Pages
 on:
   push:
     branches: [main, master]
-  schedule:
-    - cron: "0 13 * * 1-5"
   workflow_dispatch:
 
 permissions:
@@ -14,10 +12,10 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,29 +24,16 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: 安装 TA-Lib（61 种 K 线形态）
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq libta-lib-dev
-          pip install numpy TA-Lib
-
-      - name: 构建量化看板
+      - name: 生成看板
         env:
           CI_FAST: "1"
         run: |
-          python sync_market.py || true
-          python sync_sector_flow.py || true
-          python scanner.py --fast || true
-          python backtest.py --fast || true
           python generate_html.py
           test -f index.html
-
-      - name: 打包静态站点
-        run: |
           mkdir -p _site
-          cp index.html _site/
+          cp index.html _site/index.html
           touch _site/.nojekyll
-          echo "Deployed at $(date -u +%Y-%m-%dT%H:%M:%SZ)" > _site/build.txt
+          echo "Deployed at $(date -u +%Y-%m-%dT%H:%M:%SZ) via Actions" > _site/build.txt
 
       - name: 推送到 gh-pages 分支
         uses: peaceiris/actions-gh-pages@v4
@@ -58,18 +43,19 @@ jobs:
           publish_branch: gh-pages
           force_orphan: true
 
-      - uses: actions/upload-pages-artifact@v3
+      - name: 上传 Pages 构件
+        uses: actions/upload-pages-artifact@v3
         with:
           path: _site
 
-  deploy-pages:
-    needs: build-and-deploy
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/configure-pages@v4
-      - uses: actions/deploy-pages@v4
+      - name: 发布到 GitHub Pages
         id: deployment
-        continue-on-error: true
+        uses: actions/deploy-pages@v4
