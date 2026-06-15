@@ -34,36 +34,70 @@ python build_all.py
 .\update-and-push.ps1
 ```
 
+仅重新生成看板并更新线上 Pages（不改代码、不提交 main）：
+
+```powershell
+$env:CI_FAST = "1"
+python generate_html.py
+.\deploy-pages.ps1
+```
+
 | 命令 | 说明 |
 |------|------|
 | `python build_all.py` | 完整流水线 |
 | `python sync_market.py` | 仅同步 hhxg 市场快照 |
+| `python sync_sector_flow.py` | 同步近20日板块主力净流入排行 |
 | `python scanner.py` | 仅策略扫描 |
 | `python backtest.py` | 仅回测 |
-| `python generate_html.py` | 仅生成看板 |
-| `.\update-and-push.ps1` | 构建 + git push（触发 Pages 部署） |
+| `python generate_html.py` | 仅生成看板 `index.html` |
+| `.\deploy-pages.ps1` | **将 `index.html` 直推 `gh-pages`（推荐，最稳）** |
+| `.\update-and-push.ps1` | 构建 + 提交 `main` + 自动 `deploy-pages.ps1` |
 
-推送到 `main` 后，GitHub Actions 自动构建并发布到 Pages；工作日 UTC 13:00 也会定时重建。
+### GitHub Pages 部署说明
+
+线上地址：**https://cyzhh.github.io/stock/**
+
+Pages 内容来自 **`gh-pages` 分支**（根目录 `index.html`）。请先在 [Settings → Pages](https://github.com/cyzhh/stock/settings/pages) 将 Source 设为：
+
+- **Deploy from a branch** → Branch: **`gh-pages`** → **`/ (root)`**
+
+#### 推荐：`deploy-pages.ps1`（直推 gh-pages）
+
+GitHub Actions 可能因网络/依赖导致构建失败，`gh-pages` 会停在旧版。本地用 `deploy-pages.ps1` 可**绕过 Actions**，直接把当前 `index.html` 强制推到 `gh-pages`。
+
+```powershell
+python generate_html.py   # 或 python build_all.py
+.\deploy-pages.ps1
+```
+
+推送成功后访问站点，**Ctrl+F5 强刷**（或无痕窗口）避免浏览器/CDN 缓存。
+
+#### 可选：GitHub Actions
+
+推送到 `main` 会触发 [deploy-pages.yml](.github/workflows/deploy-pages.yml) 自动构建；工作日 UTC 13:00 也会定时重建。若线上仍是旧版，以 `deploy-pages.ps1` 为准。
+
+**如何确认已更新**：打开 https://cyzhh.github.io/stock/build.txt 查看部署时间；看板应包含 Tab：**市场概览 / 资金流向 / 板块20日 / 策略选股 / K线形态 / 回测**。
 
 ### 首次启用 Pages（解决 404）
 
 1. 打开 [stock → Settings → Pages](https://github.com/cyzhh/stock/settings/pages)
-2. **Build and deployment → Source** 任选其一：
-   - **推荐**：`Deploy from a branch` → Branch: `gh-pages` → `/ (root)` → Save
-   - 或：`GitHub Actions`（需 Actions 的 deploy 任务成功）
-3. 等待 1–2 分钟，访问 https://cyzhh.github.io/stock/
+2. **Build and deployment → Source** → `Deploy from a branch` → Branch: **`gh-pages`** → `/ (root)` → Save
+3. 本地执行 `.\deploy-pages.ps1`（需已生成 `index.html`）
+4. 等待 1–2 分钟，访问 https://cyzhh.github.io/stock/
 
-若仍 404，到 [Actions](https://github.com/cyzhh/stock/actions) 确认最新 workflow 是否绿色。
+若仍 404，到 [Actions](https://github.com/cyzhh/stock/actions) 查看 workflow；或再次运行 `.\deploy-pages.ps1`。
 
 ## 架构
 
 ```
-hhxg 快照 + 东方财富 K 线
+hhxg 快照 + 东方财富 K 线 / 板块资金
     ↓
-sync_market.py  →  data/market_snapshot.json
-scanner.py      →  output/scan_results.json（指标 + 策略命中）
-backtest.py     →  output/backtest_report.json
-generate_html.py → index.html（内嵌 JSON）
+sync_market.py       →  data/market_snapshot.json
+sync_sector_flow.py  →  data/sector_flow_20d.json
+scanner.py           →  output/scan_results.json（指标 + 策略命中）
+backtest.py          →  output/backtest_report.json
+generate_html.py     →  index.html（内嵌 JSON）
+deploy-pages.ps1     →  gh-pages 分支（GitHub Pages 线上）
 ```
 
 ## 多因子模型
