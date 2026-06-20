@@ -4,11 +4,13 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
-from kline_fetcher import _save_cache, bars_to_dicts, parse_klines
-
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from kline_fetcher import _save_cache, parse_klines
 
 
 def main() -> None:
