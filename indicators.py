@@ -92,6 +92,18 @@ def rsi(closes: list[float], period: int = 6) -> list[float | None]:
     return out
 
 
+def bbi(closes: list[float], periods: tuple[int, ...] = (3, 6, 12, 24)) -> list[float | None]:
+    """BBI 多空牛熊线 = (MA3 + MA6 + MA12 + MA24) / 4，常用于周线。"""
+    mas = [sma(closes, p) for p in periods]
+    out: list[float | None] = [None] * len(closes)
+    for i in range(len(closes)):
+        vals = [m[i] for m in mas]
+        if any(v is None for v in vals):
+            continue
+        out[i] = sum(vals) / len(vals)
+    return out
+
+
 def boll(closes: list[float], period: int = 20, mult: float = 2.0) -> dict[str, list[float | None]]:
     mid = sma(closes, period)
     upper: list[float | None] = [None] * len(closes)

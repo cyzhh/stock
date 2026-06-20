@@ -325,7 +325,50 @@
     @media (max-width: 600px) {
       .stock-header { flex-direction: column; }
     }
+    /* 周线 BBI 分析 */
+    .kline-chart-box {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 12px; margin-bottom: 18px; height: 420px;
+    }
+    .kline-subtabs {
+      display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px;
+    }
+    .kline-subtab {
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      padding: 6px 16px; border-radius: 18px; cursor: pointer; font-size: 0.82rem;
+    }
+    .kline-subtab.active, .kline-subtab:hover {
+      border-color: var(--accent); color: var(--text); background: rgba(56,189,248,0.1);
+    }
+    .phase-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 18px 20px; margin-bottom: 14px;
+    }
+    .phase-card.bull { border-color: rgba(239,68,68,0.25); }
+    .phase-card.bear { border-color: rgba(34,197,94,0.25); }
+    .phase-card.neutral { border-color: rgba(234,179,8,0.25); }
+    .phase-card.active-phase { box-shadow: 0 0 0 1px var(--accent); }
+    .phase-head {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 8px; margin-bottom: 10px;
+    }
+    .phase-head h3 { font-size: 0.95rem; font-weight: 700; }
+    .phase-range { font-size: 0.78rem; color: var(--muted); }
+    .signal-box {
+      background: var(--card-inner); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 16px; margin-bottom: 12px;
+    }
+    .signal-box.bear { border-left: 3px solid var(--fall); }
+    .signal-box.bull { border-left: 3px solid var(--rise); }
+    .signal-box h4 { font-size: 0.88rem; margin-bottom: 8px; color: var(--text); }
+    .signal-box ul { list-style: none; font-size: 0.82rem; color: #cbd5e1; }
+    .signal-box li { padding: 4px 0 4px 12px; position: relative; }
+    .signal-box li::before { content: "•"; position: absolute; left: 0; color: var(--accent); }
+    .level-table td:last-child { text-align: right; color: var(--muted); font-size: 0.78rem; }
+    .bbi-arrow.up::after { content: " ↑"; color: var(--rise); }
+    .bbi-arrow.down::after { content: " ↓"; color: var(--fall); }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 </head>
 <body>
   <div class="page">
@@ -343,6 +386,7 @@
       <button class="view-tab" data-view="picks">🎯 策略选股</button>
       <button class="view-tab" data-view="indicators">📈 个股指标</button>
       <button class="view-tab" data-view="patterns">🕯️ K线形态</button>
+      <button class="view-tab" data-view="klinebbi">📉 周线BBI</button>
       <button class="view-tab" data-view="backtest">🔬 回测验证</button>
     </div>
     <div class="stats-bar" id="stats-bar"></div>
@@ -352,6 +396,7 @@
     <div class="panel" id="picks-panel"></div>
     <div class="panel" id="indicators-panel"></div>
     <div class="panel" id="patterns-panel"></div>
+    <div class="panel" id="klinebbi-panel"></div>
     <div class="panel" id="backtest-panel"></div>
     <footer>
       行情数据来自 <a href="https://hhxg.top" target="_blank" rel="noopener">恢恢量化 hhxg.top</a>
@@ -369,6 +414,14 @@
     let selectedPatterns = new Set(JSON.parse(localStorage.getItem(LS_KEY) || "null") || PATTERN_REGISTRY.map(p => p.id));
     let patternSignalFilter = localStorage.getItem("stock_quant_pattern_signal") || "all";
     let patternSearch = "";
+    let klineSymbol = DATA.weekly_bbi?.default_symbol || "515080";
+    let klineSubView = "overview";
+    let klineChart = null;
+
+    function getKlineReport() {
+      const reports = DATA.weekly_bbi?.reports || [];
+      return reports.find(r => r.code === klineSymbol) || reports.find(r => r.ok) || null;
+    }
 
     function pctClass(v) {
       if (v == null || v === "") return "";
@@ -1000,6 +1053,245 @@
       if (ps) ps.addEventListener("input", e => { patternSearch = e.target.value; renderPatterns(); });
     }
 
+    function renderKlineChart(report) {
+      const el = document.getElementById("kline-chart");
+      if (!el || typeof echarts === "undefined" || !report?.klines?.length) return;
+      if (klineChart) { klineChart.dispose(); klineChart = null; }
+      klineChart = echarts.init(el, "dark");
+      const kl = report.klines;
+      const dates = kl.map(k => k.date);
+      const ohlc = kl.map(k => [k.open, k.close, k.low, k.high]);
+      const bbiData = kl.map(k => k.bbi);
+      const vols = kl.map(k => k.volume);
+      klineChart.setOption({
+        backgroundColor: "transparent",
+        animation: false,
+        tooltip: { trigger: "axis", axisPointer: { type: "cross" } },
+        legend: { data: ["K线", "BBI"], textStyle: { color: "#8b95a8" }, top: 0 },
+        grid: [{ left: 50, right: 20, top: 40, height: "58%" }, { left: 50, right: 20, top: "72%", height: "18%" }],
+        xAxis: [
+          { type: "category", data: dates, gridIndex: 0, axisLabel: { color: "#8b95a8", fontSize: 10 } },
+          { type: "category", data: dates, gridIndex: 1, axisLabel: { show: false } },
+        ],
+        yAxis: [
+          { scale: true, gridIndex: 0, splitLine: { lineStyle: { color: "rgba(255,255,255,0.06)" } }, axisLabel: { color: "#8b95a8" } },
+          { scale: true, gridIndex: 1, splitLine: { show: false }, axisLabel: { show: false } },
+        ],
+        dataZoom: [{ type: "inside", xAxisIndex: [0, 1], start: 50, end: 100 }],
+        series: [
+          {
+            name: "K线", type: "candlestick", xAxisIndex: 0, yAxisIndex: 0, data: ohlc,
+            itemStyle: { color: "#ef4444", color0: "#22c55e", borderColor: "#ef4444", borderColor0: "#22c55e" },
+          },
+          {
+            name: "BBI", type: "line", xAxisIndex: 0, yAxisIndex: 0, data: bbiData,
+            smooth: true, lineStyle: { width: 2, color: "#eab308" }, showSymbol: false,
+          },
+          {
+            name: "成交量", type: "bar", xAxisIndex: 1, yAxisIndex: 1, data: vols,
+            itemStyle: { color: "rgba(56,189,248,0.35)" },
+          },
+        ],
+      });
+    }
+
+    function renderKlineOverview(report) {
+      const o = report.overview || {};
+      const ph = report.phase || {};
+      const bbiCls = o.bbi_trend === "up" ? "bbi-arrow up" : (o.bbi_trend === "down" ? "bbi-arrow down" : "");
+      return `
+        <div class="metrics-row" style="margin-bottom:18px">
+          <div class="metric-card">
+            <div class="metric-value ${o.above_bbi ? "up" : "down"} ${bbiCls}">${o.current_bbi ?? "—"}</div>
+            <div class="metric-label">当前 BBI 牛熊线</div>
+            <div class="metric-sub">${o.above_bbi ? "价格在 BBI 上方 · 中期偏多" : "价格跌破 BBI · 中期转弱"}</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">${o.close ?? "—"}</div>
+            <div class="metric-label">最新收盘</div>
+            <div class="metric-sub">${o.date || ""} · 距高点 ${o.drawdown_from_high_pct != null ? o.drawdown_from_high_pct + "%" : "—"}</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">${o.stage_high ?? "—"}</div>
+            <div class="metric-label">阶段高点</div>
+            <div class="metric-sub">${o.stage_high_date || ""}</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">${o.hist_low ?? "—"}</div>
+            <div class="metric-label">历史最低点</div>
+            <div class="metric-sub">${o.hist_low_date || ""}</div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>周期全景 · 当前：${ph.name || "—"}</h2>
+          <p style="font-size:0.88rem;color:#cbd5e1;line-height:1.7;margin-bottom:12px">${o.interpretation || ""}</p>
+          <div class="tags">
+            ${signalTag(ph.name || "阶段", ph.signal === "bull" ? "buy" : (ph.signal === "bear" ? "sell" : "warn"))}
+            ${signalTag(o.above_bbi ? "BBI 上方" : "BBI 下方", o.above_bbi ? "buy" : "sell")}
+            ${ph.weeks_since_stage_high != null ? signalTag(`距高点 ${ph.weeks_since_stage_high} 周`, "neutral") : ""}
+          </div>
+        </div>
+        <div class="kline-chart-box"><div id="kline-chart" style="width:100%;height:100%"></div></div>`;
+    }
+
+    function renderKlinePhases(report) {
+      const active = (report.phase || {}).id;
+      return (report.phase_history || []).map(p => `
+        <div class="phase-card ${p.signal}${active === p.id ? " active-phase" : ""}">
+          <div class="phase-head">
+            <h3>${p.title}</h3>
+            ${p.range ? `<span class="phase-range">${p.range}</span>` : ""}
+          </div>
+          <div class="tags" style="margin-bottom:10px">${(p.tags || []).map(t => signalTag(t, p.signal === "bull" ? "buy" : (p.signal === "bear" ? "sell" : "warn"))).join("")}</div>
+          <ol style="padding-left:1.2rem;font-size:0.82rem;color:#9ca8bc">${(p.analysis || []).map(a => `<li style="margin-bottom:6px">${a}</li>`).join("")}</ol>
+        </div>`).join("");
+    }
+
+    function renderKlineBbiPanel(report) {
+      const ev = report.bbi_events || {};
+      const cross = ev.recent_crossovers || [];
+      return `
+        <div class="card">
+          <h2>BBI 指标规则</h2>
+          <p style="font-size:0.84rem;color:#cbd5e1;line-height:1.65">
+            BBI = (3周均价 + 6周均价 + 12周均价 + 24周均价) / 4，周线专用多空分水岭。
+            K 线持续在 BBI 上方为中期多头；跌破 BBI 为中期空头；大阴线一次性下穿 BBI 为趋势反转强信号。
+          </p>
+        </div>
+        <div class="metrics-row" style="margin-bottom:16px">
+          <div class="metric-card">
+            <div class="metric-value">${ev.bounce_count ?? 0}</div>
+            <div class="metric-label">上涨周期 BBI 止跌次数</div>
+            <div class="metric-sub">近 52 周深度回调踩线后收阳</div>
+          </div>
+        </div>
+        ${cross.length ? `
+        <div class="table-wrap"><div style="padding:14px 18px;border-bottom:1px solid var(--border)"><h2>近期 BBI 穿越事件</h2></div>
+        <div class="table-scroll"><table class="level-table"><thead><tr><th>日期</th><th>类型</th><th>收盘</th><th>BBI</th></tr></thead><tbody>
+        ${cross.map(c => `<tr>
+          <td>${c.date}</td>
+          <td>${c.type === "break_down" ? signalTag("跌破", "sell") : signalTag("站回", "buy")}</td>
+          <td>${c.close?.toFixed?.(3) ?? c.close}</td>
+          <td>${c.bbi?.toFixed?.(3) ?? c.bbi}</td>
+        </tr>`).join("")}
+        </tbody></table></div></div>` : `<p style="color:var(--muted);font-size:0.82rem;padding:12px">暂无近期穿越记录</p>`}
+        ${renderKlinePhases(report)}`;
+    }
+
+    function renderKlineLevels(report) {
+      const lv = report.levels || {};
+      const row = (items, kind) => (items || []).map(it => `
+        <tr><td>${signalTag(it.label, kind === "r" ? "sell" : "buy")}</td>
+        <td><strong>${it.price ?? "—"}</strong></td>
+        <td>${it.note || ""}</td>
+        <td>${it.distance_pct != null ? (it.distance_pct >= 0 ? "+" : "") + it.distance_pct + "%" : "—"}</td></tr>`).join("");
+      const sig = report.signals?.candle || {};
+      return `
+        <div class="grid-2">
+          <div class="table-wrap"><div style="padding:14px 18px;border-bottom:1px solid var(--border)"><h2>压力区间（由上至下）</h2></div>
+          <div class="table-scroll"><table class="level-table"><thead><tr><th>级别</th><th>价格</th><th>解读</th><th>距现价</th></tr></thead>
+          <tbody>${row(lv.resistance, "r") || "<tr><td colspan='4' style='color:var(--muted)'>—</td></tr>"}</tbody></table></div></div>
+          <div class="table-wrap"><div style="padding:14px 18px;border-bottom:1px solid var(--border)"><h2>支撑区间（由近及远）</h2></div>
+          <div class="table-scroll"><table class="level-table"><thead><tr><th>级别</th><th>价格</th><th>解读</th><th>距现价</th></tr></thead>
+          <tbody>${row(lv.support, "s") || "<tr><td colspan='4' style='color:var(--muted)'>—</td></tr>"}</tbody></table></div></div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <h2>最新 K 线结构</h2>
+          <div class="tags">
+            ${signalTag(sig.type || "—", "neutral")}
+            ${sig.body_ratio != null ? signalTag(`实体占比 ${(sig.body_ratio * 100).toFixed(0)}%`, "neutral") : ""}
+            ${sig.volume_ratio != null ? signalTag(`量比 ${sig.volume_ratio}`, sig.volume_ratio > 1.2 ? "warn" : "neutral") : ""}
+          </div>
+        </div>`;
+    }
+
+    function renderKlineSignals(report) {
+      const s = report.signals || {};
+      const bear = s.bear || {};
+      const bull = s.bull || {};
+      const rc = s.risk_control || {};
+      const list = (arr) => (arr || []).map(x => `<li>${x}</li>`).join("");
+      return `
+        <div class="grid-2">
+          <div class="signal-box bear">
+            <h4>空头信号 ${bear.triggered ? signalTag("已触发", "sell") : signalTag("未触发", "neutral")}</h4>
+            <ul>${list(bear.reasons)}</ul>
+            <p style="margin-top:10px;font-size:0.82rem;color:var(--muted)">${bear.conclusion || ""}</p>
+          </div>
+          <div class="signal-box bull">
+            <h4>多头修复条件 ${bull.partial_met ? signalTag("部分满足", "buy") : signalTag("待满足", "warn")}</h4>
+            <ul>${list(bull.conditions)}</ul>
+            <p style="margin-top:10px;font-size:0.82rem;color:var(--muted)">${bull.conclusion || ""}</p>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-top:16px">
+          <div class="card"><h2>持仓投资者</h2><ul class="report-section" style="list-style:none">${list(rc.holder)}</ul></div>
+          <div class="card"><h2>空仓观望</h2><ul class="report-section" style="list-style:none">${list(rc.empty)}</ul></div>
+        </div>
+        <div class="card" style="margin-top:16px;border-color:rgba(234,179,8,0.25)">
+          <h2>风险提示</h2>
+          <ul class="report-section">${list(s.warnings)}</ul>
+        </div>`;
+    }
+
+    function renderKlineBbi() {
+      const wb = DATA.weekly_bbi || {};
+      const reports = (wb.reports || []).filter(r => r.ok);
+      const report = getKlineReport();
+
+      const symOpts = (wb.reports || []).map(r =>
+        `<option value="${r.code}"${r.code === klineSymbol ? " selected" : ""}>${r.name || r.code} (${r.code})${r.ok ? "" : " · 无数据"}</option>`
+      ).join("");
+
+      const subTabs = [
+        { id: "overview", label: "① 基础概览" },
+        { id: "bbi", label: "② BBI 趋势" },
+        { id: "levels", label: "③ 关键区间" },
+        { id: "signals", label: "④ 交易信号" },
+      ];
+
+      if (!report?.ok) {
+        document.getElementById("klinebbi-panel").innerHTML = `
+          <div class="toolbar">
+            <select id="kline-symbol-select">${symOpts || "<option>515080</option>"}</select>
+          </div>
+          <p style="text-align:center;color:var(--muted);padding:40px">暂无周线 BBI 数据。请运行 <code>python weekly_bbi_report.py</code></p>`;
+        bindKlineToolbar();
+        return;
+      }
+
+      let body = "";
+      if (klineSubView === "overview") body = renderKlineOverview(report);
+      else if (klineSubView === "bbi") body = renderKlineBbiPanel(report);
+      else if (klineSubView === "levels") body = renderKlineLevels(report);
+      else body = renderKlineSignals(report);
+
+      document.getElementById("stats-bar").textContent =
+        `${report.name} (${report.code}) · 周线 · BBI ${report.overview?.current_bbi ?? "—"} · ${report.phase?.name || ""} · 更新 ${(wb.generated_at || "").slice(0, 10)}`;
+
+      document.getElementById("klinebbi-panel").innerHTML = `
+        <div class="toolbar">
+          <select id="kline-symbol-select">${symOpts}</select>
+          <div class="kline-subtabs">${subTabs.map(t =>
+            `<button type="button" class="kline-subtab${klineSubView === t.id ? " active" : ""}" data-sub="${t.id}">${t.label}</button>`
+          ).join("")}</div>
+        </div>
+        ${body}`;
+
+      bindKlineToolbar();
+      if (klineSubView === "overview") {
+        requestAnimationFrame(() => renderKlineChart(report));
+      }
+    }
+
+    function bindKlineToolbar() {
+      const sel = document.getElementById("kline-symbol-select");
+      if (sel) sel.addEventListener("change", e => { klineSymbol = e.target.value; renderKlineBbi(); });
+      document.querySelectorAll(".kline-subtab").forEach(btn => {
+        btn.addEventListener("click", () => { klineSubView = btn.dataset.sub; renderKlineBbi(); });
+      });
+    }
+
     function renderBacktest() {
       const summary = DATA.backtest?.summary || [];
       const stocks = DATA.backtest?.stock_results || [];
@@ -1037,7 +1329,7 @@
     function switchView(view) {
       activeView = view;
       document.querySelectorAll(".view-tab").forEach(b => b.classList.toggle("active", b.dataset.view === view));
-      ["market", "fundflow", "sector20", "picks", "indicators", "patterns", "backtest"].forEach(v => {
+      ["market", "fundflow", "sector20", "picks", "indicators", "patterns", "klinebbi", "backtest"].forEach(v => {
         document.getElementById(v + "-panel").classList.toggle("active", v === view);
       });
       document.getElementById("stats-bar").style.display = (view === "market" || view === "fundflow" || view === "sector20") ? "none" : "block";
@@ -1047,6 +1339,7 @@
       else if (view === "picks") renderPicks();
       else if (view === "indicators") renderIndicators();
       else if (view === "patterns") renderPatterns();
+      else if (view === "klinebbi") renderKlineBbi();
       else renderBacktest();
     }
 

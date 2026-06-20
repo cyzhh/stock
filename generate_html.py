@@ -11,6 +11,7 @@ from app_config import path_from_config
 from enrich_factors import enrich_scan_data
 from fund_flow_report import build_fund_flow_report
 from kline_patterns import registry_for_ui
+from weekly_bbi_report import run_all as run_weekly_bbi
 try:
     from kline_patterns import HAS_TALIB
 except ImportError:
@@ -60,6 +61,17 @@ def build_dashboard_payload(enrich: bool = True) -> dict:
         })
     ai_raw = snapshot.get("ai_summary")
     sector_flow = _load_json(path_from_config("sector_flow_20d", "data/sector_flow_20d.json"))
+    weekly_bbi = _load_json(path_from_config("weekly_bbi_report", "output/weekly_bbi_report.json"))
+    if not weekly_bbi.get("reports"):
+        import os
+        if os.environ.get("CI_FAST") != "1":
+            try:
+                weekly_bbi = run_weekly_bbi()
+            except Exception as e:
+                log.warning("周线 BBI 分析失败: %s", e)
+                weekly_bbi = {"reports": [], "error": str(e)}
+        else:
+            weekly_bbi = {"reports": [], "skipped": "CI_FAST"}
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "market_date": snapshot.get("date") or scan.get("market_date"),
@@ -100,6 +112,7 @@ def build_dashboard_payload(enrich: bool = True) -> dict:
         },
         "fund_flow": build_fund_flow_report(snapshot),
         "sector_flow_20d": sector_flow,
+        "weekly_bbi": weekly_bbi,
     }
 
 

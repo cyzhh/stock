@@ -17,6 +17,7 @@
 | **涨停回调** | 近 N 日涨停后缩量回踩 MA/BOLL 支撑 |
 | **高动能** | 5/10 日强势涨幅 + 趋势多头 + 贴近阶段高点 |
 | **K 线形态** | 61 种 TA-Lib 形态，看板可自选筛选（买入/卖出/中性） |
+| **周线 BBI** | ETF/标的周线 K 线 + BBI 牛熊线：四模块复盘（概览/趋势/区间/信号）+ ECharts |
 | 回测验证 | 胜率 + **盈亏比** + 移动止损 |
 
 ## 快速开始
@@ -50,6 +51,7 @@ python generate_html.py
 | `python scanner.py` | 仅策略扫描 |
 | `python backtest.py` | 仅回测 |
 | `python generate_html.py` | 仅生成看板 `index.html` |
+| `python weekly_bbi_report.py` | 周线 BBI 分析 → `output/weekly_bbi_report.json` |
 | `.\deploy-pages.ps1` | **将 `index.html` 直推 `gh-pages`（推荐，最稳）** |
 | `.\update-and-push.ps1` | 构建 + 提交 `main` + 自动 `deploy-pages.ps1` |
 

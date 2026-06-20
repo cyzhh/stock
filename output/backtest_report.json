@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-15T14:47:48.285447+00:00",
+  "generated_at": "2026-06-20T15:12:03.648803+00:00",
   "config": {
     "min_amount_yi": 0.8,
     "volume_ratio_min": 1.2,
@@ -13,7 +13,7 @@
   "summary": [],
   "stock_results": [],
   "overall": {
-    "stocks_tested": 1,
+    "stocks_tested": 8,
     "total_trades": 0,
     "best_strategy": null,
     "best_win_rate": null,

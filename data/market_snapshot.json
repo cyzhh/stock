@@ -1,414 +1,462 @@
 {
   "meta": {
     "provider": "hhxg.top",
-    "provider_name": "�ֻ�����",
-    "update_time": "2026-06-15T22:10:31",
+    "provider_name": "恢恢量化",
+    "update_time": "2026-06-20T22:10:37",
     "market": "CN-A",
     "language": "zh-CN",
     "schema_version": 3,
     "usage": "AI market analysis reference"
   },
-  "date": "2026-06-15",
-  "disclaimer": "���ݽ����о��ο���������Ͷ�ʽ���",
+  "date": "2026-06-18",
+  "disclaimer": "数据仅供研究参考，不构成投资建议",
   "ai_summary": {
-    "market_state": "׬ǮЧӦ 73.5%��ǿ��",
-    "focus_direction": "�뵼�塢Ԫ������ѧ����� �����ʽ���",
-    "theme_focus": "ͨ�ż�����F5G���PCB���� ����Ļ�Ծ",
-    "hotmoney_state": "���ʾ����� 48�ڣ����Ƽ�����",
-    "news_highlight": "LME�������ڵ���4.00%���ֱ�3393.000��Ԫ/�֡�",
-    "cta": "����Ϊ����ժҪ���鿴��������ָ�ꡢ�ʽ�������ĸ�������ʻֻ������ձ�"
+    "market_state": "赚钱效应 38.8%（弱）",
+    "focus_direction": "半导体、消费电子、通信设备 方向资金集中",
+    "theme_focus": "F5G概念、趋势股、通信技术 等题材活跃",
+    "hotmoney_state": "游资净买入 25亿，铂力特领涨",
+    "news_highlight": "【上交所拟推股票期权组合策略业务？暂不实施】近日有消息称，上交所拟完善股票期权组合策略业务，推出单边平仓功能。对此，记者获悉，2019年上交所和深交所同步推出股…",
+    "cta": "以上为精简摘要，查看完整技术指标、资金流向、题材复盘请访问恢恢量化日报"
   },
   "market": {
-    "date": "2026-06-15",
-    "sentiment_index": 73.5,
-    "sentiment_label": "ǿ",
-    "struct_diff": 9.4,
-    "total": 5286,
+    "date": "2026-06-18",
+    "sentiment_index": 38.8,
+    "sentiment_label": "弱",
+    "struct_diff": 2.6,
+    "total": 5291,
     "buckets": [
       {
-        "name": "С��",
-        "count": 2340,
-        "prev": 2810,
+        "name": "小涨",
+        "count": 1361,
+        "prev": 1095,
         "dir": "up"
       },
       {
-        "name": "����",
-        "count": 1016,
-        "prev": 816,
+        "name": "中涨",
+        "count": 476,
+        "prev": 416,
         "dir": "up"
       },
       {
-        "name": "����",
-        "count": 529,
-        "prev": 216,
+        "name": "大涨",
+        "count": 217,
+        "prev": 217,
         "dir": "up"
       },
       {
-        "name": "С��",
-        "count": 1211,
-        "prev": 977,
+        "name": "小跌",
+        "count": 2447,
+        "prev": 2727,
         "dir": "down"
       },
       {
-        "name": "�е�",
-        "count": 160,
-        "prev": 363,
+        "name": "中跌",
+        "count": 708,
+        "prev": 814,
         "dir": "down"
       },
       {
-        "name": "���",
-        "count": 30,
-        "prev": 104,
+        "name": "大跌",
+        "count": 82,
+        "prev": 20,
         "dir": "down"
       }
     ],
-    "limit_up": 145,
-    "fried": 88,
-    "limit_down": 3,
-    "promotion_rate": "12%"
+    "limit_up": 91,
+    "fried": 54,
+    "limit_down": 12,
+    "promotion_rate": "13%"
   },
   "hot_themes": [
     {
-      "name": "ͨ�ż���",
-      "limitup_count": 37,
-      "net_yi": 58.84,
+      "name": "F5G概念",
+      "limitup_count": 16,
+      "net_yi": 1.56,
       "top_stocks": [
         {
-          "name": "��о����",
-          "net_yi": 9.26
+          "name": "东方国信",
+          "net_yi": 3.96
         },
         {
-          "name": "̫����",
-          "net_yi": 6.04
+          "name": "中京电子",
+          "net_yi": 1.77
         }
       ],
       "related_themes": [
         {
-          "name": "F5G����",
-          "count": 202
+          "name": "通信技术",
+          "count": 221
         },
         {
-          "name": "PCB����",
-          "count": 13
+          "name": "PCB概念",
+          "count": 18
         },
         {
-          "name": "����װ��ѧ(CPO)",
-          "count": 13
-        }
-      ]
-    },
-    {
-      "name": "F5G����",
-      "limitup_count": 36,
-      "net_yi": 52.08,
-      "top_stocks": [
-        {
-          "name": "ͭ��ͭ��",
-          "net_yi": 10.14
-        },
-        {
-          "name": "��о����",
-          "net_yi": 9.26
-        }
-      ],
-      "related_themes": [
-        {
-          "name": "ͨ�ż���",
-          "count": 202
-        },
-        {
-          "name": "PCB����",
-          "count": 14
-        },
-        {
-          "name": "���",
+          "name": "工业互联网",
           "count": 6
         }
       ]
     },
     {
-      "name": "PCB����",
-      "limitup_count": 29,
-      "net_yi": 13.34,
+      "name": "趋势股",
+      "limitup_count": 15,
+      "net_yi": 1.17,
       "top_stocks": [
         {
-          "name": "ͭ��ͭ��",
-          "net_yi": 10.14
+          "name": "太极实业",
+          "net_yi": 3.96
         },
         {
-          "name": "��пƼ�",
-          "net_yi": -2.42
+          "name": "中钨高新",
+          "net_yi": 1.68
         }
       ],
       "related_themes": [
         {
-          "name": "F5G����",
-          "count": 14
+          "name": "题材股",
+          "count": 2
         },
         {
-          "name": "ͨ�ż���",
-          "count": 13
+          "name": "元件",
+          "count": 1
         },
         {
           "name": "MiniLED",
-          "count": 9
+          "count": 1
         }
       ]
     },
     {
-      "name": "����װ��ѧ(CPO)",
-      "limitup_count": 26,
-      "net_yi": 41.89,
+      "name": "通信技术",
+      "limitup_count": 15,
+      "net_yi": 3.99,
       "top_stocks": [
         {
-          "name": "��о����",
-          "net_yi": 9.26
+          "name": "东方国信",
+          "net_yi": 3.96
         },
         {
-          "name": "̫����",
-          "net_yi": 6.04
+          "name": "中京电子",
+          "net_yi": 1.77
         }
       ],
       "related_themes": [
         {
-          "name": "ͨ�ż���",
+          "name": "F5G概念",
+          "count": 221
+        },
+        {
+          "name": "PCB概念",
+          "count": 15
+        },
+        {
+          "name": "共封装光学(CPO)",
           "count": 13
+        }
+      ]
+    },
+    {
+      "name": "工业互联网",
+      "limitup_count": 11,
+      "net_yi": 2.98,
+      "top_stocks": [
+        {
+          "name": "东方国信",
+          "net_yi": 3.96
         },
         {
-          "name": "Ԫ��",
-          "count": 5
+          "name": "中京电子",
+          "net_yi": 1.77
+        }
+      ],
+      "related_themes": [
+        {
+          "name": "F5G概念",
+          "count": 6
         },
         {
-          "name": "MiniLED",
+          "name": "液冷服务器",
+          "count": 4
+        },
+        {
+          "name": "基础化工",
           "count": 3
         }
       ]
     },
     {
-      "name": "MiniLED",
-      "limitup_count": 23,
-      "net_yi": 4.73,
+      "name": "小金属概念",
+      "limitup_count": 12,
+      "net_yi": 1.7,
       "top_stocks": [
         {
-          "name": "���Ƽ�",
-          "net_yi": 1.91
+          "name": "博云新材",
+          "net_yi": 4.58
         },
         {
-          "name": "ʥȪ����",
-          "net_yi": 0.0
+          "name": "中钨高新",
+          "net_yi": 1.68
         }
       ],
       "related_themes": [
         {
-          "name": "С�׸���",
-          "count": 12
+          "name": "有色金属",
+          "count": 29
         },
         {
-          "name": "PCB����",
-          "count": 9
+          "name": "铜缆高速连接",
+          "count": 11
         },
         {
-          "name": "�Ƚ���װ",
+          "name": "基础化工",
           "count": 7
         }
       ]
     },
     {
-      "name": "С�׸���",
-      "limitup_count": 23,
-      "net_yi": 5.62,
+      "name": "PCB概念",
+      "limitup_count": 11,
+      "net_yi": 2.09,
       "top_stocks": [
         {
-          "name": "�⻪�ɷ�",
-          "net_yi": 0.0
+          "name": "中京电子",
+          "net_yi": 1.77
         },
         {
-          "name": "��ʤ�ɷ�",
-          "net_yi": 0.0
+          "name": "中钨高新",
+          "net_yi": 1.68
         }
       ],
       "related_themes": [
         {
+          "name": "F5G概念",
+          "count": 18
+        },
+        {
+          "name": "通信技术",
+          "count": 15
+        },
+        {
           "name": "MiniLED",
-          "count": 12
-        },
-        {
-          "name": "���˻�",
-          "count": 5
-        },
-        {
-          "name": "ͨ�ż���",
-          "count": 5
+          "count": 11
         }
       ]
     }
   ],
   "sectors": [
     {
-      "label": "��ҵ",
+      "label": "行业",
       "strong": [
         {
-          "name": "�뵼��",
-          "net_yi": 336.0,
-          "leader": "���Ƽ�",
+          "name": "半导体",
+          "net_yi": 119.0,
+          "leader": "晶升股份",
+          "bias_pct": 11.2
+        },
+        {
+          "name": "消费电子",
+          "net_yi": 52.0,
+          "leader": "易德龙",
           "bias_pct": 3.3
         },
         {
-          "name": "Ԫ��",
-          "net_yi": 139.0,
-          "leader": "��������",
-          "bias_pct": 9.6
+          "name": "通信设备",
+          "net_yi": 50.0,
+          "leader": "中瓷电子",
+          "bias_pct": 4.5
         },
         {
-          "name": "��ѧ�����",
-          "net_yi": 45.0,
-          "leader": "���ǿƼ�",
-          "bias_pct": 0.3
+          "name": "自动化设备",
+          "net_yi": 17.0,
+          "leader": "凌云光",
+          "bias_pct": 4.7
         },
         {
-          "name": "���ӻ�ѧƷ",
-          "net_yi": 33.0,
-          "leader": "��пƼ�",
-          "bias_pct": 11.1
-        },
-        {
-          "name": "��������",
-          "net_yi": 28.0,
-          "leader": "��ɴ�",
-          "bias_pct": 1.3
+          "name": "元件",
+          "net_yi": 13.0,
+          "leader": "麦捷科技",
+          "bias_pct": 16.4
         }
       ],
       "weak": [
         {
-          "name": "ú̿���ɼӹ�",
-          "net_yi": -23.0,
-          "leader": "������Դ",
+          "name": "电力",
+          "net_yi": -117.0,
+          "leader": "亨通股份",
+          "bias_pct": -8.6
+        },
+        {
+          "name": "银行",
+          "net_yi": -64.0,
+          "leader": "江阴银行",
           "bias_pct": -2.6
         },
         {
-          "name": "��·��·����",
-          "net_yi": -5.0,
-          "leader": "��������",
-          "bias_pct": -4.2
+          "name": "保险",
+          "net_yi": -45.0,
+          "leader": "中国人保",
+          "bias_pct": -3.5
         },
         {
-          "name": "�Ļ���ý",
-          "net_yi": -5.0,
-          "leader": "�����Ƽ�",
-          "bias_pct": -4.9
+          "name": "建筑装饰",
+          "net_yi": -25.0,
+          "leader": "中天精装",
+          "bias_pct": -4.1
         },
         {
-          "name": "Ӱ��Ժ��",
-          "net_yi": -2.0,
-          "leader": "�ݳɹɷ�",
-          "bias_pct": -8.5
-        },
-        {
-          "name": "ȼ��",
-          "net_yi": -1.0,
-          "leader": "��������",
+          "name": "电网设备",
+          "net_yi": -25.0,
+          "leader": "聚星科技",
           "bias_pct": -4.7
         }
       ]
     },
     {
-      "label": "���",
+      "label": "板块",
       "strong": [
         {
-          "name": "оƬ����",
-          "net_yi": 844.0,
-          "leader": "������",
-          "bias_pct": 1.8
-        },
-        {
           "name": "5G",
-          "net_yi": 567.0,
-          "leader": "��������",
-          "bias_pct": 0.1
+          "net_yi": 118.0,
+          "leader": "东方国信",
+          "bias_pct": 4.6
         },
         {
-          "name": "����װ��ѧ(CPO)",
-          "net_yi": 530.0,
-          "leader": "������",
-          "bias_pct": 4.1
+          "name": "芯片概念",
+          "net_yi": 110.0,
+          "leader": "麦捷科技",
+          "bias_pct": 6.3
         },
         {
-          "name": "���ѵ��Ӹ���",
-          "net_yi": 375.0,
-          "leader": "���ʸ���",
-          "bias_pct": 0.7
+          "name": "同花顺新质50",
+          "net_yi": 107.0,
+          "leader": "寒武纪",
+          "bias_pct": 1.3
         },
         {
-          "name": "�洢оƬ",
-          "net_yi": 310.0,
-          "leader": "���Ƽ�",
-          "bias_pct": 5.1
+          "name": "汽车芯片",
+          "net_yi": 96.0,
+          "leader": "裕太微",
+          "bias_pct": 6.4
+        },
+        {
+          "name": "东数西算(算力)",
+          "net_yi": 92.0,
+          "leader": "东方国信",
+          "bias_pct": 0.5
         }
       ],
       "weak": [
         {
-          "name": "ú̿����",
-          "net_yi": -24.0,
-          "leader": "���ܵ���",
-          "bias_pct": -2.2
+          "name": "国企改革",
+          "net_yi": -428.0,
+          "leader": "麦捷科技",
+          "bias_pct": -3.1
         },
         {
-          "name": "���¹���",
-          "net_yi": -9.0,
-          "leader": "��������",
-          "bias_pct": -4.0
+          "name": "证金持股",
+          "net_yi": -215.0,
+          "leader": "同大股份",
+          "bias_pct": -3.0
         },
         {
-          "name": "�Ļ���ý����",
-          "net_yi": -9.0,
-          "leader": "��������",
-          "bias_pct": -5.1
+          "name": "绿色电力",
+          "net_yi": -191.0,
+          "leader": "武汉天源",
+          "bias_pct": -4.3
         },
         {
-          "name": "ST���",
-          "net_yi": -3.0,
-          "leader": "ST������",
-          "bias_pct": -4.7
+          "name": "风电",
+          "net_yi": -182.0,
+          "leader": "武汉天源",
+          "bias_pct": -2.7
         },
         {
-          "name": "�������",
-          "net_yi": -2.0,
-          "leader": "̽·��",
-          "bias_pct": -5.7
+          "name": "高股息精选",
+          "net_yi": -180.0,
+          "leader": "天润工业",
+          "bias_pct": -3.8
         }
       ]
     }
   ],
   "ladder": {
-    "total_limit_up": 145,
-    "max_streak": 3,
+    "total_limit_up": 91,
+    "max_streak": 4,
     "top_streak": {
-      "name": "�½�·",
-      "boards": 3,
-      "industry": "��ѧԭ��"
+      "name": "旭光电子",
+      "boards": 4,
+      "industry": "其他电子"
     }
   },
   "ladder_detail": {
     "levels": [
       {
-        "boards": 5,
-        "count": 0,
-        "fail_count": 2,
+        "boards": 4,
+        "count": 1,
+        "fail_count": 9,
         "stocks": [
           {
-            "name": "��Զ����",
-            "code": "002971.SZ",
-            "industry": "��ѧ��Ʒ",
-            "area": "����",
-            "concept": "��������",
+            "name": "旭光电子",
+            "code": "600353.SH",
+            "industry": "其他电子",
+            "area": "四川",
+            "concept": "通信技术",
+            "is_success": true
+          },
+          {
+            "name": "中核科技",
+            "code": "000777.SZ",
+            "industry": "通用设备",
+            "area": "江苏",
+            "concept": "题材股",
             "is_success": false
           },
           {
-            "name": "��Ǩ��ʢ",
-            "code": "603065.SH",
-            "industry": "��ѧ��Ʒ",
-            "area": "����",
-            "concept": "��������",
+            "name": "中材科技",
+            "code": "002080.SZ",
+            "industry": "玻璃玻纤",
+            "area": "江苏",
+            "concept": "通信技术",
+            "is_success": false
+          },
+          {
+            "name": "光华科技",
+            "code": "002741.SZ",
+            "industry": "电子化学",
+            "area": "广东",
+            "concept": "通信技术",
+            "is_success": false
+          },
+          {
+            "name": "诺德股份",
+            "code": "600110.SH",
+            "industry": "电池",
+            "area": "吉林",
+            "concept": "PCB概念",
+            "is_success": false
+          },
+          {
+            "name": "旗滨集团",
+            "code": "601636.SH",
+            "industry": "玻璃玻纤",
+            "area": "湖南",
+            "concept": "题材股",
+            "is_success": false
+          },
+          {
+            "name": "海星股份",
+            "code": "603115.SH",
+            "industry": "元件",
+            "area": "江苏",
+            "concept": "元件",
+            "is_success": false
+          },
+          {
+            "name": "华正新材",
+            "code": "603186.SH",
+            "industry": "元件",
+            "area": "浙江",
+            "concept": "通信技术",
             "is_success": false
           }
         ]
@@ -416,70 +464,70 @@
       {
         "boards": 3,
         "count": 4,
-        "fail_count": 4,
+        "fail_count": 5,
         "stocks": [
           {
-            "name": "�½�·",
-            "code": "000510.SZ",
-            "industry": "��ѧԭ��",
-            "area": "�Ĵ�",
-            "concept": "С��������",
+            "name": "贤丰控股",
+            "code": "002141.SZ",
+            "industry": "动物保健",
+            "area": "广东",
+            "concept": "PCB概念",
             "is_success": true
           },
           {
-            "name": "ʢ���ɷ�",
-            "code": "001257.SZ",
-            "industry": "С����",
-            "area": "����",
-            "concept": "��ɫ����",
+            "name": "中天精装",
+            "code": "002989.SZ",
+            "industry": "装修装饰",
+            "area": "深圳",
+            "concept": "建筑装饰",
             "is_success": true
           },
           {
-            "name": "��ɣ���",
-            "code": "000032.SZ",
-            "industry": "רҵ����",
-            "area": "����",
-            "concept": "�������",
+            "name": "江钨装备",
+            "code": "600397.SH",
+            "industry": "专用设备",
+            "area": "江西",
+            "concept": "题材股",
             "is_success": true
           },
           {
-            "name": "����ɷ�",
-            "code": "601958.SH",
-            "industry": "С����",
-            "area": "����",
-            "concept": "��ɫ����",
+            "name": "艾华集团",
+            "code": "603989.SH",
+            "industry": "元件",
+            "area": "湖南",
+            "concept": "F5G概念",
             "is_success": true
           },
           {
-            "name": "���궯��",
-            "code": "001696.SZ",
-            "industry": "ͨ���豸",
-            "area": "����",
-            "concept": "���˻�",
-            "is_success": false
-          },
-          {
-            "name": "�����ɷ�",
-            "code": "002203.SZ",
-            "industry": "��ҵ����",
-            "area": "�㽭",
-            "concept": "��ɫ����",
-            "is_success": false
-          },
-          {
-            "name": "�ڳ��²�",
-            "code": "600067.SH",
-            "industry": "�����豸",
-            "area": "����",
-            "concept": "���˻�",
-            "is_success": false
-          },
-          {
-            "name": "����Ѫ��",
-            "code": "603014.SH",
-            "industry": "ҽ����е",
-            "area": "ɽ��",
+            "name": "大连友谊",
+            "code": "000679.SZ",
+            "industry": "一般零售",
+            "area": "辽宁",
             "concept": "nan",
+            "is_success": false
+          },
+          {
+            "name": "沃格光电",
+            "code": "603773.SH",
+            "industry": "光学光电",
+            "area": "江西",
+            "concept": "通信技术",
+            "is_success": false
+          },
+          {
+            "name": "莲花控股",
+            "code": "600186.SH",
+            "industry": "调味发酵",
+            "area": "河南",
+            "concept": "题材股",
+            "is_success": false
+          },
+          {
+            "name": "鑫源智造",
+            "code": "600615.SH",
+            "industry": "工业金属",
+            "area": "重庆",
+            "concept": "智能家居",
             "is_success": false
           }
         ]
@@ -487,526 +535,519 @@
       {
         "boards": 2,
         "count": 7,
-        "fail_count": 72,
+        "fail_count": 60,
         "stocks": [
           {
-            "name": "�н�ƽ�",
-            "code": "000506.SZ",
-            "industry": "�����",
-            "area": "ɽ��",
-            "concept": "��ɫ����",
+            "name": "冰轮环境",
+            "code": "000811.SZ",
+            "industry": "通用设备",
+            "area": "山东",
+            "concept": "氢能源",
             "is_success": true
           },
           {
-            "name": "ƽ���繤",
-            "code": "001359.SZ",
-            "industry": "����",
-            "area": "����",
-            "concept": "��������",
+            "name": "中京电子",
+            "code": "002579.SZ",
+            "industry": "元件",
+            "area": "广东",
+            "concept": "通信技术",
             "is_success": true
           },
           {
-            "name": "����֤ȯ",
-            "code": "601696.SH",
-            "industry": "֤ȯ��",
-            "area": "�Ϻ�",
-            "concept": "����������",
+            "name": "智微智能",
+            "code": "001339.SZ",
+            "industry": "计算机设",
+            "area": "深圳",
+            "concept": "F5G概念",
             "is_success": true
           },
           {
-            "name": "�ݺ��²�",
-            "code": "301176.SZ",
-            "industry": "Ԫ��",
-            "area": "����",
-            "concept": "PCB����",
+            "name": "通鼎互联",
+            "code": "002491.SZ",
+            "industry": "通信设备",
+            "area": "江苏",
+            "concept": "通信技术",
             "is_success": true
           },
           {
-            "name": "������",
-            "code": "603335.SH",
-            "industry": "�����㲿��",
-            "area": "�㶫",
-            "concept": "����ʱ������",
+            "name": "立航科技",
+            "code": "603261.SH",
+            "industry": "航空装备",
+            "area": "四川",
+            "concept": "无人机",
             "is_success": true
           },
           {
-            "name": "̩���Ƽ�",
-            "code": "603738.SH",
-            "industry": "Ԫ��",
-            "area": "����",
-            "concept": "���˻�",
+            "name": "盛剑科技",
+            "code": "603324.SH",
+            "industry": "环保设备",
+            "area": "上海",
+            "concept": "先进封装",
             "is_success": true
           },
           {
-            "name": "������",
-            "code": "605198.SH",
-            "industry": "ũ��Ʒ��",
-            "area": "ɽ��",
-            "concept": "�������",
+            "name": "金博股份",
+            "code": "688598.SH",
+            "industry": "非金属材",
+            "area": "湖南",
+            "concept": "小米概念",
             "is_success": true
           },
           {
-            "name": "�к�����",
-            "code": "000768.SZ",
-            "industry": "����װ��",
-            "area": "����",
-            "concept": "���˻�",
+            "name": "京东方Ａ",
+            "code": "000725.SZ",
+            "industry": "光学光电",
+            "area": "北京",
+            "concept": "通信技术",
             "is_success": false
           }
         ]
       },
       {
         "boards": 1,
-        "count": 134,
+        "count": 79,
         "fail_count": 0,
         "stocks": [
           {
-            "name": "�ط���Ϣ",
-            "code": "000070.SZ",
+            "name": "万泽股份",
+            "code": "000534.SZ",
             "industry": "",
-            "area": "����",
-            "concept": "6G����",
+            "area": "广东",
+            "concept": "创新药",
             "is_success": true
           },
           {
-            "name": "Ӣ�ؼ���",
-            "code": "000411.SZ",
+            "name": "阳光股份",
+            "code": "000608.SZ",
             "industry": "",
-            "area": "�㽭",
-            "concept": "SPD����",
+            "area": "广西",
+            "concept": "商业地产",
             "is_success": true
           },
           {
-            "name": "��˺���",
-            "code": "000520.SZ",
-            "industry": "",
-            "area": "����",
-            "concept": "��ͨ����",
-            "is_success": true
-          },
-          {
-            "name": "������ҵ",
-            "code": "000545.SZ",
-            "industry": "",
-            "area": "����",
-            "concept": "��ѧԭ��",
-            "is_success": true
-          },
-          {
-            "name": "��������",
-            "code": "000593.SZ",
-            "industry": "",
-            "area": "�Ĵ�",
-            "concept": "���и���",
-            "is_success": true
-          },
-          {
-            "name": "�绪�߿�",
-            "code": "000636.SZ",
-            "industry": "",
-            "area": "�㶫",
-            "concept": "AI�۾�",
-            "is_success": true
-          },
-          {
-            "name": "���ٸ���",
+            "name": "中钨高新",
             "code": "000657.SZ",
             "industry": "",
-            "area": "����",
-            "concept": "2026һ����Ԥ��",
+            "area": "海南",
+            "concept": "2026一季报预增",
             "is_success": true
           },
           {
-            "name": "ģ�ܿƼ�",
-            "code": "000700.SZ",
+            "name": "国安股份",
+            "code": "000839.SZ",
             "industry": "",
-            "area": "����",
-            "concept": "С�׸���",
+            "area": "北京",
+            "concept": "AI智能体",
+            "is_success": true
+          },
+          {
+            "name": "中嘉博创",
+            "code": "000889.SZ",
+            "industry": "",
+            "area": "河北",
+            "concept": "F5G概念",
+            "is_success": true
+          },
+          {
+            "name": "华瓷股份",
+            "code": "001216.SZ",
+            "industry": "",
+            "area": "湖南",
+            "concept": "NFT概念",
+            "is_success": true
+          },
+          {
+            "name": "长江材料",
+            "code": "001296.SZ",
+            "industry": "",
+            "area": "重庆",
+            "concept": "3D打印",
+            "is_success": true
+          },
+          {
+            "name": "天海电子",
+            "code": "001365.SZ",
+            "industry": "",
+            "area": "河南",
+            "concept": "PCB概念",
             "is_success": true
           }
         ]
       }
     ],
     "lb_rates_map": {
-      "1": "8.9%",
-      "2": "50.0%",
-      "0": "62.9%"
+      "1": "10.4%",
+      "2": "44.4%",
+      "3": "10.0%",
+      "0": "62.7%"
     },
     "area_counts": {
-      "�㽭": 31,
-      "����": 5,
-      "�㶫": 12,
-      "�Ϻ�": 9,
-      "ɽ��": 5
+      "江苏": 13,
+      "北京": 8,
+      "山东": 7,
+      "广东": 7,
+      "上海": 7,
+      "浙江": 7,
+      "深圳": 6,
+      "湖北": 5,
+      "四川": 4,
+      "湖南": 4
     },
     "concept_counts": {
-      "ͨ�ż���": 37,
-      "F5G����": 36,
-      "PCB����": 29,
-      "����װ��ѧ(CPO)": 26,
-      "ͭ�¸�������": 23,
-      "MiniLED": 23,
-      "С�׸���": 23,
-      "Ԫ��": 21,
-      "�Ƚ���װ": 20,
-      "���500": 16
+      "F5G概念": 17,
+      "通信技术": 15,
+      "趋势股": 15,
+      "工业互联网": 13,
+      "小金属概念": 12,
+      "PCB概念": 11,
+      "铜缆高速连接": 11,
+      "基础化工": 10,
+      "液冷服务器": 9,
+      "养老概念": 9
     }
   },
   "focus_news": [
     {
-      "t": "2026-06-15T22:01:22",
-      "cat": "�г�",
-      "title": "LME�������ڵ���4.00%���ֱ�3393.000��Ԫ/�֡�"
+      "t": "2026-06-20T21:36:43",
+      "cat": "焦点",
+      "title": "【上交所拟推股票期权组合策略业务？暂不实施】近日有消息称，上交所拟完善股票期权组合策略业务，推出单边平仓功能。对此，记者获悉，2019年上交所和深交所同步推出股…"
     },
     {
-      "t": "2026-06-15T21:56:15",
-      "cat": "����",
-      "title": "SpaceX ͨ������ IPO ļ��Լ 857 ����Ԫ��"
+      "t": "2026-06-20T20:02:08",
+      "cat": "焦点",
+      "title": "本周大盘主力资金累计净流入-130.38亿元，半导体、通信设备板块净流入居前，个股中际旭创、兆易创新净流入最多。"
     },
     {
-      "t": "2026-06-15T21:50:02",
-      "cat": "�г�",
-      "title": "���������Ӽ�������ȫ�����ǡ��������Ӽ�������ȫ�����ǣ�ARQQ����23%��QBTS��QUBT�ǳ�14%��RGTI�ǳ�12%��IONQ��LAES�ǳ�8%��"
+      "t": "2026-06-19T23:59:31",
+      "cat": "市场",
+      "title": "洲际交易所 7 月柴油期货结算价报每吨 905 美元。"
     },
     {
-      "t": "2026-06-15T21:47:36",
-      "cat": "�г�",
-      "title": "����Դ���ã��عɹɶ�һ���ж���1.06�ڹɽ���˾����������Դ���ù���ƣ���˾�յ����˷�Ժ֪ͨ�飬����2026��7��15��10ʱ��7��16��10ʱ��ͨ���Ա���˾����"
+      "t": "2026-06-19T23:32:42",
+      "cat": "市场",
+      "title": "英国央行表示，第三季度将通过 3 场拍卖出售短期英国国债，总规模 7.25 亿英镑；另通过 2 场拍卖出售中期英国国债，总规模 6 亿英镑。"
     },
     {
-      "t": "2026-06-15T21:47:19",
-      "cat": "�г�",
-      "title": "��������ʯ�����������ƫ�����С�Sparta Commodities��Neil Crosby��һ�ݱ����б�ʾ������ľ�Ⱥ�Ͽ�����¿�����Ҫʱ�䣬��Ӧ���ָ���50%��"
+      "t": "2026-06-19T23:31:09",
+      "cat": "市场",
+      "title": "【意大利股市继续创收盘历史新高】德国DAX 30指数初步收涨0.09%，报25049.50点，本周累涨约1.6%。法国股指初步收跌0.29%，意大利股指初步收涨…"
     },
     {
-      "t": "2026-06-15T21:46:21",
-      "cat": "�г�",
-      "title": "�ѳǰ뵼��ָ�����ݴ�����ʷ�¸ߣ���������4.5%��"
+      "t": "2026-06-19T23:27:56",
+      "cat": "市场",
+      "title": "市场消息： 嘉信理财正与芝加哥期权交易所合作，推出挂钩标普 500 指数表现的二元期权合约。"
     },
     {
-      "t": "2026-06-15T21:45:35",
-      "cat": "�г�",
-      "title": "���ܻ��Ҹ������ǣ���ǰ���رҼ۸񴥼������ܸ�λ��Coinbase Global�ɼ�����6.4%��Strategy�ɼ�����7%��Bit Digital�ɼ�����7.��"
+      "t": "2026-06-18T23:50:54",
+      "cat": "市场",
+      "title": "万斯称，在现有油价下跌基础上，民众油价支出将迎来大幅回落。"
     },
     {
-      "t": "2026-06-15T21:45:22",
-      "cat": "�г�",
-      "title": "����Ͷ��ۣ���������֮�ʼ��ô�����ҵ���ָ��ռ��󡿿�Ͷ��۵Ĳ���������ɣ��˹��ʾ��4�·ݼ��ô�����ҵ������������1.8%���Ⲣ����ȫ������ʯ����ҵ�ͼ۸����ǣ��⡭"
+      "t": "2026-06-18T23:45:45",
+      "cat": "焦点",
+      "title": "纳斯达克中国金龙指数跌超1%，海天网络跌12.89%，金生游乐跌11.30%，复朗集团跌6.25%，金山云跌5.19%，世纪互联跌5.00%。"
     },
     {
-      "t": "2026-06-15T21:44:17",
-      "cat": "�г�",
-      "title": "Ӣ��/��Ԫһ���²�������1��23�������״ε���6%��"
+      "t": "2026-06-18T23:40:59",
+      "cat": "市场",
+      "title": "日元兑美元跌幅扩大，跌破161关口。"
     },
     {
-      "t": "2026-06-15T21:43:19",
-      "cat": "�г�",
-      "title": "�������Ƽ�������̼������ǡ������Ƽ�������̼������ǣ�Nebius������9%��CoreWeave����7%���׹��ġ�Hut 8��IREN����4%��"
+      "t": "2026-06-18T23:38:21",
+      "cat": "焦点",
+      "title": "比特币跌破63000美元，日内跌2.39%。"
     }
   ],
   "macro_news": [
     {
-      "t": "2026-06-09T23:33:02",
-      "cat": "���",
-      "title": "�������������������ڹ�ծ���ñ�����3.6%��Ͷ�걶��3.25������52���ڹ�ծ���ñ�����3.750%��Ͷ�걶��3.34��"
-    },
-    {
-      "t": "2026-06-09T22:58:45",
-      "cat": "���",
-      "title": "�����ݣ��ᶨ�����д���ǿ��������ǿ������ͷŷ���ҵ��չǱ�ܡ�6��9�գ������з���ҵ����ٿ���������ί��Ƿ���ǿ����Ҫͻ������ǣ�����ƽ������Է���ҵ��רҵ���ͼ�ֵ��"
+      "t": "2026-06-17T22:56:02",
+      "cat": "宏观",
+      "title": "【我国智能产品质量安全风险控制知识库建设取得突破】 近期，针对智能产品风险机理复杂、基础知识库缺失等行业性难题，市场监管总局组织国内优势科研力量开展关键技术攻关…"
     }
   ],
   "hotmoney": {
-    "date": "2026-06-15",
-    "total_net_yi": 47.59,
+    "date": "2026-06-18",
+    "total_net_yi": 24.85,
     "top_net_buy": [
       {
-        "name": "���Ƽ�",
-        "net_yi": 16.75,
-        "ratio_pct": 53.6
+        "name": "铂力特",
+        "net_yi": 7.86,
+        "ratio_pct": 51.6
       },
       {
-        "name": "ͭ��ͭ��",
-        "net_yi": 10.14,
-        "ratio_pct": 27.5
+        "name": "博云新材",
+        "net_yi": 4.58,
+        "ratio_pct": 23.9
       },
       {
-        "name": "��о����",
-        "net_yi": 9.26,
-        "ratio_pct": 50.9
+        "name": "屹唐股份",
+        "net_yi": 4.24,
+        "ratio_pct": 87.1
       },
       {
-        "name": "̫����",
-        "net_yi": 6.04,
-        "ratio_pct": 43.9
+        "name": "福达股份",
+        "net_yi": 4.21,
+        "ratio_pct": 70.8
       },
       {
-        "name": "������ҵ",
-        "net_yi": 5.4,
-        "ratio_pct": 6.9
+        "name": "东方国信",
+        "net_yi": 3.96,
+        "ratio_pct": 55.1
       }
     ],
     "seats": [
       {
-        "name": "���ݰ�",
+        "name": "赵老哥",
         "stocks": [
           {
-            "name": "ͬ���²�",
-            "net_yi": 0.35
-          },
-          {
-            "name": "ʤ������",
-            "net_yi": 0.25
-          },
-          {
-            "name": "������ҵ",
-            "net_yi": -0.02
-          },
-          {
-            "name": "��пƼ�",
-            "net_yi": -0.27
-          },
-          {
-            "name": "���ɿƼ�",
-            "net_yi": -0.28
-          },
-          {
-            "name": "���Ƽ�",
-            "net_yi": -1.04
-          }
-        ]
-      },
-      {
-        "name": "������",
-        "stocks": [
-          {
-            "name": "�˷�����",
-            "net_yi": 1.14
-          }
-        ]
-      },
-      {
-        "name": "����",
-        "stocks": [
-          {
-            "name": "ͭ��ͭ��",
-            "net_yi": 1.03
-          },
-          {
-            "name": "�����²�",
-            "net_yi": 0.27
-          }
-        ]
-      },
-      {
-        "name": "������",
-        "stocks": [
-          {
-            "name": "*ST��֥",
-            "net_yi": 0.01
-          }
-        ]
-      },
-      {
-        "name": "������",
-        "stocks": [
-          {
-            "name": "�ָ���",
-            "net_yi": 3.38
-          },
-          {
-            "name": "����̫��",
+            "name": "退市沪科",
             "net_yi": -0.0
           }
         ]
       },
       {
-        "name": "���ֺ���",
+        "name": "成都系",
         "stocks": [
           {
-            "name": "*ST��ܰ",
-            "net_yi": 0.06
+            "name": "麦捷科技",
+            "net_yi": 1.01
           },
           {
-            "name": "*ST����",
-            "net_yi": 0.04
-          },
-          {
-            "name": "������ʯ",
-            "net_yi": 0.0
+            "name": "光华科技",
+            "net_yi": -1.25
           }
         ]
       },
       {
-        "name": "����ר��",
+        "name": "温州帮",
         "stocks": [
           {
-            "name": "���Ƽ�",
-            "net_yi": 12.92
+            "name": "*ST三房",
+            "net_yi": 0.12
           },
           {
-            "name": "��о����",
-            "net_yi": 6.3
+            "name": "*ST艾艾",
+            "net_yi": 0.05
           },
           {
-            "name": "ͭ��ͭ��",
-            "net_yi": 5.36
+            "name": "天龙退",
+            "net_yi": 0.01
           },
           {
-            "name": "�𰲹���",
-            "net_yi": 3.74
+            "name": "退市创兴",
+            "net_yi": -0.0
+          }
+        ]
+      },
+      {
+        "name": "方新侠",
+        "stocks": [
+          {
+            "name": "美畅股份",
+            "net_yi": -0.42
+          }
+        ]
+      },
+      {
+        "name": "欢乐海岸",
+        "stocks": [
+          {
+            "name": "永杰新材",
+            "net_yi": 0.1
+          }
+        ]
+      },
+      {
+        "name": "量化基金",
+        "stocks": [
+          {
+            "name": "铂力特",
+            "net_yi": 6.56
           },
           {
-            "name": "������ҵ",
-            "net_yi": 3.72
+            "name": "屹唐股份",
+            "net_yi": 3.6
           },
           {
-            "name": "̫����",
-            "net_yi": 2.87
+            "name": "福达股份",
+            "net_yi": 0.58
           },
           {
-            "name": "������ɫ",
-            "net_yi": 1.74
-          },
-          {
-            "name": "̩���Ƽ�",
-            "net_yi": 1.39
-          },
-          {
-            "name": "����Ƽ�",
-            "net_yi": 1.39
-          },
-          {
-            "name": "������ҵ",
-            "net_yi": 1.08
-          },
-          {
-            "name": "�巽���",
-            "net_yi": 0.49
-          },
-          {
-            "name": "��������",
-            "net_yi": 0.32
-          },
-          {
-            "name": "��ɼ�ҵ",
+            "name": "韩建河山",
             "net_yi": 0.31
           },
           {
-            "name": "ʢ���ɷ�",
-            "net_yi": 0.28
+            "name": "金博股份",
+            "net_yi": 0.29
           },
           {
-            "name": "�ݷ���ʯ",
-            "net_yi": 0.13
+            "name": "珍宝岛",
+            "net_yi": 0.2
           },
           {
-            "name": "������ҵ",
-            "net_yi": 0.11
+            "name": "麦捷科技",
+            "net_yi": 0.2
           },
           {
-            "name": "�����Ƽ�",
+            "name": "中核科技",
+            "net_yi": 0.15
+          },
+          {
+            "name": "北自科技",
+            "net_yi": 0.1
+          },
+          {
+            "name": "亨通股份",
+            "net_yi": 0.1
+          },
+          {
+            "name": "山东玻纤",
             "net_yi": 0.09
           },
           {
-            "name": "�ʿͿƼ�",
-            "net_yi": 0.04
+            "name": "晋拓股份",
+            "net_yi": 0.08
           },
           {
-            "name": "��ʵ����",
-            "net_yi": 0.04
+            "name": "梦百合",
+            "net_yi": 0.08
           },
           {
-            "name": "���Ҵ��",
+            "name": "晶升股份",
+            "net_yi": 0.07
+          },
+          {
+            "name": "立航科技",
+            "net_yi": 0.05
+          },
+          {
+            "name": "太极实业",
             "net_yi": 0.01
           },
           {
-            "name": "����²�",
+            "name": "*ST艾艾",
             "net_yi": 0.01
           },
           {
-            "name": "�����ɷ�",
+            "name": "*ST威领",
+            "net_yi": -0.0
+          },
+          {
+            "name": "德创环保",
+            "net_yi": -0.03
+          },
+          {
+            "name": "ST海钦",
+            "net_yi": -0.03
+          },
+          {
+            "name": "宿迁联盛",
+            "net_yi": -0.05
+          },
+          {
+            "name": "抚顺特钢",
             "net_yi": -0.07
           },
           {
-            "name": "���н���",
-            "net_yi": -0.08
+            "name": "裕太微",
+            "net_yi": -0.11
           },
           {
-            "name": "���ش߻�",
+            "name": "狮头股份",
+            "net_yi": -0.12
+          },
+          {
+            "name": "云汉芯城",
+            "net_yi": -0.13
+          },
+          {
+            "name": "天娱数科",
+            "net_yi": -0.14
+          },
+          {
+            "name": "国晟科技",
+            "net_yi": -0.14
+          },
+          {
+            "name": "ST绝味",
+            "net_yi": -0.15
+          },
+          {
+            "name": "香江控股",
+            "net_yi": -0.16
+          },
+          {
+            "name": "诺德股份",
             "net_yi": -0.19
           },
           {
-            "name": "���꾫��",
-            "net_yi": -0.2
+            "name": "红板科技",
+            "net_yi": -0.24
           },
           {
-            "name": "��������",
-            "net_yi": -0.25
+            "name": "迪生力",
+            "net_yi": -0.27
           },
           {
-            "name": "��ͨ�ع�",
-            "net_yi": -0.25
+            "name": "京能置业",
+            "net_yi": -0.35
           },
           {
-            "name": "ͬ���²�",
-            "net_yi": -0.26
+            "name": "黄河旋风",
+            "net_yi": -0.37
           },
           {
-            "name": "��������",
-            "net_yi": -0.29
+            "name": "九州一轨",
+            "net_yi": -0.39
           },
           {
-            "name": "ɽ��ī��",
-            "net_yi": -0.3
+            "name": "盛剑科技",
+            "net_yi": -0.41
           },
           {
-            "name": "�� �� ý",
-            "net_yi": -0.4
+            "name": "永杰新材",
+            "net_yi": -0.49
           },
           {
-            "name": "������",
-            "net_yi": -0.42
+            "name": "亚翔集成",
+            "net_yi": -0.59
           },
           {
-            "name": "������ũ",
-            "net_yi": -0.45
+            "name": "卓郎智能",
+            "net_yi": -1.27
           },
           {
-            "name": "��������",
-            "net_yi": -0.56
+            "name": "盛和资源",
+            "net_yi": -1.38
           },
           {
-            "name": "���Ӱ��",
-            "net_yi": -0.57
+            "name": "厦门钨业",
+            "net_yi": -4.33
           },
           {
-            "name": "��ʯ��",
-            "net_yi": -0.6
+            "name": "兆易创新",
+            "net_yi": -17.82
+          }
+        ]
+      },
+      {
+        "name": "紫阳东路",
+        "stocks": [
+          {
+            "name": "兆易创新",
+            "net_yi": 11.19
           },
           {
-            "name": "��Զ����",
-            "net_yi": -0.88
+            "name": "盛和资源",
+            "net_yi": 3.57
           },
           {
-            "name": "��������",
-            "net_yi": -2.0
+            "name": "光迅科技",
+            "net_yi": 3.04
           },
           {
-            "name": "���ʸ���",
-            "net_yi": -2.28
-          },
-          {
-            "name": "��пƼ�",
-            "net_yi": -3.25
-          },
-          {
-            "name": "��ú��Դ",
-            "net_yi": -3.84
-          },
-          {
-            "name": "���Ƽ�",
-            "net_yi": -4.54
+            "name": "光华科技",
+            "net_yi": -2.72
           }
         ]
       }
@@ -1014,55 +1055,55 @@
   },
   "comparison": {
     "yesterday": {
-      "limit_up": 89
+      "limit_up": 86
     },
-    "trend_label": "��7�ո�λ����"
+    "trend_label": "近7日低位区间"
   },
   "signals_count": {
-    "jiuzhuan": 76,
-    "multi_factor": 37,
-    "emotion_sync": 92,
+    "jiuzhuan": 74,
+    "multi_factor": 27,
+    "emotion_sync": 150,
     "volatility_alert": null,
-    "free_day": "ÿ��һ",
+    "free_day": "每周一",
     "xuangu_url": "https://hhxg.top/xuangu.html",
     "backtest_url": "https://hhxg.top/xuangu.html#backtest"
   },
   "links": {
     "stock_picker": {
-      "title": "AI����ѡ��",
+      "title": "AI量化选股",
       "url": "https://hhxg.top/xuangu.html",
-      "desc": "������ɸѡ�����Իز⡢����ѡ��"
+      "desc": "多因子筛选、策略回测、智能选股"
     },
     "etf": {
-      "title": "ETF����",
+      "title": "ETF工具",
       "url": "https://hhxg.top/etf.html",
-      "desc": "ETF�ǵ����ʽ����򡢳ֲַ���"
+      "desc": "ETF涨跌、资金流向、持仓分析"
     },
     "hotmoney": {
-      "title": "����׷��",
+      "title": "游资追踪",
       "url": "https://hhxg.top/youzi.html",
-      "desc": "֪������ϯλ������������ȷ���"
+      "desc": "知名游资席位动向、龙虎榜深度分析"
     },
     "margin": {
-      "title": "��������",
+      "title": "两融数据",
       "url": "https://hhxg.top/rzrq.html",
-      "desc": "������ȯ���仯��������������"
+      "desc": "融资融券余额变化、个股两融排名"
     },
     "volatility": {
-      "title": "�춯���",
+      "title": "异动监控",
       "url": "https://hhxg.top/yidong.html",
-      "desc": "�����춯ʵʱ��׽��������Ԥ��"
+      "desc": "盘中异动实时捕捉、波动率预警"
     },
     "analysis": {
-      "title": "��ȷ���",
+      "title": "深度分析",
       "url": "https://hhxg.top/analysis.html",
-      "desc": "��ҵ����б������Ը���"
+      "desc": "行业深度研报、策略复盘"
     },
     "website": {
-      "title": "�ֻ���������",
+      "title": "恢恢量化官网",
       "url": "https://hhxg.top",
-      "desc": "������������������"
+      "desc": "更多量化工具与数据"
     }
   },
-  "_synced_at": "2026-06-15T14:45:33.222652+00:00"
+  "_synced_at": "2026-06-20T14:59:32.407801+00:00"
 }

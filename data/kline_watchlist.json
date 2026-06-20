@@ -1,0 +1,10 @@
+{
+  "updated_at": "2026-06-20",
+  "symbols": [
+    {"code": "515080", "name": "中证红利ETF", "market": "sh"},
+    {"code": "510880", "name": "红利ETF", "market": "sh"},
+    {"code": "159915", "name": "创业板ETF", "market": "sz"},
+    {"code": "510300", "name": "沪深300ETF", "market": "sh"},
+    {"code": "512890", "name": "红利低波ETF", "market": "sh"}
+  ]
+}

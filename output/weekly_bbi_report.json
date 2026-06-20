@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-06-20T15:15:33.132606+00:00",
+  "default_symbol": "515080",
+  "period_label": "周线",
+  "indicator": "BBI 多空牛熊线 (3/6/12/24 周均线)",
+  "reports": [
+    {
+      "code": "515080",
+      "name": "中证红利ETF",
+      "ok": false,
+      "reason": "K线请求失败 1.515080: Remote end closed connection without response"
+    },
+    {
+      "code": "510880",
+      "name": "红利ETF",
+      "ok": false,
+      "reason": "K线请求失败 1.510880: Remote end closed connection without response"
+    },
+    {
+      "code": "159915",
+      "name": "创业板ETF",
+      "ok": false,
+      "reason": "K线请求失败 0.159915: Remote end closed connection without response"
+    },
+    {
+      "code": "510300",
+      "name": "沪深300ETF",
+      "ok": false,
+      "reason": "K线请求失败 1.510300: Remote end closed connection without response"
+    },
+    {
+      "code": "512890",
+      "name": "红利低波ETF",
+      "ok": false,
+      "reason": "K线请求失败 1.512890: Remote end closed connection without response"
+    }
+  ]
+}

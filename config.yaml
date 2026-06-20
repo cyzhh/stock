@@ -9,10 +9,13 @@ paths:
   scan_results: output/scan_results.json
   backtest_report: output/backtest_report.json
   dashboard_data: output/dashboard.json
+  weekly_bbi_report: output/weekly_bbi_report.json
 
 sync:
   hhxg_skill_dir: ../.cursor/skills/hhxg-market/scripts
   kline_days: 120
+  kline_weeks: 120
+  kline_months: 60
   timeout_sec: 20
   retries: 3
 
@@ -57,3 +60,8 @@ logging:
   level: INFO
   file: logs/stock_quant.log
   console: true
+
+weekly_bbi:
+  watchlist: data/kline_watchlist.json
+  default_symbol: "515080"
+  weeks: 120
